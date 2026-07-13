@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>Catalogo CODMAR</title>
+
+
+
+<style>
+
+/* ========================= */
+/*          CSS CODMAR        */
+/* ========================= */
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin:20px;
+    background:#f5f5f5;
+}
+
+
+h1 {
+    text-align:center;
+}
+
+
+/* BUSCADOR */
+
+#buscar{
+    width:300px;
+    padding:10px;
+    font-size:16px;
+    margin:20px auto;
+    display:block;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+
+/* CATALOGO */
+
+#catalogo{
+    text-align:center;
+}
+
+
+.producto{
+    border:1px solid #ccc;
+    background:white;
+    border-radius:10px;
+    padding:15px;
+    margin:15px;
+    width:220px;
+    display:inline-block;
+    text-align:center;
+    vertical-align:top;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+
+
+.producto img{
+    width:180px;
+    height:180px;
+    object-fit:contain;
+}
+
+
+
+/* BOTON WHATSAPP PRODUCTO */
+
+.boton-whatsapp{
+    display:inline-block;
+    background:#25D366;
+    color:white;
+    padding:10px 15px;
+    margin-top:10px;
+    border-radius:8px;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+
+
+/* BOTON AGREGAR CARRITO */
+
+.boton-carrito{
+    display:block;
+    width:100%;
+    margin-top:8px;
+    padding:10px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+
+
+/* BOTON CARRITO PRINCIPAL */
+
+#verCarrito{
+    display:block;
+    margin:20px auto;
+    padding:12px 25px;
+    background:#ff9800;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+
+
+/* VENTANA DEL CARRITO */
+
+#carritoVentana{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:420px;
+    max-height:500px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
+    z-index:9999;
+}
+
+
+
+#listaCarrito{
+    margin-top:15px;
+}
+
+
+
+#totalCarrito{
+    margin-top:15px;
+    font-size:20px;
+    font-weight:bold;
+    color:#d32f2f;
+}
+
+
+
+/* BOTONES DEL CARRITO */
+
+.botonesCarrito{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+
+.botonesCarrito button{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+
+
+#vaciarCarrito{
+    background:#d32f2f;
+    color:white;
+}
+
+
+
+#enviarWhatsApp{
+    background:#25D366;
+    color:white;
+}
+
+
+
+#cerrarCarrito{
+    background:#666;
+    color:white;
+}
+
+
+
+#carritoVentana button{
+    margin:5px;
+}
+
+
+</style>
+
+</head>
+
+<body>
+
+
+<h1>Farmacia CODMAR</h1>
+
+
+<!-- Buscador de productos -->
+
+<input 
+type="text"
+id="buscar"
+placeholder="🔍 Buscar medicamento...">
+
+
+<!-- Botón para abrir carrito -->
+
+<button id="verCarrito" onclick="verCarrito()">
+
+🛒 Carrito (0)
+
+</button>
+
+
+<!-- Aquí aparecerán los productos del catálogo -->
+
+<div id="catalogo"></div>
+
+
+
+<!-- ========================= -->
+<!--       VENTANA CARRITO      -->
+<!-- ========================= -->
+
+
+<div id="carritoVentana">
+
+
+    <h2>🛒 Mi carrito</h2>
+
+
+    <div id="listaCarrito"></div>
+
+
+    <h3 id="totalCarrito"></h3>
+
+
+
+    <div class="botonesCarrito">
+
+
+        <button 
+        id="vaciarCarrito"
+        onclick="vaciarCarrito()">
+
+            🗑 Vaciar carrito
+
+        </button>
+
+
+
+        <button
+        id="enviarWhatsApp"
+        onclick="enviarWhatsApp()">
+
+            📲 Enviar pedido
+
+        </button>
+
+
+
+        <button
+        id="cerrarCarrito"
+        onclick="cerrarCarrito()">
+
+            ❌ Cerrar
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+<script>
+
+// =========================
+//       JAVASCRIPT CODMAR
+// =========================
+
+
+// =========================
+//       CARRITO
+// =========================
+
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+
+// Actualiza el número del botón carrito
+
+function actualizarCarrito(){
+
+    document.getElementById("verCarrito").innerHTML =
+    "🛒 Carrito (" + carrito.length + ")";
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+}
+
+
+
+// Agregar productos
+
+function agregarCarrito(nombre, precio){
+
+
+    precio = parseFloat(precio.replace("$","").trim());
+
+
+    let productoExistente = carrito.find(function(producto){
+
+        return producto.nombre === nombre;
+
+    });
+
+
+
+    if(productoExistente){
+
+
+        productoExistente.cantidad++;
+
+
+    }else{
+
+
+        carrito.push({
+
+            nombre:nombre,
+            precio:precio,
+            cantidad:1
+
+        });
+
+
+    }
+
+
+
+    actualizarCarrito();
+
+
+
+    alert(
+        nombre +
+        " agregado al carrito.\n\nProductos en el carrito: "
+        + carrito.length
+    );
+
+
+}
+
+
+
+// Mostrar carrito
+
+function verCarrito(){
+
+
+    let contenido = "";
+
+    let total = 0;
+
+
+
+    carrito.forEach(function(producto){
+
+
+        contenido += `
+
+        <div>
+
+        <strong>${producto.nombre}</strong><br>
+
+        Cantidad: ${producto.cantidad}<br>
+
+        Subtotal:
+        $${(producto.precio * producto.cantidad).toFixed(2)}
+
+        <br><br>
+
+
+        <button onclick="aumentarCantidad('${producto.nombre}')">
+        ➕
+        </button>
+
+
+        <button onclick="disminuirCantidad('${producto.nombre}')">
+        ➖
+        </button>
+
+
+        <button onclick="eliminarProducto('${producto.nombre}')">
+        ❌
+        </button>
+
+
+        </div>
+
+        <hr>
+
+        `;
+
+
+
+        total += producto.precio * producto.cantidad;
+
+
+    });
+
+
+
+    if(carrito.length === 0){
+
+
+        document.getElementById("listaCarrito").innerHTML =
+        "El carrito está vacío";
+
+
+        document.getElementById("totalCarrito").innerHTML = "";
+
+
+    }else{
+
+
+        document.getElementById("listaCarrito").innerHTML =
+        contenido;
+
+
+        document.getElementById("totalCarrito").innerHTML =
+        "Total: $" + total.toFixed(2);
+
+
+    }
+
+
+
+    document.getElementById("carritoVentana").style.display="block";
+
+
+}
+
+
+
+// Aumentar cantidad
+
+function aumentarCantidad(nombre){
+
+
+    let producto = carrito.find(p => p.nombre === nombre);
+
+
+    producto.cantidad++;
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+
+// Disminuir cantidad
+
+function disminuirCantidad(nombre){
+
+
+    let producto = carrito.find(p => p.nombre === nombre);
+
+
+
+    if(producto.cantidad > 1){
+
+
+        producto.cantidad--;
+
+
+    }else{
+
+
+        eliminarProducto(nombre);
+
+
+    }
+
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+
+
+// Eliminar producto
+
+function eliminarProducto(nombre){
+
+
+    carrito = carrito.filter(p => p.nombre !== nombre);
+
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+// Vaciar carrito
+
+function vaciarCarrito(){
+
+    carrito = [];
+
+    actualizarCarrito();
+
+    verCarrito();
+
+}
+
+
+// Cerrar carrito
+
+function cerrarCarrito(){
+
+
+    document.getElementById("carritoVentana").style.display="none";
+
+
+}
+
+// Enviar pedido por WhatsApp
+
+function enviarWhatsApp(){
+
+    if(carrito.length === 0){
+
+        alert("El carrito está vacío.");
+
+        return;
+
+    }
+
+    let mensaje = "Hola, quiero realizar el siguiente pedido:%0A%0A";
+
+    let total = 0;
+
+    carrito.forEach(function(producto){
+
+        let subtotal = producto.precio * producto.cantidad;
+
+        mensaje += "• " + producto.nombre +
+                   " x" + producto.cantidad +
+                   " = $" + subtotal.toFixed(2) + "%0A";
+
+        total += subtotal;
+
+    });
+
+    mensaje += "%0A*Total: $" + total.toFixed(2) + "*";
+
+    window.open(
+        "https://wa.me/5212282116197?text=" + mensaje,
+        "_blank"
+    );
+
+}
+
+
+
+
+
+// =========================
+//       CARGAR CSV
+// =========================
+
+
+fetch("productos.csv")
+
+
+.then(respuesta => respuesta.text())
+
+
+.then(datos => {
+
+
+
+const filas = datos.split("\n");
+
+
+const catalogo = document.getElementById("catalogo");
+
+
+const buscar = document.getElementById("buscar");
+
+
+
+let productos = [];
+
+
+
+for(let i=1;i<filas.length;i++){
+
+
+
+    let columnas = filas[i].split(",");
+
+
+
+    if(columnas.length>=3){
+
+
+
+        productos.push({
+
+
+            imagen:columnas[0].trim(),
+
+
+            nombre:columnas[1].trim(),
+
+
+            precio:columnas[2].trim()
+
+
+
+        });
+
+
+
+    }
+
+
+
+}
+
+
+
+
+// Mostrar productos
+
+
+function mostrarProductos(lista){
+
+
+
+    catalogo.innerHTML="";
+
+
+
+    lista.forEach(producto=>{
+
+
+        catalogo.innerHTML += `
+
+
+        <div class="producto">
+
+
+
+        <img src="imagenes/${producto.imagen}">
+
+
+
+        <h3>${producto.nombre}</h3>
+
+
+
+        <p>
+
+        <strong>
+        $${producto.precio}
+        </strong>
+
+        </p>
+
+
+
+
+        <a
+
+        class="boton-whatsapp"
+
+        href="https://wa.me/5212282116197?text=Hola%20quiero%20comprar%20${producto.nombre}"
+
+        target="_blank">
+
+        🛒 Pedir por WhatsApp
+
+        </a>
+
+
+
+
+
+        <button
+
+        class="boton-carrito"
+
+        onclick="agregarCarrito('${producto.nombre}','${producto.precio}')">
+
+        ➕ Agregar al carrito
+
+        </button>
+
+
+
+
+        </div>
+
+
+
+        `;
+
+
+
+    });
+
+
+
+}
+
+
+
+
+mostrarProductos(productos);
+
+
+actualizarCarrito();
+
+
+// Buscador
+
+
+buscar.addEventListener("keyup",function(){
+
+
+
+let texto = buscar.value.toLowerCase();
+
+
+
+
+let filtrados = productos.filter(function(producto){
+
+
+
+return producto.nombre.toLowerCase().includes(texto);
+
+
+
+});
+
+
+
+
+mostrarProductos(filtrados);
+
+
+
+});
+
+
+
+
+});
+
+</script>
+
+</body>
+
+</html>
+
