@@ -565,7 +565,10 @@ function enviarWhatsApp(){
 
     }
 
-    let mensaje = "Hola, quiero realizar el siguiente pedido:%0A%0A";
+    let mensaje = "*PEDIDO CO D MAR*%0A%0A";
+
+    mensaje += "Producto | Cantidad | Precio | Importe%0A";
+    mensaje += "--------------------------------%0A";
 
     let total = 0;
 
@@ -573,15 +576,17 @@ function enviarWhatsApp(){
 
         let subtotal = producto.precio * producto.cantidad;
 
-        mensaje += "• " + producto.nombre +
-                   " x" + producto.cantidad +
-                   " = $" + subtotal.toFixed(2) + "%0A";
+        mensaje += producto.nombre +
+                   " | " + producto.cantidad +
+                   " | $" + producto.precio.toFixed(2) +
+                   " | $" + subtotal.toFixed(2) +
+                   "%0A";
 
         total += subtotal;
 
     });
 
-    mensaje += "%0A*Total: $" + total.toFixed(2) + "*";
+    mensaje += "%0A*TOTAL: $" + total.toFixed(2) + "*";
 
     window.open(
         "https://wa.me/5212282116197?text=" + mensaje,
@@ -589,6 +594,8 @@ function enviarWhatsApp(){
     );
 
 }
+
+   
 
 
 
