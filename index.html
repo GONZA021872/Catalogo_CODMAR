@@ -600,21 +600,24 @@ function enviarWhatsApp(){
 
     let mensaje = "*PEDIDO CO D MAR*%0A%0A";
 
-  let contador = 1;
+    let total = 0;
 
-carrito.forEach(function(producto){
+    let contador = 1;
 
-    let subtotal = producto.precio * producto.cantidad;
+    carrito.forEach(function(producto){
 
-    mensaje += contador + ". " + producto.nombre + "%0A";
-    mensaje += "   Cantidad: " + producto.cantidad + "%0A";
-    mensaje += "   Precio: $" + producto.precio.toFixed(2) + "%0A";
-    mensaje += "   Importe: $" + subtotal.toFixed(2) + "%0A%0A";
+        let subtotal = producto.precio * producto.cantidad;
 
-    total += subtotal;
-    contador++;
+        mensaje += contador + ". " + producto.nombre + "%0A";
+        mensaje += "   Cantidad: " + producto.cantidad + "%0A";
+        mensaje += "   Precio: $" + producto.precio.toFixed(2) + "%0A";
+        mensaje += "   Importe: $" + subtotal.toFixed(2) + "%0A%0A";
 
-});
+        total += subtotal;
+        contador++;
+
+    });
+
     mensaje += "%0A*TOTAL: $" + total.toFixed(2) + "*";
 
     window.open(
