@@ -599,34 +599,34 @@ function enviarWhatsApp(){
     }
 
     let mensaje = "🏥 *CO D MAR*%0A";
-mensaje += "Distribuidora Farmacéutica y Comercializadora%0A%0A";
-mensaje += "```%0A";
-mensaje += "Cant  Artículo                  Importe%0A";
-mensaje += "----------------------------------------%0A";
+    mensaje += "Distribuidora Farmacéutica y Comercializadora%0A%0A";
+    mensaje += "```%0A";
+    mensaje += "Cant  Artículo  Importe%0A";
+    mensaje += "----------------------------%0A";
 
-let total = 0;
+    let total = 0;
 
-carrito.forEach(function(producto){
+    carrito.forEach(function(producto){
 
-    let subtotal = producto.precio * producto.cantidad;
+        let subtotal = producto.precio * producto.cantidad;
 
-    let cantidad = String(producto.cantidad).padEnd(4);
+        let cantidad = String(producto.cantidad).padEnd(4);
 
-    // Limita el nombre para que no se corte en celulares
-    let articulo = producto.nombre.substring(0,20).padEnd(20);
+        // Limita el nombre para que no se corte en celulares
+        let articulo = producto.nombre.substring(0,20).padEnd(20);
 
-    // Alinea el importe a la derecha
-    let importe = ("$" + subtotal.toFixed(2)).padStart(8);
+        // Alinea el importe
+        let importe = "$" + subtotal.toFixed(2);
 
-   mensaje += "Cant Artículo             Importe%0A";
+        mensaje += cantidad + " " + articulo + " " + importe + "%0A";
 
-    total += subtotal;
+        total += subtotal;
 
-});
+    });
 
-mensaje += "------------------------------------%0A";
-mensaje += "TOTAL: $" + total.toFixed(2) + "%0A";
-mensaje += "```";
+    mensaje += "------------------------%0A";
+    mensaje += "TOTAL: $" + total.toFixed(2) + "%0A";
+    mensaje += "```";
 
     window.open(
         "https://wa.me/5212282116197?text=" + mensaje,
@@ -634,6 +634,7 @@ mensaje += "```";
     );
 
 }
+
 
 
 
