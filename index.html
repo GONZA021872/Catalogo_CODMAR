@@ -229,7 +229,21 @@ body {
     margin:5px;
 }
 
+#volverCatalogo{
+    display:none;
+    margin:10px auto;
+    padding:10px 18px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
 
+#volverCatalogo:hover{
+    background:#0b5ed7;
 
 </style>
 
@@ -251,6 +265,9 @@ type="text"
 id="buscar"
 placeholder="🔍 Buscar medicamento...">
 
+<button id="volverCatalogo">
+    ← Volver al catálogo
+</button>
 
 <!-- Botón para abrir carrito -->
 
@@ -664,6 +681,9 @@ const catalogo = document.getElementById("catalogo");
 const buscar = document.getElementById("buscar");
 
 
+const volverCatalogo = document.getElementById("volverCatalogo");
+
+
 
 let productos = [];
 
@@ -787,40 +807,40 @@ actualizarCarrito();
 // Buscador
 
 
-buscar.addEventListener("keyup",function(){
+buscar.addEventListener("keyup", function () {
 
+    let texto = buscar.value.toLowerCase();
 
+    let filtrados = productos.filter(function(producto){
 
-let texto = buscar.value.toLowerCase();
+        return producto.nombre.toLowerCase().includes(texto);
 
+    });
 
+    mostrarProductos(filtrados);
 
-
-let filtrados = productos.filter(function(producto){
-
-
-
-return producto.nombre.toLowerCase().includes(texto);
-
-
-
-});
-
-
-
-
-mostrarProductos(filtrados);
-
-
+    if(texto !== ""){
+        volverCatalogo.style.display = "block";
+    }else{
+        volverCatalogo.style.display = "none";
+    }
 
 });
 
 
+volverCatalogo.addEventListener("click", function(){
 
+    buscar.value = "";
+
+    mostrarProductos(productos);
+
+    volverCatalogo.style.display = "none";
 
 });
 
+});   
 </script>
+
 
 </body>
 
