@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8">
 
-  <title>Catalogo CODMAR</title>
+  <title>Catalogo CODMAR </title>
 
 <style>
 
@@ -244,7 +244,7 @@ body {
     cursor:pointer;
     transition:0.3s;
 }
-}
+
 
 #volverCatalogo:hover{
     background:#0b5ed7;
@@ -260,6 +260,34 @@ body {
     <h1>CODMAR</h1>
     <p>Distribuidora Farmacéutica y Comercializadora</p>
 </div>
+
+
+<!-- Categorías -->
+
+<div class="categorias">
+
+    <button onclick="mostrarMedicamentos()">
+        💊 Medicamentos
+    </button>
+
+    <button onclick="mostrarMaterial()">
+        🩹 Material de Curación
+    </button>
+
+    <button onclick="mostrarSimilares()">
+        🔄 Similares
+    </button>
+
+    <button onclick="mostrarPatente()">
+        💎 Patente
+    </button>
+
+    <button onclick="mostrarPerfumeria()">
+        🧴 Perfumería
+    </button>
+
+</div>
+
 
 
 <!-- Buscador de productos -->
@@ -689,7 +717,7 @@ const volverCatalogo = document.getElementById("volverCatalogo");
 
 
 
-let productos = [];
+window.productos = [];
 
 
 
@@ -705,7 +733,7 @@ for(let i=1;i<filas.length;i++){
 
 
 
-        productos.push({
+       window.productos.push({
 
 
             imagen:columnas[0].trim(),
@@ -714,7 +742,9 @@ for(let i=1;i<filas.length;i++){
             nombre:columnas[1].trim(),
 
 
-            precio:columnas[2].trim()
+            precio:columnas[2].trim(),
+
+            categoria:columnas[3].trim(),
 
 
 
@@ -802,10 +832,53 @@ function mostrarProductos(lista){
 
 
 
-mostrarProductos(productos);
-
+mostrarProductos(
+    window.productos.filter(function(producto){
+        return producto.categoria.toLowerCase().includes("medicamentos");
+    })
+);
 
 actualizarCarrito();
+
+
+
+
+// Mostrar Medicamentos
+
+window.mostrarMedicamentos = function(){
+
+    let medicamentos = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("medicamentos");
+
+    });
+
+    mostrarProductos(medicamentos);
+
+};
+
+
+
+
+// Mostrar Material de Curación
+
+
+
+window.mostrarMaterial = function(){
+
+    let material = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("material");
+
+    });
+
+    mostrarProductos(material);
+
+};
+
+
+
+
 
 
 // Buscador
@@ -849,5 +922,4 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
-
 
