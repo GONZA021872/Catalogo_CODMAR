@@ -250,6 +250,115 @@ body {
     background:#0b5ed7;
 }
 
+
+
+/* ===== MODAL PRODUCTO ===== */
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:9999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.7);
+}
+
+.modal-contenido{
+
+    background:white;
+
+    width:90%;
+    max-width:420px;
+
+    margin:40px auto;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    position:relative;
+
+    animation:aparecer .25s;
+}
+
+.modal-contenido img{
+
+    width:250px;
+
+    height:250px;
+
+    object-fit:contain;
+
+}
+
+#modalNombre{
+
+    font-size:24px;
+    margin:15px 0;
+
+}
+
+#modalPrecio{
+
+    font-size:26px;
+
+    color:#e53935;
+
+    font-weight:bold;
+
+}
+
+#agregarModal{
+
+    background:#28a745;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 25px;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+}
+
+#cerrarModal{
+
+    position:absolute;
+
+    right:15px;
+
+    top:10px;
+
+    font-size:35px;
+
+    cursor:pointer;
+
+}
+
+@keyframes aparecer{
+
+    from{
+        transform:scale(.8);
+        opacity:0;
+    }
+
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+
+}
+
+
 </style>
 
 </head>
@@ -372,7 +481,35 @@ placeholder="🔍 Buscar medicamento...">
 
 </div>
 
+
+<!-- ===== VENTANA DEL PRODUCTO ===== -->
+
+<div id="modalProducto" class="modal">
+
+    <div class="modal-contenido">
+
+        <span id="cerrarModal">&times;</span>
+
+        <img id="modalImagen" src="" alt="Producto">
+
+        <h2 id="modalNombre"></h2>
+
+        <p id="modalPrecio"></p>
+
+        <button id="agregarModal">
+
+            🛒 Agregar al carrito
+
+        </button>
+
+    </div>
+
+</div>
+
+
 <script>
+
+
 
 // =========================
 //       JAVASCRIPT CODMAR
@@ -687,6 +824,66 @@ function enviarWhatsApp(){
 
 
 
+// =========================
+//      MODAL PRODUCTO
+// =========================
+
+let productoModal = null;
+
+function abrirProducto(imagen, nombre, precio){
+
+    productoModal = {
+        imagen: imagen,
+        nombre: nombre,
+        precio: precio
+    };
+
+    document.getElementById("modalImagen").src =
+    "imagenes/" + imagen;
+
+    document.getElementById("modalNombre").innerHTML =
+    nombre;
+
+    document.getElementById("modalPrecio").innerHTML =
+    "$" + precio;
+
+    document.getElementById("modalProducto").style.display =
+    "block";
+
+}
+
+document.getElementById("cerrarModal").onclick = function(){
+
+    document.getElementById("modalProducto").style.display =
+    "none";
+
+};
+
+window.onclick = function(event){
+
+    if(event.target == document.getElementById("modalProducto")){
+
+        document.getElementById("modalProducto").style.display =
+        "none";
+
+    }
+
+};
+
+
+
+document.getElementById("agregarModal").onclick = function(){
+
+    agregarCarrito(
+        productoModal.nombre,
+        productoModal.precio
+    );
+
+    document.getElementById("modalProducto").style.display =
+    "none";
+
+};
+
 
 
 
@@ -730,7 +927,7 @@ for(let i=1;i<filas.length;i++){
 
 
 
-    if(columnas.length>=4){
+    if(columnas.length>=3){
 
 
 
@@ -782,8 +979,14 @@ function mostrarProductos(lista){
         <div class="producto">
 
 
-
-        <img src="imagenes/${producto.imagen}">
+    <img
+src="imagenes/${producto.imagen}"
+onclick="abrirProducto(
+'${producto.imagen}',
+'${producto.nombre}',
+'${producto.precio}'
+)"
+style="cursor:pointer;">
 
 
 
@@ -880,8 +1083,6 @@ window.mostrarMaterial = function(){
 
 
 
-
-
 // Buscador
 
 
@@ -923,6 +1124,7 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
+
 
 
 
