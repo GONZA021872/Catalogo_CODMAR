@@ -1,3 +1,1172 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+  <title>Catalogo CODMAR </title>
+
+<style>
+
+/* ========================= */
+/*          CSS CODMAR        */
+/* ========================= */
+
+
+body {
+    font-family: Arial, sans-serif;
+    margin:20px;
+    background:#f5f5f5;
+}
+
+/* MARCA CODMAR */
+
+.marca{
+    text-align:center;
+    margin-top:20px;
+}
+
+.logo-icono{
+    font-size:48px;
+    margin-bottom:5px;
+}
+
+.marca h1{
+    font-size:80px;
+    font-weight:900;
+    margin:0;
+    letter-spacing:4px;
+    color:#111;
+}
+
+.marca p{
+    font-size: 40px;          /* Más grande */
+    font-weight: bold;
+    color: #555;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;      /* Más separación entre letras */
+    line-height: 1.4;         /* Hace que la letra se vea más alta */
+    text-transform: uppercase;/* Todo en mayúsculas, más profesional */
+}
+
+
+/* BUSCADOR */
+
+#buscar{
+    width: 100%;
+    max-width: 700px;
+    display: block;
+    margin: 20px auto;
+    padding: 18px 20px;
+    font-size: 28px;      /* Hace más grande la lupa y el texto */
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    outline: none;
+}
+/* CATALOGO */
+
+#catalogo{
+    text-align:center;
+}
+
+
+.producto{
+    border:1px solid #ccc;
+    background:white;
+    border-radius:10px;
+    padding:8px;
+    margin:8px;
+    width:160px;
+    display:inline-block;
+    text-align:center;
+    vertical-align:top;
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+}
+
+.producto img{
+    width:110px;
+    height:110px;
+    object-fit:contain;
+
+}
+
+.producto h3{
+    font-size:14px;
+    margin:6px 0;
+    min-height:36px;
+}
+
+.producto p{
+    font-size:18px;
+    color:#d32f2f;
+    font-weight:bold;
+    margin:6px 0;
+}
+
+
+
+
+/* BOTON AGREGAR CARRITO */
+
+.boton-carrito{
+    display:block;
+    width:110%;
+    margin-top:6px;
+    padding:12px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    font-size:18px;
+    cursor:pointer;
+}
+
+
+
+/* BOTON CARRITO PRINCIPAL */
+
+#verCarrito{
+    display:block;
+    width:40%;
+    margin:25px auto;
+    height:100px;
+    background:#ff9800;
+    color:white;
+    border:none;
+    border-radius:15px;
+    font-size:30px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+#verCarrito:hover{
+    transform:scale(1.05);
+    background:#f57c00;
+}
+
+/* VENTANA DEL CARRITO */
+
+#carritoVentana{
+    display:none;
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:420px;
+    max-height:500px;
+    overflow-y:auto;
+    background:#fff;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
+    z-index:9999;
+}
+
+
+
+#listaCarrito{
+    margin-top:15px;
+}
+
+
+
+#totalCarrito{
+    margin-top:15px;
+    font-size:20px;
+    font-weight:bold;
+    color:#d32f2f;
+}
+
+
+
+/* BOTONES DEL CARRITO */
+
+.botonesCarrito{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}
+
+
+.botonesCarrito button{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+
+
+#vaciarCarrito{
+    background:#d32f2f;
+    color:white;
+}
+
+
+
+#enviarWhatsApp{
+    background:#25D366;
+    color:white;
+}
+
+
+
+#cerrarCarrito{
+    background:#666;
+    color:white;
+}
+
+
+
+#carritoVentana button{
+    margin:5px;
+}
+
+#volverCatalogo{
+    display:none;
+    width:60%;
+    max-width:500px;
+    margin:20px auto;
+    padding:18px 25px;
+    background:#0d6efd;
+    color:white;
+    border:none;
+    border-radius:12px;
+    font-size:24px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+
+#volverCatalogo:hover{
+    background:#0b5ed7;
+}
+
+
+
+/* ===== MODAL PRODUCTO ===== */
+
+.modal{
+    display:none;
+    position:fixed;
+    z-index:9999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.7);
+}
+
+.modal-contenido{
+
+    background:white;
+
+    width:90%;
+    max-width:420px;
+
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    animation:aparecer .25s;
+}
+
+.modal-contenido img{
+
+    width:250px;
+
+    height:250px;
+
+    object-fit:contain;
+
+}
+
+#modalNombre{
+
+    font-size:24px;
+    margin:15px 0;
+
+}
+
+#modalPrecio{
+
+    font-size:26px;
+
+    color:#e53935;
+
+    font-weight:bold;
+
+}
+
+#agregarModal{
+
+    background:#28a745;
+
+    color:white;
+
+    border:none;
+
+    padding:15px 25px;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+}
+
+#cerrarModal{
+
+    position:absolute;
+
+    right:15px;
+
+    top:10px;
+
+    font-size:35px;
+
+    cursor:pointer;
+
+}
+
+
+
+@media (max-width:768px){
+
+    .categorias{
+
+        display:flex;
+
+        flex-direction:column;
+
+        gap:12px;
+
+        width:95%;
+
+        margin:20px auto;
+
+    }
+
+    .categorias button{
+
+        width:100%;
+
+        padding:22px;
+
+        font-size:28px;
+
+        border-radius:15px;
+
+        font-weight:bold;
+
+    }
+
+}
+
+
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="marca">
+    <h1>CODMAR</h1>
+    <p>Distribuidora Farmacéutica y Comercializadora</p>
+</div>
+
+
+<!-- Categorías -->
+
+<div class="categorias">
+
+    <button onclick="mostrarMedicamentos()">
+        💊 Medicamentos
+    </button>
+
+    <button onclick="mostrarMaterial()">
+        🩹 Material de Curación
+    </button>
+
+    <button onclick="mostrarSimilares()">
+        🔄 Similares
+    </button>
+
+    <button onclick="mostrarPatente()">
+        💎 Patente
+    </button>
+
+    <button onclick="mostrarPerfumeria()">
+        🧴 Perfumería
+    </button>
+
+</div>
+
+
+
+<!-- Buscador de productos -->
+
+<input 
+type="text"
+id="buscar"
+placeholder="🔍 Buscar medicamento...">
+
+<button id="volverCatalogo">
+    ← Volver al catálogo
+</button>
+
+<!-- Botón para abrir carrito -->
+
+<button id="verCarrito" onclick="verCarrito()">
+
+🛒 Carrito (0)
+
+</button>
+
+
+<!-- Aquí aparecerán los productos del catálogo -->
+
+<div id="catalogo"></div>
+
+
+
+<!-- ========================= -->
+<!--       VENTANA CARRITO      -->
+<!-- ========================= -->
+
+
+<div id="carritoVentana">
+
+
+    <h2>🛒 Mi carrito</h2>
+
+
+    <div id="listaCarrito"></div>
+
+
+    <h3 id="totalCarrito"></h3>
+
+
+
+    <div class="botonesCarrito">
+
+
+        <button 
+        id="vaciarCarrito"
+        onclick="vaciarCarrito()">
+
+            🗑 Vaciar carrito
+
+        </button>
+
+
+
+        <button
+        id="enviarWhatsApp"
+        onclick="enviarWhatsApp()">
+
+            📲 Enviar pedido
+
+        </button>
+
+
+
+        <button
+        id="cerrarCarrito"
+        onclick="cerrarCarrito()">
+
+            ❌ Cerrar
+
+        </button>
+
+
+    </div>
+
+
+</div>
+
+
+<!-- ===== VENTANA DEL PRODUCTO ===== -->
+
+<div id="modalProducto" class="modal">
+
+    <div class="modal-contenido">
+
+        <span id="cerrarModal">&times;</span>
+
+        <img id="modalImagen" src="" alt="Producto">
+
+        <h2 id="modalNombre"></h2>
+
+        <p id="modalPrecio"></p>
+
+        <button id="agregarModal">
+
+            🛒 Agregar al carrito
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+
+// =========================
+//       JAVASCRIPT CODMAR
+// =========================
+
+
+// =========================
+//       CARRITO
+// =========================
+
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+
+// Actualiza el número del botón carrito
+
+function actualizarCarrito(){
+
+    document.getElementById("verCarrito").innerHTML =
+    "🛒 Carrito (" + carrito.length + ")";
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+}
+
+
+
+// Agregar productos
+
+function agregarCarrito(nombre, precio){
+
+
+    precio = parseFloat(precio.replace("$","").trim());
+
+
+    let productoExistente = carrito.find(function(producto){
+
+        return producto.nombre === nombre;
+
+    });
+
+
+
+    if(productoExistente){
+
+
+        productoExistente.cantidad++;
+
+
+    }else{
+
+
+        carrito.push({
+
+            nombre:nombre,
+            precio:precio,
+            cantidad:1
+
+        });
+
+
+    }
+
+
+
+    actualizarCarrito();
+
+
+
+    alert(
+        nombre +
+        " agregado al carrito.\n\nProductos en el carrito: "
+        + carrito.length
+    );
+
+
+}
+
+
+
+// Mostrar carrito
+
+function verCarrito(){
+
+
+    let contenido = "";
+
+    let total = 0;
+
+
+
+    carrito.forEach(function(producto){
+
+
+        contenido += `
+
+        <div>
+
+        <strong>${producto.nombre}</strong><br>
+
+        Cantidad: ${producto.cantidad}<br>
+
+        Subtotal:
+        $${(producto.precio * producto.cantidad).toFixed(2)}
+
+        <br><br>
+
+
+        <button onclick="aumentarCantidad('${producto.nombre}')">
+        ➕
+        </button>
+
+
+        <button onclick="disminuirCantidad('${producto.nombre}')">
+        ➖
+        </button>
+
+
+        <button onclick="eliminarProducto('${producto.nombre}')">
+        ❌
+        </button>
+
+
+        </div>
+
+        <hr>
+
+        `;
+
+
+
+        total += producto.precio * producto.cantidad;
+
+
+    });
+
+
+
+    if(carrito.length === 0){
+
+
+        document.getElementById("listaCarrito").innerHTML =
+        "El carrito está vacío";
+
+
+        document.getElementById("totalCarrito").innerHTML = "";
+
+
+    }else{
+
+
+        document.getElementById("listaCarrito").innerHTML =
+        contenido;
+
+
+        document.getElementById("totalCarrito").innerHTML =
+        "Total: $" + total.toFixed(2);
+
+
+    }
+
+
+
+    document.getElementById("carritoVentana").style.display="block";
+
+
+}
+
+
+
+// Aumentar cantidad
+
+function aumentarCantidad(nombre){
+
+
+    let producto = carrito.find(p => p.nombre === nombre);
+
+
+    producto.cantidad++;
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+
+// Disminuir cantidad
+
+function disminuirCantidad(nombre){
+
+
+    let producto = carrito.find(p => p.nombre === nombre);
+
+
+
+    if(producto.cantidad > 1){
+
+
+        producto.cantidad--;
+
+
+    }else{
+
+
+        eliminarProducto(nombre);
+
+
+    }
+
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+
+
+// Eliminar producto
+
+function eliminarProducto(nombre){
+
+
+    carrito = carrito.filter(p => p.nombre !== nombre);
+
+
+
+    verCarrito();
+
+    actualizarCarrito();
+
+
+}
+
+
+// Vaciar carrito
+
+function vaciarCarrito(){
+
+    carrito = [];
+
+    actualizarCarrito();
+
+    verCarrito();
+
+}
+
+
+// Cerrar carrito
+
+function cerrarCarrito(){
+
+
+    document.getElementById("carritoVentana").style.display="none";
+
+
+}
+
+// Enviar pedido por WhatsApp
+
+function enviarWhatsApp(){
+
+    if(carrito.length === 0){
+
+        alert("El carrito está vacío.");
+
+        return;
+
+    }
+
+    let mensaje = "🏥 *CO D MAR*%0A";
+    mensaje += "Distribuidora Farmacéutica y Comercializadora%0A%0A";
+    mensaje += "```%0A";
+    mensaje += "Cant  Artículo              P.Unit      Importe%0A";
+   mensaje += "----------------------------------------------------%0A";
+    let total = 0;
+
+    carrito.forEach(function(producto){
+
+       let subtotal = producto.precio * producto.cantidad;
+
+let cantidad = String(producto.cantidad).padEnd(4);
+
+let articulo = producto.nombre.substring(0,28).padEnd(20);
+
+let precioUnitario =
+"$" + producto.precio.toLocaleString("es-MX",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+});
+
+let importe =
+"$" + subtotal.toLocaleString("es-MX",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+});
+
+mensaje +=
+cantidad + " " +
+articulo + " " +
+precioUnitario.padEnd(10) + " " +
+importe + "%0A";
+
+total += subtotal;
+
+});
+
+mensaje += "----------------------------------------------------%0A";
+
+mensaje += "TOTAL: $" +
+total.toLocaleString("es-MX",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+}) + "%0A";
+
+mensaje += "```";
+
+window.open(
+    "https://wa.me/5212282116197?text=" + mensaje,
+    "_blank"
+);
+
+}
+
+
+// =========================
+//      MODAL PRODUCTO
+// =========================
+
+let productoModal = null;
+
+function abrirProducto(imagen, nombre, precio){
+
+    productoModal = {
+        imagen: imagen,
+        nombre: nombre,
+        precio: precio
+    };
+
+    document.getElementById("modalImagen").src =
+    "imagenes/" + imagen;
+
+    document.getElementById("modalNombre").innerHTML =
+    nombre;
+
+    document.getElementById("modalPrecio").innerHTML =
+    "$" + precio;
+
+    document.getElementById("modalProducto").style.display =
+    "block";
+
+}
+
+document.getElementById("cerrarModal").onclick = function(){
+
+    document.getElementById("modalProducto").style.display =
+    "none";
+
+};
+
+window.onclick = function(event){
+
+    if(event.target == document.getElementById("modalProducto")){
+
+        document.getElementById("modalProducto").style.display =
+        "none";
+
+    }
+
+};
+
+
+
+document.getElementById("agregarModal").onclick = function(){
+
+    agregarCarrito(
+        productoModal.nombre,
+        productoModal.precio
+    );
+
+    document.getElementById("modalProducto").style.display =
+    "none";
+
+};
+
+
+
+
+// =========================
+//       CARGAR CSV
+// =========================
+
+
+fetch("productos.csv")
+
+
+.then(respuesta => respuesta.text())
+
+
+.then(datos => {
+
+
+
+const filas = datos.split("\n");
+
+
+const catalogo = document.getElementById("catalogo");
+
+
+const buscar = document.getElementById("buscar");
+
+
+const volverCatalogo = document.getElementById("volverCatalogo");
+
+
+
+window.productos = [];
+
+
+
+for(let i=1;i<filas.length;i++){
+
+
+
+    let columnas = filas[i].split(",");
+
+
+
+    if(columnas.length>=4){
+
+
+
+       window.productos.push({
+
+
+            imagen:columnas[0].trim(),
+
+
+            nombre:columnas[1].trim(),
+
+
+            precio:columnas[2].trim(),
+
+            categoria:columnas[3].trim(),
+
+
+
+        });
+
+
+
+    }
+
+
+
+}
+
+
+
+
+// Mostrar productos
+
+
+function mostrarProductos(lista){
+
+
+
+    catalogo.innerHTML="";
+
+
+
+    lista.forEach(producto=>{
+
+
+        catalogo.innerHTML += `
+
+
+        <div class="producto">
+
+
+    <img
+src="imagenes/${producto.imagen}"
+onclick="abrirProducto(
+'${producto.imagen}',
+'${producto.nombre}',
+'${producto.precio}'
+)"
+style="cursor:pointer;">
+
+
+
+        <h3>${producto.nombre}</h3>
+
+
+
+        <p>
+
+        <strong>
+        $${producto.precio}
+        </strong>
+
+        </p>
+
+
+
+
+       
+        <button
+
+        class="boton-carrito"
+
+        onclick="agregarCarrito('${producto.nombre}','${producto.precio}')">
+
+        ➕ Agregar al carrito
+
+        </button>
+
+
+
+
+        </div>
+
+
+
+        `;
+
+
+
+    });
+
+
+
+}
+
+
+
+
+mostrarProductos(
+    window.productos.filter(function(producto){
+        return producto.categoria.toLowerCase().includes("medicamentos");
+    })
+);
+
+actualizarCarrito();
+
+
+
+
+// Mostrar Medicamentos
+
+window.mostrarMedicamentos = function(){
+
+    let medicamentos = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("medicamentos");
+
+    });
+
+    mostrarProductos(medicamentos);
+
+};
+
+
+
+
+// Mostrar Material de Curación
+
+
+
+window.mostrarMaterial = function(){
+
+    let material = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("material");
+
+    });
+
+    mostrarProductos(material);
+
+};
+
+
+
+
+
+
+// Buscador
+
+
+buscar.addEventListener("keyup", function () {
+
+    let texto = buscar.value.toLowerCase();
+
+    let filtrados = productos.filter(function(producto){
+
+        return producto.nombre.toLowerCase().includes(texto);
+
+    });
+
+    mostrarProductos(filtrados);
+
+    if(texto !== ""){
+        volverCatalogo.style.display = "block";
+    }else{
+        volverCatalogo.style.display = "none";
+    }
+
+});
+
+
+volverCatalogo.addEventListener("click", function(){
+
+    buscar.value = "";
+
+    mostrarProductos(productos);
+
+    volverCatalogo.style.display = "none";
+
+});
+
+});   
+</script>
+
+
+</body>
+
+</html>
+
 
 
 
