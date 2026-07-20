@@ -385,21 +385,23 @@ body {
     .categorias{
 
         display:flex;
-        flex-direction:column;
+        flex-direction:row;
         gap:12px;
         width:100%;
         margin:20px auto;
         padding:0 10px;
+        overflow-x:auto;
 
     }
 
     .categorias button{
 
-        width:100%;
-        padding:26px;
-        font-size:30px;
+        width:auto;
+        padding:18px 25px;
+        font-size:22px;
         border-radius:15px;
         font-weight:bold;
+        flex-shrink:0;
 
     }
 
@@ -1190,6 +1192,7 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
+
 
 
 
