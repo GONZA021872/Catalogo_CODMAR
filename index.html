@@ -55,15 +55,15 @@ body {
 /* BUSCADOR */
 
 #buscar{
-    width: 100%;
-    max-width: 700px;
-    display: block;
-    margin: 20px auto;
-    padding: 18px 20px;
-    font-size: 28px;      /* Hace más grande la lupa y el texto */
-    border: 2px solid #ccc;
-    border-radius: 12px;
-    outline: none;
+    width:90%;
+    max-width:700px;
+    display:block;
+    margin:20px auto;
+    padding:18px 20px;
+    font-size:28px;
+    border:2px solid #ccc;
+    border-radius:12px;
+    outline:none;
 }
 /* CATALOGO */
 
@@ -348,7 +348,7 @@ body {
 
 .categorias{
     display:flex;
-    justify-content:flex-start;
+    justify-content:center;
     flex-wrap:nowrap;
     gap:10px;
     margin:20px 0;
@@ -433,6 +433,10 @@ body {
         🩹 Material de Curación
     </button>
 
+    <button onclick="mostrarPerfumeria()">
+🧴 Perfumería
+</button>
+
     <button onclick="mostrarSimilares()">
         🔄 Similares
     </button>
@@ -441,10 +445,7 @@ body {
         💎 Patente
     </button>
 
-    <button onclick="mostrarPerfumeria()">
-        🧴 Perfumería
-    </button>
-
+    
 </div>
 
 
@@ -454,11 +455,13 @@ body {
 <input 
 type="text"
 id="buscar"
-placeholder="🔍 Buscar medicamento...">
+placeholder="🔍 Buscar producto...">
+
 
 <button id="volverCatalogo">
     ← Volver al catálogo
 </button>
+
 
 <!-- Botón para abrir carrito -->
 
@@ -1147,6 +1150,34 @@ window.mostrarMaterial = function(){
 
 
 
+// Mostrar Perfumería
+
+window.mostrarPerfumeria = function(){
+
+    let perfumeria = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("perfumeria");
+
+    });
+
+    mostrarProductos(perfumeria);
+
+};   // <-- ESTA LLAVE Y PUNTO Y COMA FALTABAN
+
+
+window.mostrarSimilares = function(){
+
+    alert("Similares en construcción");
+
+};
+
+
+window.mostrarPatente = function(){
+
+    alert("Patente en construcción");
+
+};
+
 
 
 
@@ -1178,7 +1209,7 @@ volverCatalogo.addEventListener("click", function(){
 
     buscar.value = "";
 
-    mostrarProductos(productos);
+    mostrarMedicamentos();
 
     volverCatalogo.style.display = "none";
 
@@ -1191,3 +1222,6 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
+
+
+
