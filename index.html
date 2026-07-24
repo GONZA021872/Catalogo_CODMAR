@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -348,11 +348,14 @@ body {
 
 .categorias{
     display:flex;
-    justify-content:center;
+    justify-content:flex-start;
     flex-wrap:nowrap;
     gap:10px;
     margin:20px 0;
     overflow-x:auto;
+    overflow-y:hidden;
+    white-space:nowrap;
+    -webkit-overflow-scrolling:touch;
 }
 
 
@@ -390,6 +393,10 @@ body {
         margin:20px auto;
         padding:0 10px;
         overflow-x:auto;
+        justify-content:flex-start;
+        overflow-y:hidden;
+        white-space:nowrap;
+        -webkit-overflow-scrolling:touch;
 
     }
 
