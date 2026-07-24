@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 
 <head>
@@ -434,8 +434,13 @@ body {
     </button>
 
     <button onclick="mostrarPerfumeria()">
-🧴 Perfumería
-</button>
+    🧴 Perfumería
+    </button>
+
+
+    <button onclick="mostrarMiscelaneos()">
+    📦 Misceláneos
+    </button>
 
     <button onclick="mostrarSimilares()">
         🔄 Similares
@@ -1162,7 +1167,25 @@ window.mostrarPerfumeria = function(){
 
     mostrarProductos(perfumeria);
 
-};   // <-- ESTA LLAVE Y PUNTO Y COMA FALTABAN
+};   
+
+
+
+// Mostrar Misceláneos
+
+window.mostrarMiscelaneos = function(){
+
+    let miscelaneos = window.productos.filter(function(producto){
+
+        return producto.categoria.toLowerCase().includes("miscelaneos");
+
+    });
+
+    mostrarProductos(miscelaneos);
+
+};
+
+
 
 
 window.mostrarSimilares = function(){
@@ -1177,6 +1200,7 @@ window.mostrarPatente = function(){
     alert("Patente en construcción");
 
 };
+
 
 
 
@@ -1222,6 +1246,3 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
-
-
-
