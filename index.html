@@ -349,10 +349,11 @@ body {
 .categorias{
 
     display:flex;
-    justify-content:center;
-    flex-wrap:wrap;
+    justify-content:flex-start;
+    flex-wrap:nowrap;
     gap:10px;
     margin:20px 0;
+    overflow-x:auto;
 
 }
 
@@ -384,20 +385,23 @@ body {
     .categorias{
 
         display:flex;
-        flex-direction:column;
+        flex-direction:row;
         gap:12px;
-        width:95%;
+        width:100%;
         margin:20px auto;
+        padding:0 10px;
+        overflow-x:auto;
 
     }
 
     .categorias button{
 
-        width:100%;
-        padding:22px;
-        font-size:28px;
+        width:auto;
+        padding:18px 25px;
+        font-size:22px;
         border-radius:15px;
         font-weight:bold;
+        flex-shrink:0;
 
     }
 
@@ -1252,6 +1256,9 @@ window.mostrarPatente = function(){
 };
 
 
+
+
+
 // Buscador
 
 
@@ -1288,6 +1295,7 @@ volverCatalogo.addEventListener("click", function(){
 
 });   
 </script>
+
 
 </body>
 
