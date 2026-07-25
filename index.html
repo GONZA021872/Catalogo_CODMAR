@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -347,35 +347,38 @@ body {
 /* CATEGORÍAS */
 
 .categorias{
-
     display:flex;
-    justify-content:flex-start;
     flex-wrap:nowrap;
-    gap:10px;
-    margin:20px 0;
+    justify-content:flex-start;
+    gap:12px;
+    width:100%;
+    margin:20px auto;
+    padding:0 10px;
     overflow-x:auto;
-
+    overflow-y:hidden;
+    white-space:nowrap;
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
 }
 
+.categorias::-webkit-scrollbar{
+    display:none;
+}
 
 .categorias button{
-
-    background:#0d6efd;
-    color:white;
-    border:none;
+    flex:0 0 auto;
     padding:12px 20px;
-    border-radius:10px;
     font-size:18px;
     font-weight:bold;
+    border:none;
+    border-radius:10px;
+    background:#0d6efd;
+    color:white;
     cursor:pointer;
-
 }
 
-
 .categorias button:hover{
-
     background:#0b5ed7;
-
 }
 
 
