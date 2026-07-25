@@ -389,27 +389,41 @@ body {
 
         display:flex;
         flex-direction:row;
+        flex-wrap:nowrap;
         gap:12px;
         width:100%;
         margin:20px auto;
         padding:0 10px;
         overflow-x:auto;
+        overflow-y:hidden;
+        white-space:nowrap;
+        -webkit-overflow-scrolling:touch;
+
+    }
+
+    .categorias::-webkit-scrollbar{
+
+        display:none;
 
     }
 
     .categorias button{
 
-        width:auto;
-        padding:18px 25px;
-        font-size:22px;
-        border-radius:15px;
+        flex:0 0 auto;
+        min-width:180px;
+        padding:16px 28px;
+        font-size:20px;
+        border-radius:12px;
+        background:#0d6efd;
+        color:white;
+        border:none;
         font-weight:bold;
-        flex-shrink:0;
+        cursor:pointer;
+        text-align:center;
 
     }
 
 }
-
 
 
     /* CARRITO EN CELULAR */
@@ -1303,5 +1317,3 @@ volverCatalogo.addEventListener("click", function(){
 </body>
 
 </html>
-
-
