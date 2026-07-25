@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 
 <head>
@@ -343,10 +343,10 @@ body {
     cursor:pointer;
 
 }
-
 /* CATEGORÍAS */
 
 .categorias{
+
     display:flex;
     flex-wrap:nowrap;
     justify-content:flex-start;
@@ -359,13 +359,19 @@ body {
     white-space:nowrap;
     scroll-behavior:smooth;
     -webkit-overflow-scrolling:touch;
+
 }
+
 
 .categorias::-webkit-scrollbar{
+
     display:none;
+
 }
 
+
 .categorias button{
+
     flex:0 0 auto;
     padding:12px 20px;
     font-size:18px;
@@ -375,13 +381,19 @@ body {
     background:#0d6efd;
     color:white;
     cursor:pointer;
+
 }
+
 
 .categorias button:hover{
+
     background:#0b5ed7;
+
 }
 
 
+
+/* CELULAR */
 
 @media (max-width:768px){
 
@@ -401,28 +413,33 @@ body {
 
     }
 
+
     .categorias::-webkit-scrollbar{
 
         display:none;
 
     }
 
-  .categorias button{
 
-    flex:0 0 auto;
-    min-width:200px;
-    height:75px;
-    font-size:20px;
-    border-radius:12px;
-    background:#0d6efd;
-    color:white;
-    border:none;
-    font-weight:bold;
-    cursor:pointer;
+    .categorias button{
 
-}
+        flex:0 0 auto;
+        min-width:200px;
+        height:75px;
+        font-size:20px;
+        border-radius:12px;
+        background:#0d6efd;
+        color:white;
+        border:none;
+        font-weight:bold;
+        cursor:pointer;
+        display:flex;
+        align-items:center;
+        justify-content:center;
 
-}
+    }
+ }
+
 
     /* CARRITO EN CELULAR */
 
