@@ -5,7 +5,7 @@
 
     <meta charset="UTF-8">
 
-  <title>Catalogo CODMAR </title>
+  <title>Catalogo CO D MAR </title>
 
 <style>
 
@@ -394,6 +394,11 @@ body {
 }
 
 
+
+/* ========================= */
+/*      PÁGINA CARRITO        */
+/* ========================= */
+
 .categorias button:hover{
 
     background:#0b5ed7;
@@ -450,6 +455,169 @@ body {
 
 }
 
+}
+
+/* ========================= */
+/*      PÁGINA CARRITO        */
+/* ========================= */
+
+#paginaCarrito{
+
+    display:none;
+    width:95%;
+    max-width:900px;
+    margin:20px auto;
+    background:white;
+    border-radius:15px;
+    padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,.2);
+
+}
+
+.productoCarrito{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+    border-bottom:1px solid #ddd;
+    padding:15px 0;
+
+}
+
+.productoCarrito img{
+
+    width:90px;
+    height:90px;
+    object-fit:contain;
+
+}
+
+.infoProducto{
+
+    flex:1;
+
+}
+
+.infoProducto h3{
+
+    margin:0;
+    font-size:20px;
+
+}
+
+.infoProducto p{
+
+    margin:8px 0;
+    color:#d32f2f;
+    font-weight:bold;
+    font-size:20px;
+
+}
+
+
+.filaCarrito{
+
+    display:grid;
+    grid-template-columns:140px 1fr 100px 120px 70px;
+    align-items:center;
+    gap:10px;
+    border-bottom:1px solid #ddd;
+    padding:12px 0;
+
+}
+
+.colImagen{
+
+    width:70px;
+    flex-shrink:0;
+
+}
+
+.colImagen img{
+
+    width:60px;
+    height:60px;
+    object-fit:contain;
+    display:block;
+
+}
+
+.colCantidad{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+
+}
+
+.colCantidad span{
+
+    font-size:18px;
+    font-weight:bold;
+
+}
+
+.colCantidad button{
+
+    width:30px;
+    height:30px;
+    cursor:pointer;
+
+}
+
+.colProducto{
+
+    font-weight:bold;
+
+}
+
+.colPrecio,
+.colImporte{
+
+    text-align:center;
+    font-weight:bold;
+
+}
+
+.colImporte{
+
+    color:#d32f2f;
+
+}
+
+.colEliminar{
+
+    text-align:center;
+
+}
+
+.colEliminar button{
+
+    background:#d32f2f;
+    color:white;
+    border:none;
+    border-radius:6px;
+    padding:6px 10px;
+    cursor:pointer;
+
+}
+
+
+.encabezadoCarrito{
+
+    display:grid;
+    grid-template-columns:140px 1fr 100px 120px 70px;
+    gap:10px;
+    font-weight:bold;
+    background:#0d6efd;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+    margin-bottom:10px;
+    text-align:center;
+
+}
 
     /* CARRITO EN CELULAR */
 
@@ -511,10 +679,12 @@ body {
 <body>
 
 
-<div class="marca">
-    <h1>CODMAR</h1>
+    <div class="marca">
+    
+     <h1>CO D MAR</h1>
+
     <p>Distribuidora Farmacéutica y Comercializadora</p>
-</div>
+   </div>
 
 
 <!-- Categorías -->
@@ -580,11 +750,48 @@ placeholder="🔍 Buscar producto...">
 
 
 <!-- ========================= -->
+<!--      PÁGINA CARRITO       -->
+<!-- ========================= -->
+
+
+
+<div id="paginaCarrito" style="display:none;">
+
+    <h2 style="text-align:center; font-size:32px;">
+        🛒 Mi Carrito
+    </h2>
+
+    <div id="listaCarritoPagina"></div>
+
+    <h2 id="totalPagina" style="text-align:center; color:#d32f2f;"></h2>
+
+    <div style="text-align:center; margin-top:30px;">
+
+        <button id="enviarWhatsAppPagina">
+            📲 Enviar pedido
+        </button>
+
+        <button id="vaciarCarritoPagina">
+            🗑 Vaciar carrito
+        </button>
+
+        <button id="volverCatalogoPagina">
+            ⬅ Volver al catálogo
+        </button>
+
+    </div>
+
+</div>
+
+
+
+
+<!-- ========================= -->
 <!--       VENTANA CARRITO      -->
 <!-- ========================= -->
 
 
-<div id="carritoVentana">
+<div id="carritoVentana" style="display:none;">
 
 
     <h2>🛒 Mi carrito</h2>
@@ -690,7 +897,7 @@ function actualizarCarrito(){
 
 // Agregar productos
 
-function agregarCarrito(nombre, precio){
+function agregarCarrito(nombre, precio, imagen){
 
 
     precio = parseFloat(precio.replace("$","").trim());
@@ -713,14 +920,15 @@ function agregarCarrito(nombre, precio){
     }else{
 
 
-        carrito.push({
+     carrito.push({
 
-            nombre:nombre,
-            precio:precio,
-            cantidad:1
+    nombre:nombre,
+    precio:precio,
+    cantidad:1,
+    imagen:imagen
 
-        });
 
+});
 
     }
 
@@ -745,87 +953,86 @@ function agregarCarrito(nombre, precio){
 
 function verCarrito(){
 
+    // Ocultar catálogo
+    document.getElementById("catalogo").style.display = "none";
+
+    // Ocultar botón del carrito
+    document.getElementById("verCarrito").style.display = "none";
+
+    // Mostrar página del carrito
+    document.getElementById("paginaCarrito").style.display = "block";
 
     let contenido = "";
-
     let total = 0;
-
-
 
     carrito.forEach(function(producto){
 
-
         contenido += `
 
-        <div>
+<div class="filaCarrito">
 
-        <strong>${producto.nombre}</strong><br>
+    <div class="colCantidad">
+        <button onclick="disminuirCantidad('${producto.nombre}')">➖</button>
+        <span>${producto.cantidad}</span>
+        <button onclick="aumentarCantidad('${producto.nombre}')">➕</button>
+    </div>
 
-        Cantidad: ${producto.cantidad}<br>
+    <div class="colProducto">
+        ${producto.nombre}
+    </div>
 
-        Subtotal:
+    <div class="colPrecio">
+        $${producto.precio.toFixed(2)}
+    </div>
+
+    <div class="colImporte">
         $${(producto.precio * producto.cantidad).toFixed(2)}
+    </div>
 
-        <br><br>
+    <div class="colEliminar">
+        <button onclick="eliminarProducto('${producto.nombre}')">🗑</button>
+    </div>
 
+</div>
 
-        <button onclick="aumentarCantidad('${producto.nombre}')">
-        ➕
-        </button>
-
-
-        <button onclick="disminuirCantidad('${producto.nombre}')">
-        ➖
-        </button>
-
-
-        <button onclick="eliminarProducto('${producto.nombre}')">
-        ❌
-        </button>
-
-
-        </div>
-
-        <hr>
-
-        `;
-
-
+`;
 
         total += producto.precio * producto.cantidad;
 
-
     });
-
-
 
     if(carrito.length === 0){
 
+        document.getElementById("listaCarritoPagina").innerHTML =
+        "<h3 style='text-align:center;'>🛒 El carrito está vacío</h3>";
 
-        document.getElementById("listaCarrito").innerHTML =
-        "El carrito está vacío";
-
-
-        document.getElementById("totalCarrito").innerHTML = "";
-
+        document.getElementById("totalPagina").innerHTML = "";
 
     }else{
 
+        document.getElementById("listaCarritoPagina").innerHTML =
 
-        document.getElementById("listaCarrito").innerHTML =
-        contenido;
+        `
 
+<div class="encabezadoCarrito">
 
-        document.getElementById("totalCarrito").innerHTML =
-        "Total: $" + total.toFixed(2);
+    <div>Cantidad</div>
+    <div>Producto</div>
+    <div>Precio</div>
+    <div>Importe</div>
+    <div></div>
 
+</div>
+
+` + contenido;
+
+        document.getElementById("totalPagina").innerHTML =
+        "TOTAL: $" + total.toLocaleString("es-MX",{
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        });
 
     }
-
-
-
-    document.getElementById("carritoVentana").style.display="block";
-
 
 }
 
@@ -951,7 +1158,7 @@ function enviarWhatsApp(){
 
 let cantidad = String(producto.cantidad).padEnd(4);
 
-let articulo = producto.nombre.substring(0,28).padEnd(20);
+let articulo = producto.nombre.substring(0,22).padEnd(22);
 
 let precioUnitario =
 "$" + producto.precio.toLocaleString("es-MX",{
@@ -966,10 +1173,11 @@ let importe =
 });
 
 mensaje +=
-cantidad + " " +
-articulo + " " +
-precioUnitario.padEnd(10) + " " +
-importe + "%0A";
+cantidad.padEnd(5) +
+articulo +
+precioUnitario.padStart(10) +
+importe.padStart(12) +
+"%0A";
 
 total += subtotal;
 
@@ -1045,14 +1253,14 @@ document.getElementById("agregarModal").onclick = function(){
 
     agregarCarrito(
         productoModal.nombre,
-        productoModal.precio
+        productoModal.precio,
+        productoModal.imagen
     );
 
     document.getElementById("modalProducto").style.display =
     "none";
 
 };
-
 
 
 
@@ -1128,81 +1336,50 @@ for(let i=1;i<filas.length;i++){
 
 
 
-// Mostrar productos
-
-
 function mostrarProductos(lista){
-
-
 
     catalogo.innerHTML="";
 
-
-
     lista.forEach(producto=>{
-
 
         catalogo.innerHTML += `
 
-
         <div class="producto">
 
-
-    <img
-src="imagenes/${producto.imagen}"
-onclick="abrirProducto(
-'${producto.imagen}',
-'${producto.nombre}',
-'${producto.precio}'
-)"
-style="cursor:pointer;">
-
-
+        <img
+        src="imagenes/${producto.imagen}"
+        onclick="abrirProducto(
+        '${producto.imagen}',
+        '${producto.nombre}',
+        '${producto.precio}'
+        )"
+        style="cursor:pointer;">
 
         <h3>${producto.nombre}</h3>
 
-
-
         <p>
-
         <strong>
         $${producto.precio}
         </strong>
-
         </p>
 
-
-
-
-       
         <button
 
         class="boton-carrito"
 
-        onclick="agregarCarrito('${producto.nombre}','${producto.precio}')">
+        onclick="agregarCarrito('${producto.nombre}','${producto.precio}','${producto.imagen}')">
 
         ➕ Agregar al carrito
 
         </button>
 
-
-
-
         </div>
-
-
 
         `;
 
-
-
     });
 
-
-
 }
-
-
 
 
 mostrarProductos(
@@ -1335,11 +1512,41 @@ volverCatalogo.addEventListener("click", function(){
 
 });
 
-});   
+// =========================
+//      BOTONES CARRITO
+// =========================
+
+
+document.getElementById("enviarWhatsAppPagina").onclick = enviarWhatsApp;
+
+
+document.getElementById("vaciarCarritoPagina").onclick = vaciarCarrito;
+
+
+document.getElementById("volverCatalogoPagina").onclick = volverCatalogoCarrito;
+
+
+
+function volverCatalogoCarrito(){
+
+    document.getElementById("paginaCarrito").style.display = "none";
+
+    document.getElementById("catalogo").style.display = "";
+
+    document.getElementById("verCarrito").style.display = "block";
+
+}
+
+
+});
+
 </script>
 
 
 </body>
 
 </html>
+ 
+
+
 
