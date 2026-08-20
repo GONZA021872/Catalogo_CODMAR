@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -748,44 +748,6 @@ placeholder="🔍 Buscar producto...">
 <div id="catalogo"></div>
 
 
-
-<!-- ========================= -->
-<!--      PÁGINA CARRITO       -->
-<!-- ========================= -->
-
-
-
-<div id="paginaCarrito" style="display:none;">
-
-    <h2 style="text-align:center; font-size:32px;">
-        🛒 Mi Carrito
-    </h2>
-
-    <div id="listaCarritoPagina"></div>
-
-    <h2 id="totalPagina" style="text-align:center; color:#d32f2f;"></h2>
-
-    <div style="text-align:center; margin-top:30px;">
-
-        <button id="enviarWhatsAppPagina">
-            📲 Enviar pedido
-        </button>
-
-        <button id="vaciarCarritoPagina">
-            🗑 Vaciar carrito
-        </button>
-
-        <button id="volverCatalogoPagina">
-            ⬅ Volver al catálogo
-        </button>
-
-    </div>
-
-</div>
-
-
-
-
 <!-- ========================= -->
 <!--       VENTANA CARRITO      -->
 <!-- ========================= -->
@@ -842,6 +804,77 @@ placeholder="🔍 Buscar producto...">
 </div>
 
 
+<!-- ========================= -->
+<!--       PÁGINA CLIENTES     -->
+<!-- ========================= -->
+
+<div id="paginaClientes" style="display:none;">
+
+    <h2 style="text-align:center; font-size:32px;">
+        👥 Mis Clientes
+    </h2>
+
+    <div style="text-align:center; margin-top:30px;">
+
+        <button id="agregarCliente">
+            ➕ Agregar cliente
+        </button>
+
+        <button id="volverCarritoClientes">
+            ⬅ Volver al carrito
+        </button>
+
+    </div>
+
+    <!-- FORMULARIO AGREGAR CLIENTE -->
+
+    <div id="formularioCliente" style="display:none; margin:30px auto; max-width:500px;">
+
+        <h3 style="text-align:center;">
+            ➕ Agregar cliente
+        </h3>
+
+        <label>
+            Nombre del cliente
+        </label>
+
+        <input
+            type="text"
+            id="nombreCliente"
+            placeholder="Escribe el nombre"
+            style="width:100%; padding:12px; margin:8px 0 15px;">
+
+        <label>
+            📱 Número de WhatsApp
+        </label>
+
+        <input
+            type="tel"
+            id="whatsappCliente"
+            placeholder="Ejemplo: 2281234567"
+            style="width:100%; padding:12px; margin:8px 0 15px;">
+
+        <div style="text-align:center;">
+
+            <button id="guardarCliente">
+                💾 Guardar
+            </button>
+
+            <button id="cancelarCliente">
+                ❌ Cancelar
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- LISTA DE CLIENTES -->
+
+    <div id="listaClientes"></div>
+
+</div>
+
+
 <!-- ===== VENTANA DEL PRODUCTO ===== -->
 
 <div id="modalProducto" class="modal">
@@ -867,6 +900,61 @@ placeholder="🔍 Buscar producto...">
 </div>
 
 
+<!-- ========================= -->
+<!--       PÁGINA CARRITO     -->
+<!-- ========================= -->
+
+<div id="paginaCarrito" style="display:none;">
+
+    <h2 style="text-align:center; font-size:32px;">
+        🛒 Mi Carrito
+    </h2>
+
+    <div id="clienteSeleccionadoCarrito"
+        style="
+            text-align:center;
+            margin:15px auto;
+            padding:12px;
+            max-width:600px;
+            background:#e8f1ff;
+            border-radius:10px;
+            font-size:18px;
+            font-weight:bold;
+        ">
+    </div>
+
+    <div id="listaCarritoPagina"></div>
+
+    <h2 id="totalPagina"
+        style="text-align:center; color:#d32f2f;">
+    </h2>
+
+    <div style="text-align:center; margin-top:30px;">
+
+        <button id="enviarWhatsAppPagina">
+            📲 Enviar pedido
+        </button>
+
+        <button id="verClientes" onclick="verClientes()">
+            👥 Clientes
+        </button>
+
+        <button id="vaciarCarritoPagina">
+            🗑 Vaciar carrito
+        </button>
+
+        <button id="volverCatalogoPagina">
+            ⬅ Volver al catálogo
+        </button>
+
+    </div>
+
+</div>
+
+
+
+
+
 <script>
 
 
@@ -874,6 +962,8 @@ placeholder="🔍 Buscar producto...">
 // =========================
 //       JAVASCRIPT CODMAR
 // =========================
+
+
 
 
 // =========================
@@ -961,6 +1051,32 @@ function verCarrito(){
 
     // Mostrar página del carrito
     document.getElementById("paginaCarrito").style.display = "block";
+
+
+// Mostrar cliente seleccionado
+let clienteSeleccionado =
+    JSON.parse(localStorage.getItem("clienteSeleccionadoCODMAR"));
+
+let cajaCliente =
+document.getElementById("clienteSeleccionadoCarrito");
+
+if(cajaCliente){
+
+    if(clienteSeleccionado){
+
+        cajaCliente.innerHTML =
+            "👤 Cliente: " + clienteSeleccionado.nombre +
+            "<br>📱 WhatsApp: " + clienteSeleccionado.whatsapp;
+
+    }else{
+
+        cajaCliente.innerHTML =
+            "👤 Ningún cliente seleccionado";
+
+    }
+
+}
+
 
     let contenido = "";
     let total = 0;
@@ -1133,7 +1249,9 @@ function cerrarCarrito(){
 
 }
 
-// Enviar pedido por WhatsApp
+// =========================
+//   ENVIAR PEDIDO WHATSAPP
+// =========================
 
 function enviarWhatsApp(){
 
@@ -1142,63 +1260,103 @@ function enviarWhatsApp(){
         alert("El carrito está vacío.");
 
         return;
+    }
+
+    let clienteSeleccionado =
+        JSON.parse(localStorage.getItem("clienteSeleccionadoCODMAR"));
+
+    if(!clienteSeleccionado){
+
+        alert("Primero selecciona un cliente.");
+
+        return;
+    }
+
+    let numeroCliente = "";
+
+    if(clienteSeleccionado.whatsapp){
+
+        numeroCliente =
+            clienteSeleccionado.whatsapp.replace(/\D/g, "");
 
     }
 
-    let mensaje = "🏥 *CO D MAR*%0A";
-    mensaje += "Distribuidora Farmacéutica y Comercializadora%0A%0A";
-    mensaje += "```%0A";
-    mensaje += "Cant  Artículo              P.Unit      Importe%0A";
-   mensaje += "----------------------------------------------------%0A";
+    let mensaje = "";
+
+    mensaje += "🏥 *CODMAR*\n";
+    mensaje += "Distribuidora Farmacéutica y Comercializadora\n\n";
+
+    mensaje += "👤 Cliente: " +
+        clienteSeleccionado.nombre + "\n";
+
+    mensaje += "📱 WhatsApp: " +
+        (clienteSeleccionado.whatsapp || "Sin WhatsApp registrado") +
+        "\n\n";
+
+    mensaje += "```text\n";
+
+    mensaje += "Cant  Artículo              P.Unit      Importe\n";
+
+    mensaje += "----------------------------------------------------\n";
+
     let total = 0;
 
     carrito.forEach(function(producto){
 
-       let subtotal = producto.precio * producto.cantidad;
+        let subtotal =
+            producto.precio * producto.cantidad;
 
-let cantidad = String(producto.cantidad).padEnd(4);
+        let cantidad =
+            String(producto.cantidad).padEnd(5);
 
-let articulo = producto.nombre.substring(0,22).padEnd(22);
+        let articulo =
+            producto.nombre.substring(0,22).padEnd(22);
 
-let precioUnitario =
-"$" + producto.precio.toLocaleString("es-MX",{
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-});
+        let precioUnitario =
+            "$" + producto.precio.toLocaleString("es-MX",{
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            });
 
-let importe =
-"$" + subtotal.toLocaleString("es-MX",{
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-});
+        let importe =
+            "$" + subtotal.toLocaleString("es-MX",{
+                minimumFractionDigits:2,
+                maximumFractionDigits:2
+            });
 
-mensaje +=
-cantidad.padEnd(5) +
-articulo +
-precioUnitario.padStart(10) +
-importe.padStart(12) +
-"%0A";
+        mensaje +=
+            cantidad +
+            articulo +
+            precioUnitario.padStart(10) +
+            importe.padStart(12) +
+            "\n";
 
-total += subtotal;
+        total += subtotal;
 
-});
+    });
 
-mensaje += "----------------------------------------------------%0A";
+    mensaje +=
+        "----------------------------------------------------\n";
 
-mensaje += "TOTAL: $" +
-total.toLocaleString("es-MX",{
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-}) + "%0A";
+    mensaje +=
+        "TOTAL: $" +
+        total.toLocaleString("es-MX",{
+            minimumFractionDigits:2,
+            maximumFractionDigits:2
+        }) +
+        "\n";
 
-mensaje += "```";
+    mensaje += "```";
 
-window.open(
-    "https://wa.me/5212282116197?text=" + mensaje,
-    "_blank"
-);
+    let enlaceWhatsApp =
+    "https://wa.me/?text=" +
+    encodeURIComponent(mensaje);
+
+window.open(enlaceWhatsApp, "_blank");
 
 }
+
+
 
 
 // =========================
@@ -1540,12 +1698,256 @@ function volverCatalogoCarrito(){
 
 });
 
-</script>
 
+// =========================
+//      PÁGINA CLIENTES
+// =========================
+
+function verClientes(){
+
+    document.getElementById("paginaCarrito").style.display = "none";
+
+    document.getElementById("paginaClientes").style.display = "block";
+
+    mostrarClientes();
+
+}
+
+// Volver de Clientes al carrito
+
+document.getElementById("volverCarritoClientes").onclick = function(){
+
+    document.getElementById("paginaClientes").style.display = "none";
+
+    document.getElementById("paginaCarrito").style.display = "block";
+
+};
+
+// =========================
+//    AGREGAR CLIENTE
+// =========================
+
+document.getElementById("agregarCliente").onclick = function(){
+
+    document.getElementById("formularioCliente").style.display = "block";
+
+};
+// =========================
+//      GUARDAR CLIENTE
+// =========================
+
+document.getElementById("guardarCliente").onclick = function(){
+
+    let nombre =
+        document.getElementById("nombreCliente").value.trim();
+
+    let whatsapp =
+        document.getElementById("whatsappCliente").value.replace(/\D/g, "");
+
+   if(nombre === ""){
+
+    alert("Por favor escribe el nombre del cliente.");
+
+    return;
+}
+
+    let clientes =
+        JSON.parse(localStorage.getItem("clientesCODMAR")) || [];
+       
+      let clienteExistente = clientes.find(function(cliente){
+
+    return cliente.nombre.toLowerCase() === nombre.toLowerCase();
+
+});
+    
+    if(clienteExistente){
+
+        alert("Este número de WhatsApp ya está registrado.");
+
+        return;
+    }
+
+    // AGREGAR NUEVO CLIENTE
+
+    clientes.push({
+        nombre: nombre,
+        whatsapp: whatsapp
+    });
+
+    // GUARDAR LA LISTA ACTUALIZADA
+
+    localStorage.setItem(
+        "clientesCODMAR",
+        JSON.stringify(clientes)
+    );
+
+    // ACTUALIZAR LA LISTA EN PANTALLA
+
+    mostrarClientes();
+
+    // OCULTAR FORMULARIO
+
+    document.getElementById("formularioCliente").style.display = "none";
+
+    // LIMPIAR CAMPOS
+
+    document.getElementById("nombreCliente").value = "";
+
+    document.getElementById("whatsappCliente").value = "";
+
+    alert("Cliente guardado correctamente.");
+
+};
+
+
+
+// =========================
+//    MOSTRAR CLIENTES
+// =========================
+
+function mostrarClientes(){
+
+    let clientes = JSON.parse(localStorage.getItem("clientesCODMAR")) || [];
+
+    let lista = document.getElementById("listaClientes");
+
+    lista.innerHTML = "";
+
+    if(clientes.length === 0){
+
+        lista.innerHTML =
+        "<p style='text-align:center;'>No hay clientes registrados.</p>";
+
+        return;
+    }
+
+    clientes.forEach(function(cliente, indice){
+
+        lista.innerHTML += `
+
+        <div style="
+            margin:15px auto;
+            padding:15px;
+            max-width:500px;
+            background:white;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.15);
+        ">
+
+            <h3 style="margin:0;">
+                👤 ${cliente.nombre}
+            </h3>
+
+            <p style="margin:8px 0;">
+                📱 ${cliente.whatsapp}
+            </p>
+
+            <button onclick="seleccionarCliente(${indice})"
+                style="
+                    background:#0d6efd;
+                    color:white;
+                    border:none;
+                    border-radius:6px;
+                    padding:8px 15px;
+                    cursor:pointer;
+                    margin-right:8px;
+                ">
+                👤 Seleccionar
+            </button>
+
+            <button onclick="eliminarCliente(${indice})"
+                style="
+                    background:#d32f2f;
+                    color:white;
+                    border:none;
+                    border-radius:6px;
+                    padding:8px 15px;
+                    cursor:pointer;
+                ">
+                🗑️ Eliminar
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+// =========================
+//     ELIMINAR CLIENTE
+// =========================
+
+function eliminarCliente(indice){
+
+    let clientes = JSON.parse(localStorage.getItem("clientesCODMAR")) || [];
+
+    let cliente = clientes[indice];
+
+    if(!cliente){
+        return;
+    }
+
+    let confirmar = confirm(
+        "¿Quieres eliminar a " + cliente.nombre + "?"
+    );
+
+    if(!confirmar){
+        return;
+    }
+
+    clientes.splice(indice, 1);
+
+    localStorage.setItem(
+        "clientesCODMAR",
+        JSON.stringify(clientes)
+    );
+
+    mostrarClientes();
+
+}
+
+
+
+// =========================
+//   SELECCIONAR CLIENTE
+// =========================
+
+function seleccionarCliente(indice){
+
+    let clientes = JSON.parse(localStorage.getItem("clientesCODMAR")) || [];
+
+    let cliente = clientes[indice];
+
+    if(!cliente){
+        return;
+    }
+
+    localStorage.setItem(
+        "clienteSeleccionadoCODMAR",
+        JSON.stringify(cliente)
+    );
+
+    alert(
+        "Cliente seleccionado: " + cliente.nombre
+    );
+
+    document.getElementById("paginaClientes").style.display = "none";
+
+    document.getElementById("paginaCarrito").style.display = "block";
+
+    verCarrito();
+}
+
+
+
+</script>
 
 </body>
 
 </html>
+
+
  
 
 
