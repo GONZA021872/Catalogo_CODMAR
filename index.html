@@ -455,7 +455,13 @@ body {
 
 }
 
+#abrirAdministracion{
+    flex:0 0 auto;
 }
+
+}
+
+
 
 /* ========================= */
 /*      PÁGINA CARRITO        */
@@ -710,8 +716,12 @@ body {
         💎 Patente
     </button>
 
-    
-</div>
+     <button id="abrirAdministracion" style="display:none;">
+        ⚙️ Administración
+    </button>
+
+
+   </div>
 
 
 
@@ -798,6 +808,8 @@ placeholder="🔍 Buscar producto...">
 </div>
 
 
+
+
 <!-- ========================= -->
 <!--       PÁGINA CLIENTES     -->
 <!-- ========================= -->
@@ -868,6 +880,40 @@ placeholder="🔍 Buscar producto...">
 
 </div>
 
+<!-- ========================= -->
+<!--    PÁGINA ADMINISTRACIÓN  -->
+<!-- ========================= -->
+
+<div id="paginaAdministracion" style="display:none;">
+
+    <h2 style="text-align:center; font-size:32px;">
+        ⚙️ Administración CODMAR
+    </h2>
+
+    <div style="text-align:center; margin-top:30px;">
+
+        <button id="botonClientesAdmin">
+            👥 Clientes
+        </button>
+
+        <button id="botonAgregarProductoAdmin">
+            ➕ Agregar producto
+        </button>
+
+        <button id="botonVentasAdmin">
+            🧾 Ventas
+        </button>
+
+        <button id="volverCatalogoAdmin">
+            ⬅ Volver al catálogo
+        </button>
+
+    </div>
+
+</div>
+
+
+
 
 <!-- ===== VENTANA DEL PRODUCTO ===== -->
 
@@ -929,10 +975,7 @@ placeholder="🔍 Buscar producto...">
             📲 Enviar pedido
         </button>
 
-        <button id="verClientes" onclick="verClientes()">
-            👥 Clientes
-        </button>
-
+       
         <button id="vaciarCarritoPagina">
             🗑 Vaciar carrito
         </button>
@@ -958,6 +1001,17 @@ placeholder="🔍 Buscar producto...">
 // =========================
 
 
+
+// =========================
+//     MODO ADMINISTRADOR
+// =========================
+
+let modoAdministrador = true;
+
+if(modoAdministrador){
+
+    document.getElementById("abrirAdministracion").style.display = "flex";
+}
 
 
 // =========================
@@ -1704,6 +1758,7 @@ document.getElementById("agregarCliente").onclick = function(){
     document.getElementById("formularioCliente").style.display = "block";
 
 };
+
 // =========================
 //      GUARDAR CLIENTE
 // =========================
