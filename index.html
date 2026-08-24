@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 
 <head>
@@ -552,34 +552,30 @@ body {
 }
 
 .colCantidad span{
-
-    font-size:18px;
+    font-size:22px;
     font-weight:bold;
-
 }
 
+
 .colCantidad button{
-
-    width:30px;
-    height:30px;
+    width:40px;
+    height:40px;
+    font-size:20px;
     cursor:pointer;
-
 }
 
 .colProducto{
-
     font-weight:bold;
-
+    font-size:20px;
 }
+
 
 .colPrecio,
 .colImporte{
-
     text-align:center;
     font-weight:bold;
-
+    font-size:20px;
 }
-
 .colImporte{
 
     color:#d32f2f;
@@ -593,16 +589,14 @@ body {
 }
 
 .colEliminar button{
-
     background:#d32f2f;
     color:white;
     border:none;
-    border-radius:6px;
-    padding:6px 10px;
+    border-radius:8px;
+    padding:10px 14px;
+    font-size:20px;
     cursor:pointer;
-
 }
-
 
 .encabezadoCarrito{
 
@@ -1062,18 +1056,17 @@ document.getElementById("clienteSeleccionadoCarrito");
 
 if(cajaCliente){
 
-    if(clienteSeleccionado){
+  if(clienteSeleccionado){
 
-        cajaCliente.innerHTML =
-            "👤 Cliente: " + clienteSeleccionado.nombre +
-            "<br>📱 WhatsApp: " + clienteSeleccionado.whatsapp;
+    cajaCliente.innerHTML =
+        "👤 Cliente: " + clienteSeleccionado.nombre;
 
-    }else{
+}else{
 
-        cajaCliente.innerHTML =
-            "👤 Ningún cliente seleccionado";
+    cajaCliente.innerHTML =
+        "👤 Ningún cliente seleccionado";
 
-    }
+}
 
 }
 
@@ -1232,6 +1225,8 @@ function vaciarCarrito(){
 
     carrito = [];
 
+   localStorage.removeItem("clienteSeleccionadoCODMAR");
+
     actualizarCarrito();
 
     verCarrito();
@@ -1256,9 +1251,7 @@ function cerrarCarrito(){
 function enviarWhatsApp(){
 
     if(carrito.length === 0){
-
         alert("El carrito está vacío.");
-
         return;
     }
 
@@ -1266,33 +1259,19 @@ function enviarWhatsApp(){
         JSON.parse(localStorage.getItem("clienteSeleccionadoCODMAR"));
 
     if(!clienteSeleccionado){
-
         alert("Primero selecciona un cliente.");
-
         return;
-    }
-
-    let numeroCliente = "";
-
-    if(clienteSeleccionado.whatsapp){
-
-        numeroCliente =
-            clienteSeleccionado.whatsapp.replace(/\D/g, "");
-
     }
 
     let mensaje = "";
 
-    mensaje += "🏥 *CODMAR*\n";
+    mensaje += "*CODMAR*\n";
     mensaje += "Distribuidora Farmacéutica y Comercializadora\n\n";
 
-      mensaje += "👤 Cliente: " +
-    clienteSeleccionado.nombre + "\n\n";
-
-    mensaje += "```text\n";
+    mensaje += "Cliente: " +
+        clienteSeleccionado.nombre + "\n\n";
 
     mensaje += "Cant  Artículo              P.Unit      Importe\n";
-
     mensaje += "----------------------------------------------------\n";
 
     let total = 0;
@@ -1342,18 +1321,15 @@ function enviarWhatsApp(){
         }) +
         "\n";
 
-    mensaje += "```";
-
     let enlaceWhatsApp =
-    "https://wa.me/?text=" +
-    encodeURIComponent(mensaje);
+        "https://wa.me/?text=" +
+        encodeURIComponent(mensaje);
 
-window.open(enlaceWhatsApp, "_blank");
+    console.log(mensaje);
+    console.log(enlaceWhatsApp);
 
+    window.open(enlaceWhatsApp, "_blank");
 }
-
-
-
 
 // =========================
 //      MODAL PRODUCTO
@@ -1944,7 +1920,6 @@ function seleccionarCliente(indice){
 </html>
 
 
- 
 
 
 
