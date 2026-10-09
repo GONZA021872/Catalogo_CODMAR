@@ -871,18 +871,20 @@ body {
         width: 200px;
     }
 
-
-    /* ------------------------- */
-    /* CARRITO                   */
-    /* ------------------------- */
-
-    .boton-carrito {
-        position: relative;
-
-        left: 325px;
-        top: 10px;
-    }
-
+.boton-carrito {
+    position: fixed;
+    right: 20px;
+    top: 50px;
+    left: auto;
+    margin: 0;
+    transform: translate(
+        var(--ajuste-carrito-x),
+        var(--ajuste-carrito-y)
+    );
+    box-sizing: border-box;
+    z-index: 3001;
+}
+    
 
     /* ------------------------- */
     /* FRANJA SUPERIOR           */
