@@ -1,998 +1,2638 @@
-/* ============================= */
-/*       CONFIGURACIÓN           */
-/* ============================= */
+/* ================================================= */
+/*                 CONEXIÓN SUPABASE                 */
+/* ================================================= */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+const SUPABASE_URL =
+    "https://lkajqjiiqatleydroibw.supabase.co";
 
-html,
-body {
-    width: 100%;
-    height: 100%;
-}
+const SUPABASE_KEY =
+    "sb_publishable_tfOFSgp4Rq8Q6WKSWhstaA_VsdxHk9D";
 
-
-/* ============================= */
-/*       VARIABLES DE DISEÑO     */
-/* ============================= */
-
-:root {
-
-    /* COLORES PRINCIPALES */
-
-    --color-franjas: white;
-    --color-boton-menu: white;
-    --color-texto-menu: #f2f2f2;
-    --color-panel-menu: #D8E2EE;
-
-
-    /* POSICIÓN DEL LOGOTIPO */
-
-    --ajuste-logotipo-x: 0px;
-
-
-    /* POSICIÓN DEL NOMBRE COMERCIAL */
-
-    --ajuste-x: 0px;
-    --ajuste-y: 0px;
-
-    --ajuste-carrito-x: 0px;
---ajuste-carrito-y: 0px;
-
-
-    /* TIPOGRAFÍA DEL NOMBRE COMERCIAL */
-
-    --fuente-nombre-comercial: Arial;
-    --tamano-nombre-comercial: 20px;
-}
-
-
-/* ============================= */
-/*       PÁGINA DE INICIO        */
-/* ============================= */
-
-#pagina-inicio {
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    background: white;
-}
-
-
-/* ============================= */
-/*       FRANJA SUPERIOR         */
-/* ============================= */
-
-.barra-inicio-superior {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 101px;
-
-    background-color: var(--color-franjas);
-
-    z-index: 1000;
-}
-
-
-/* ============================= */
-/*             MENÚ              */
-/* ============================= */
-
-.boton-menu {
-    position: absolute;
-    left: 15px;
-    top: 60%;
-    transform: translateY(-50%);
-
-    background-color: var(--color-boton-menu);
-    color: var(--color-texto-menu);
-
-    border: 1px solid #b8b8b8;
-    border-radius: 7px;
-
-    padding: 3px 12px;
-
-    font-family: "Arial Narrow", "Roboto Condensed", sans-serif;
-    font-size: 13px;
-    font-weight: 300;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 1px 0 #ffffff,
-        0 2px 4px rgba(0, 0, 0, 0.25);
-
-    transition: 0.2s ease;
-}
-
-
-/* ============================= */
-/*          BUSCADOR             */
-/* ============================= */
-
-.buscador {
-    position: absolute;
-    right: 150px;
-    top: 60%;
-    transform: translateY(-50%);
-
-    width: 150px;
-    height: 25px;
-
-    background: white;
-
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-
-    display: flex;
-    align-items: center;
-
-    overflow: hidden;
-
-    transition: width 0.3s ease;
-}
-
-.buscador.visible {
-    visibility: visible;
-}
-
-.buscador:focus-within {
-    width: 200px;
-}
-
-#campo-busqueda {
-    flex: 1;
-    min-width: 0;
-    height: 100%;
-
-    border: none;
-    outline: none;
-
-    padding: 0 8px;
-
-    font-size: 14px;
-}
-
-.boton-busqueda {
-    flex-shrink: 0;
-
-    width: 35px;
-    height: 35px;
-
-    background: white;
-
-    border: none;
-
-    font-size: 16px;
-
-    cursor: pointer;
-
-    padding: 0;
-}
-
-
-/* ============================= */
-/*           CARRITO             */
-/* ============================= */
-
-.boton-carrito {
-    background: none;
-    border: none;
-    padding: 0;
-
-    cursor: pointer;
-
-    position: absolute;
-    right: 110px;
-    top: 50px;
-
-    transform: translate(
-        var(--ajuste-carrito-x),
-        var(--ajuste-carrito-y)
+const clienteSupabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
-}
- 
 
-.bolsita {
-    display: block;
 
-    width: 25px;
-    height: 28px;
 
-    border: 2px solid rgb(250, 246, 246);
-    border-radius: 3px;
 
-    position: relative;
+/* ================================================= */
+/*              INICIO DE LA APLICACIÓN              */
+/* ================================================= */
 
-    box-sizing: border-box;
-}
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
 
-.bolsita::before {
-    content: "";
+/* ================================================= */
+/*              SESIÓN DEL USUARIO                  */
+/* ================================================= */
 
-    position: absolute;
+const {
+    data: { session },
+    error: errorSesion
+} = await clienteSupabase.auth.getSession();
 
-    width: 12px;
-    height: 8px;
+if (errorSesion) {
 
-    border: 2px solid rgb(238, 232, 232);
-    border-bottom: none;
-
-    border-radius: 8px 8px 0 0;
-
-    top: -9px;
-    left: 4px;
-}
-
-/* ============================= */
-/*           CARRITO             */
-/* ============================= */
-
-.icono-carrito {
-    position: relative;
-
-    display: block;
-
-    width: 46px;
-    height: 40px;
-
-    border: none;
-    background: none;
-
-    transform: none;
-
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10 L30 16 L39 28'/%3E%3Cpath d='M30 16 L108 16 L98 62 L43 62 Z'/%3E%3Cpath d='M43 62 L98 62 C108 62 111 70 103 75 L39 75'/%3E%3C/g%3E%3Ccircle cx='48' cy='91' r='6' fill='%23ffffff'/%3E%3Ccircle cx='91' cy='91' r='6' fill='%23ffffff'/%3E%3C/svg%3E");
-
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-}
-
-
-/* ============================= */
-/*       ELIMINAR PSEUDOS        */
-/* ============================= */
-
-.icono-carrito::before,
-.icono-carrito::after {
-    content: none;
-}
-
-/* ============================= */
-/*       ESPACIO CENTRAL         */
-/* ============================= */
-
-.contenido-inicio {
-    position: fixed;
-
-    top: 101px;
-    bottom: 70px;
-    left: 0;
-
-    width: 100%;
-
-    background: white;
-
-    z-index: 800;
-}
-
-
-/* ============================= */
-/*       FRANJA INFERIOR         */
-/* ============================= */
-
-.barra-inicio-inferior {
-    position: fixed;
-
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 70px;
-
-    background-color: var(--color-franjas);
-
-    z-index: 1000;
-}
-
-
-/* ============================= */
-/*       MENÚ DESPLEGABLE        */
-/* ============================= */
-
-.panel-menu {
-    position: fixed;
-
-    top: 101px;
-    left: 0;
-
-    width: 260px;
-    height: calc(100% - 171px);
-
-    background-color: var(--color-panel-menu);
-
-    border: none;
-
-    z-index: 900;
-
-    transform: translateY(-100%);
-
-    transition: transform 0.25s ease;
-}
-
-.panel-menu.menu-abierto {
-    transform: translateY(0);
-}
-
-.opcion-menu {
-    padding: 18px 25px;
-
-    font-family: Arial, sans-serif;
-    font-size: 17px;
-
-    color: #333;
-
-    border-bottom: 1px solid #eeeeee;
-
-    cursor: pointer;
-}
-
-
-/* ============================= */
-/*     CONFIGURACIÓN DE INICIO   */
-/* ============================= */
-
-.formulario-inicio {
-    display: none;
-
-    position: fixed;
-
-    top: 50%;
-    left: 50%;
-
-    transform: translate(-50%, -50%);
-
-    width: 420px;
-    min-height: 280px;
-
-    background: #cfcbcb;
-
-    border: 1px solid #581616;
-    border-radius: 10px;
-
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.20),
-        0 8px 25px rgba(0, 0, 0, 0.12);
-
-    z-index: 1500;
-
-    padding: 30px;
-}
-
-.formulario-inicio.formulario-abierto {
-    display: block;
-}
-
-.opcion-color {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 15px;
-}
-
-.formulario-inicio h3 {
-    text-align: center;
-}
-
-
-/* ============================= */
-/*       BOTONES ACEPTAR         */
-/* ============================= */
-
-#aceptar-inicio {
-    position: absolute;
-
-    bottom: 10px;
-    left: 50%;
-
-    transform: translateX(-50%);
-}
-
-#aceptar-cabecera {
-    position: absolute;
-
-    bottom: 15px;
-    left: 50%;
-
-    transform: translateX(-50%);
-}
-
-#aceptar-nombre-comercial {
-    position: absolute;
-
-    top: 340px;
-    left: 50%;
-
-    transform: translateX(-50%);
-}
-
-#aceptar-logotipo {
-    position: absolute;
-
-    bottom: 15px;
-    left: 50%;
-
-    transform: translateX(-50%);
-}
-
-
-/* ============================= */
-/*       CONFIGURACIÓN CABECERA  */
-/* ============================= */
-
-.opcion-encabezado {
-    margin-top: 15px;
-}
-
-.mostrar-nombre-comercial {
-    position: relative;
-    bottom: 18px;
-}
-
-
-/* ============================= */
-/*       VISTA DEL LOGOTIPO      */
-/* ============================= */
-
-#vista-logotipo {
-    width: 120px;
-    height: 80px;
-
-    margin: -50px 0 10px 230px;
-
-    padding: 10px;
-
-    border: 1px solid #999;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-}
-
-#vista-logotipo img {
-    max-width: 100%;
-    max-height: 100%;
-
-    object-fit: contain;
-}
-
-
-/* ============================= */
-/*       LOGOTIPO EN FRANJA      */
-/* ============================= */
-
-#logotipo-franja {
-    height: 80px;
-    width: auto;
-
-    object-fit: contain;
-
-    position: absolute;
-
-    left: 50%;
-    top: 10px;
-
-    transform:
-        translateX(
-            calc(-50% + var(--ajuste-logotipo-x))
-        );
-}
-
-
-/* ============================= */
-/*       ESTADO DE CARGA         */
-/* ============================= */
-
-.barra-inicio-superior.cargando .boton-menu,
-.barra-inicio-superior.cargando .buscador,
-.barra-inicio-superior.cargando .boton-carrito,
-.barra-inicio-superior.cargando #logotipo-franja {
-    visibility: hidden;
-}
-
-
-/* ============================= */
-/*      NOMBRE COMERCIAL         */
-/* ============================= */
-
-#nombre-comercial-encabezado {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    font-family: var(--fuente-nombre-comercial);
-    font-size: var(--tamano-nombre-comercial);
-
-    transform:
-        translate(
-            calc(-50% + var(--ajuste-x)),
-            calc(-50% + var(--ajuste-y))
-        );
-}
-
-
-/* ============================= */
-/* CONFIGURACIÓN DEL LOGOTIPO    */
-/* ============================= */
-
-#formulario-logotipo {
-    width: 400px;
-    min-height: 280px;
-}
-
-#formulario-logotipo .opcion-encabezado:has(#posicion-logotipo) {
-    display: flex;
-
-    align-items: center;
-
-    gap: 15px;
-}
-
-#formulario-logotipo .opcion-encabezado:has(#posicion-logotipo) label {
-    margin-right: auto;
-}
-
-
-/* ============================= */
-/* CONTROL DE POSICIÓN LOGOTIPO  */
-/* ============================= */
-
-.posicion-logotipo-control {
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-}
-
-.control-flechas-logotipo {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 4px;
-
-    width: 145px;
-    height: 34px;
-
-    border: 1px solid #999;
-    border-radius: 6px;
-
-    background: #f5f5f5;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 #ffffff;
-}
-
-.control-flechas-logotipo button {
-    width: 25px;
-    height: 25px;
-
-    padding: 0;
-
-    border: 1px solid #aaa;
-    border-radius: 4px;
-
-    background: #ffffff;
-
-    font-size: 11px;
-    color: #444;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
-.control-flechas-logotipo button:hover {
-    background: #eeeeee;
-}
-
-.control-flechas-logotipo button:active {
-    transform: scale(0.94);
-}
-
-#valor-ajuste-logotipo {
-    width: 55px;
-
-    text-align: center;
-
-    font-size: 15px;
-
-    color: #0c0c0c;
-}
-
-/* ========================================= */
-/* CONTROLES CIRCULARES DE POSICIÓN           */
-/* ========================================= */
-
-.posicion-nombre-comercial-control,
-.posicion-carrito-control {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 15px;
-}
-
-
-/* ========================================= */
-/*      CÍRCULO DE CONTROL                    */
-/* ========================================= */
-
-.control-posicion-nombre-comercial,
-.control-posicion-carrito {
-    width: 82px;
-    height: 82px;
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
-
-    align-items: center;
-    justify-items: center;
-
-    border: 1px solid #999;
-    border-radius: 50%;
-
-    background: #f5f5f5;
-
-    box-shadow:
-        0 1px 3px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 #ffffff;
-}
-
-
-/* ========================================= */
-/*       FLECHAS DEL NOMBRE COMERCIAL         */
-/* ========================================= */
-
-#flecha-nombre-comercial-arriba {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-#flecha-nombre-comercial-izquierda {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-#centro-nombre-comercial {
-    grid-column: 2;
-    grid-row: 2;
-
-    width: 14px;
-    height: 14px;
-
-    border: 1px solid #888;
-    border-radius: 50%;
-
-    background: #ffffff;
-
-    font-size: 0;
-}
-
-#flecha-nombre-comercial-derecha {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-#flecha-nombre-comercial-abajo {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-
-/* ========================================= */
-/*           FLECHAS DEL CARRITO              */
-/* ========================================= */
-
-#flecha-carrito-arriba {
-    grid-column: 2;
-    grid-row: 1;
-}
-
-#flecha-carrito-izquierda {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-#centro-carrito {
-    grid-column: 2;
-    grid-row: 2;
-
-    width: 14px;
-    height: 14px;
-
-    border: 1px solid #888;
-    border-radius: 50%;
-
-    background: #ffffff;
-
-    font-size: 0;
-}
-
-#flecha-carrito-derecha {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-#flecha-carrito-abajo {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-
-/* ========================================= */
-/*             BOTONES DE FLECHA              */
-/* ========================================= */
-
-.control-posicion-nombre-comercial button,
-.control-posicion-carrito button {
-    width: 25px;
-    height: 25px;
-
-    padding: 0;
-    margin: 0;
-
-    border: none;
-
-    background: transparent;
-
-    color: #444;
-
-    font-size: 12px;
-
-    cursor: pointer;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    touch-action: none;
-}
-
-
-/* ========================================= */
-/*                  HOVER                     */
-/* ========================================= */
-
-.control-posicion-nombre-comercial button:hover,
-.control-posicion-carrito button:hover {
-    background: #e5e5e5;
-
-    border-radius: 50%;
-}
-
-
-/* ========================================= */
-/*                 PRESIONAR                  */
-/* ========================================= */
-
-.control-posicion-nombre-comercial button:active,
-.control-posicion-carrito button:active {
-    transform: scale(0.90);
-}
-
-/* ============================= */
-/*           OCULTO              */
-/* ============================= */
-
-.oculto {
-    display: none !important;
-}
-
-
-/* ============================= */
-/*          TELÉFONO             */
-/* ============================= */
-
-@media (max-width: 768px) {
-
-    /* ------------------------- */
-    /* FORMULARIOS               */
-    /* ------------------------- */
-
-    .formulario-inicio {
-        width: calc(90% - 40px);
-    }
-
-
-    /* ------------------------- */
-    /* BOTÓN DE LOGOTIPO          */
-    /* ------------------------- */
-
-    #boton-logotipo {
-        width: 130px;
-
-        padding: 7px 5px;
-
-        font-size: 10px;
-
-        margin-left: -20px;
-    }
-
-
-    /* ------------------------- */
-    /* VISTA DEL LOGOTIPO         */
-    /* ------------------------- */
-
-    #vista-logotipo {
-        margin-left: 125px;
-
-        font-size: 12px;
-
-        white-space: normal;
-    }
-
-
-    /* ------------------------- */
-    /* BUSCADOR                  */
-    /* ------------------------- */
-
-    .buscador {
-        width: 200px;
-
-        margin-left: 80px;
-
-        position: relative;
-
-        left: 30px;
-        top: 50px;
-    }
-
-    .buscador:focus-within {
-        width: 200px;
-    }
-
-.boton-carrito {
-    position: fixed;
-    right: 20px;
-    top: 50px;
-    left: auto;
-    margin: 0;
-    transform: translate(
-        var(--ajuste-carrito-x),
-        var(--ajuste-carrito-y)
+    console.error(
+        "Error al obtener la sesión:",
+        errorSesion
     );
-    box-sizing: border-box;
-    z-index: 3001;
+
+}
+
+
+if (!session) {
+
+    console.log(
+        "No hay usuario autenticado."
+    );
+
+    document.getElementById(
+        "pantalla-login"
+    ).style.display = "block";
+
+    document.getElementById(
+        "pagina-inicio"
+    ).style.display = "none";
+
+} else {
+
+    console.log(
+        "Usuario autenticado:",
+        session.user.id
+    );
+
+    document.getElementById(
+        "pantalla-login"
+    ).style.display = "none";
+
+    document.getElementById(
+        "pagina-inicio"
+    ).style.display = "block";
+
 }
     
 
-    /* ------------------------- */
-    /* FRANJA SUPERIOR           */
-    /* ------------------------- */
+/* ================================================= */
+/*                INICIO DE SESIÓN                   */
+/* ================================================= */
 
-    .barra-inicio-superior {
-        z-index: 3000;
+const botonLogin =
+    document.getElementById("boton-login");
+
+const loginEmail =
+    document.getElementById("login-email");
+
+const loginPassword =
+    document.getElementById("login-password");
+
+const mensajeLogin =
+    document.getElementById("mensaje-login");
+
+
+if (botonLogin) {
+
+    botonLogin.addEventListener(
+        "click",
+        async function () {
+
+            const email =
+                loginEmail.value.trim();
+
+            const password =
+                loginPassword.value;
+
+            mensajeLogin.textContent = "";
+
+
+            const {
+                data,
+                error
+            } = await clienteSupabase.auth.signInWithPassword({
+
+                email: email,
+
+                password: password
+
+            });
+
+
+            if (error) {
+
+                console.error(
+                    "Error al iniciar sesión:",
+                    error
+                );
+
+                mensajeLogin.textContent =
+                    "Correo o contraseña incorrectos.";
+
+                return;
+            }
+
+
+            console.log(
+                "Sesión iniciada:",
+                data.user.id
+            );
+
+
+            document.getElementById(
+                "pantalla-login"
+            ).style.display = "none";
+
+
+            document.getElementById(
+                "pagina-inicio"
+            ).style.display = "block";
+
+
+            location.reload();
+        }
+    );
+
+}
+
+/* ================================================= */
+/*       DETENER CARGA SI NO HAY SESIÓN              */
+/* ================================================= */
+
+if (!session) {
+    return;
+}
+
+
+
+        /* ============================================= */
+        /*              ELEMENTOS DEL MENÚ              */
+        /* ============================================= */
+
+        const botonMenu =
+            document.getElementById("boton-menu");
+
+        const panelMenu =
+            document.getElementById("panel-menu");
+
+        const opcionesMenu =
+            document.querySelectorAll(".opcion-menu");
+
+        const opcionInicio =
+            document.querySelector(".opcion-menu");
+
+
+        /* ============================================= */
+        /*                 FORMULARIOS                    */
+        /* ============================================= */
+
+        const formularioInicio =
+            document.getElementById("formulario-inicio");
+
+        const formularioCabecera =
+            document.getElementById("formulario-cabecera");
+
+        const formularioNombreComercial =
+            document.getElementById(
+                "formulario-nombre-comercial"
+            );
+
+        const formularioLogotipo =
+            document.getElementById(
+                "formulario-logotipo"
+            );
+
+            const formularioCarrito =
+            document.getElementById(
+            "formulario-carrito"
+    );
+
+        /* ============================================= */
+        /*           BOTONES DE CONFIGURACIÓN             */
+        /* ============================================= */
+
+        const botonNombreComercial =
+            document.getElementById(
+                "boton-nombre-comercial"
+            );
+  
+        const botonConfigurarCarrito =
+             document.getElementById(
+            "boton-configurar-carrito"
+    );
+
+          const aceptarCarrito =
+                document.getElementById(
+               "aceptar-carrito"
+    );  
+
+
+        const aceptarNombreComercial =
+            document.getElementById(
+                "aceptar-nombre-comercial"
+            );
+
+        const botonConfigurarLogotipo =
+            document.getElementById(
+                "boton-configurar-logotipo"
+            );
+
+        const aceptarLogotipo =
+            document.getElementById(
+                "aceptar-logotipo"
+            );
+
+        const aceptarInicio =
+            document.getElementById(
+                "aceptar-inicio"
+            );
+
+            console.log("BOTONES DE CONFIGURACIÓN CARGADOS");
+console.log("ACEPTAR NOMBRE:", aceptarNombreComercial);
+
+        const aceptarCabecera =
+            document.getElementById(
+                "aceptar-cabecera"
+            );
+
+
+        /* ============================================= */
+        /*               CONFIGURACIÓN GENERAL            */
+        /* ============================================= */
+
+        const colorFranjas =
+            document.getElementById(
+                "color-franjas"
+            );
+
+        const colorBotonMenu =
+            document.getElementById(
+                "color-boton-menu"
+            );
+
+        const colorTextoMenu =
+            document.getElementById(
+                "color-texto-menu"
+            );
+
+        const colorPanelMenu =
+            document.getElementById(
+                "color-panel-menu"
+            );
+
+
+        /* ============================================= */
+        /*                    CARRITO                     */
+        /* ============================================= */
+
+        const mostrarCarrito =
+            document.getElementById(
+                "mostrar-carrito"
+            );
+
+        const botonCarrito =
+            document.querySelector(
+                ".boton-carrito"
+            );
+
+
+        /* ============================================= */
+        /*              NOMBRE COMERCIAL                  */
+        /* ============================================= */
+
+        const mostrarNombreComercial =
+            document.getElementById(
+                "mostrar-nombre-comercial"
+            );
+
+        const nombreComercial =
+            document.getElementById(
+                "nombre-comercial"
+            );
+
+        const fuenteNombreComercial =
+            document.getElementById(
+                "fuente-nombre-comercial"
+            );
+
+        const tamanoNombreComercial =
+            document.getElementById(
+                "tamano-nombre-comercial"
+            );
+
+
+        /* ============================================= */
+        /*                    BUSCADOR                    */
+        /* ============================================= */
+
+        const mostrarBuscador =
+            document.getElementById(
+                "mostrar-buscador"
+            );
+
+        const buscador =
+            document.getElementById(
+                "buscador"
+            );
+
+        const botonBusqueda =
+            document.getElementById(
+                "boton-busqueda"
+            );
+
+
+        /* ============================================= */
+        /*                    LOGOTIPO                    */
+        /* ============================================= */
+
+        const archivoLogotipo =
+            document.getElementById(
+                "archivo-logotipo"
+            );
+
+        const vistaLogotipo =
+            document.getElementById(
+                "vista-logotipo"
+            );
+
+        const botonLogotipo =
+            document.getElementById(
+                "boton-logotipo"
+            );
+
+        const mostrarLogotipo =
+            document.getElementById(
+                "mostrar-logotipo"
+            );
+
+
+        /* ============================================= */
+        /*        FLECHAS DEL LOGOTIPO                   */
+        /* ============================================= */
+
+        const flechaLogotipoIzquierda =
+            document.getElementById(
+                "flecha-logotipo-izquierda"
+            );
+
+        const flechaLogotipoDerecha =
+            document.getElementById(
+                "flecha-logotipo-derecha"
+            );
+
+
+        /* ============================================= */
+        /*       FLECHAS DEL NOMBRE COMERCIAL             */
+        /* ============================================= */
+
+        const flechaNombreComercialIzquierda =
+            document.getElementById(
+                "flecha-nombre-comercial-izquierda"
+            );
+
+        const flechaNombreComercialDerecha =
+            document.getElementById(
+                "flecha-nombre-comercial-derecha"
+            );
+
+        const flechaNombreComercialArriba =
+            document.getElementById(
+                "flecha-nombre-comercial-arriba"
+            );
+
+        const flechaNombreComercialAbajo =
+            document.getElementById(
+                "flecha-nombre-comercial-abajo"
+            );
+
+         /* ================================================= */
+/*          CONFIGURACIÓN DEL CARRITO                */
+/* ================================================= */
+
+const tipoBolsita =
+    document.getElementById(
+        "tipo-bolsita"
+    );
+
+const tipoCarrito =
+    document.getElementById(
+        "tipo-carrito"
+    );
+
+
+/* ================================================= */
+/*          FLECHAS DEL CARRITO                      */
+/* ================================================= */
+
+const flechaCarritoIzquierda =
+    document.getElementById(
+        "flecha-carrito-izquierda"
+    );
+
+const flechaCarritoDerecha =
+    document.getElementById(
+        "flecha-carrito-derecha"
+    );
+
+const flechaCarritoArriba =
+    document.getElementById(
+        "flecha-carrito-arriba"
+    );
+
+const flechaCarritoAbajo =
+    document.getElementById(
+        "flecha-carrito-abajo"
+    );  
+
+
+        /* ============================================= */
+        /*             FRANJAS PRINCIPALES                */
+        /* ============================================= */
+
+        const franjaSuperior =
+            document.querySelector(
+                ".barra-inicio-superior"
+            );
+
+        const franjaInferior =
+            document.querySelector(
+                ".barra-inicio-inferior"
+            );
+
+        /* ================================================= */
+/*          VARIABLES DE FUNCIONAMIENTO              */
+/* ================================================= */
+
+let ajusteLogotipo = 0;
+
+let ajusteNombreComercialX = 0;
+let ajusteNombreComercialY = 0;
+
+let tamanoNombreComercialEscritorio = "20px";
+let tamanoNombreComercialMovil = "20px";
+
+let ajusteNombreComercialXEscritorio = 0;
+let ajusteNombreComercialYEscritorio = 0;
+
+let ajusteNombreComercialXMovil = 0;
+let ajusteNombreComercialYMovil = 0;
+
+let nombreComercialEscritorio = "";
+let nombreComercialMovil = "";
+
+let tipoCarritoSeleccionado = "bolsita";
+
+let ajusteCarritoX = 0;
+
+let ajusteCarritoY = 0;
+
+let intervaloLogotipo = null;
+
+let intervaloCarrito = null;
+        
+
+        /* ================================================= */
+        /*       FUNCIÓN PARA ACTUALIZAR VARIABLES CSS       */
+        /* ================================================= */
+
+        function actualizarVariableCSS(
+            variable,
+            valor
+        ) {
+            document.documentElement.style.setProperty(
+                variable,
+                valor
+            );
+        }
+
+
+        /* ================================================= */
+        /*              LOGOTIPO: POSICIÓN                   */
+        /* ================================================= */
+
+        function aplicarAjusteLogotipo() {
+
+            actualizarVariableCSS(
+                "--ajuste-logotipo-x",
+                `${ajusteLogotipo}px`
+            );
+        }
+
+
+        function moverLogotipo(direccion) {
+
+            ajusteLogotipo +=
+                direccion * 10;
+
+            aplicarAjusteLogotipo();
+        }
+
+
+        function iniciarMovimientoLogotipo(
+            direccion
+        ) {
+
+            moverLogotipo(direccion);
+
+            intervaloLogotipo =
+                setInterval(
+                    function () {
+                        moverLogotipo(
+                            direccion
+                        );
+                    },
+                    80
+                );
+        }
+
+
+        function detenerMovimientoLogotipo() {
+
+            clearInterval(
+                intervaloLogotipo
+            );
+
+            intervaloLogotipo = null;
+        }
+
+        /* ================================================= */
+/*          IDENTIFICAR CLIENTE DEL USUARIO          */
+/* ================================================= */
+
+const {
+    data: usuarioCliente,
+    error: errorUsuarioCliente
+} = await clienteSupabase
+    .from("usuarios")
+    .select("cliente_id")
+    .eq("auth_user_id", session.user.id)
+    .maybeSingle();
+
+
+if (errorUsuarioCliente) {
+
+    console.error(
+        "Error al obtener cliente del usuario:",
+        errorUsuarioCliente
+    );
+
+}
+
+
+if (!usuarioCliente) {
+
+    console.error(
+        "El usuario no tiene un cliente asignado."
+    );
+
+    return;
+}
+
+
+const clienteId =
+    usuarioCliente.cliente_id;
+
+
+console.log(
+    "CLIENTE ACTUAL:",
+    clienteId
+);
+
+
+         /* ================================================= */
+        /*             CARGAR CONFIGURACIÓN                  */
+        /* ================================================= */
+
+        const {
+            data: configuracionGuardada,
+            error
+        } = await clienteSupabase
+            .from("configuracion_inicio")
+            .select("*")
+           .eq("cliente_id", clienteId)
+            .maybeSingle();
+
+
+        /* ================================================= */
+        /*                 ERROR DE CARGA                    */
+        /* ================================================= */
+
+        if (error) {
+
+            console.error(
+                "Error al cargar configuración:",
+                error
+            );
+        }
+
+
+        /* ================================================= */
+        /*        APLICAR CONFIGURACIÓN GUARDADA             */
+        /* ================================================= */
+
+        if (configuracionGuardada) {
+
+
+            /* --------------------------------------------- */
+            /* COLORES                                        */
+            /* --------------------------------------------- */
+
+            actualizarVariableCSS(
+                "--color-franjas",
+                configuracionGuardada.color_franjas ||
+                "white"
+            );
+
+            actualizarVariableCSS(
+                "--color-boton-menu",
+                configuracionGuardada.color_boton_menu ||
+                "#159c96"
+            );
+
+            actualizarVariableCSS(
+                "--color-texto-menu",
+                configuracionGuardada.color_texto_menu ||
+                "#f2f2f2"
+            );
+
+            actualizarVariableCSS(
+                "--color-panel-menu",
+                configuracionGuardada.color_panel_menu ||
+                "#D8E2EE"
+            );
+
+
+            /* --------------------------------------------- */
+            /* CONTROLES DE COLOR                             */
+            /* --------------------------------------------- */
+
+            colorFranjas.value =
+                configuracionGuardada.color_franjas ||
+                "#ffffff";
+
+            colorBotonMenu.value =
+                configuracionGuardada.color_boton_menu ||
+                "#159c96";
+
+            colorTextoMenu.value =
+                configuracionGuardada.color_texto_menu ||
+                "#f2f2f2";
+
+            colorPanelMenu.value =
+                configuracionGuardada.color_panel_menu ||
+                "#D8E2EE";
+
+
+            /* --------------------------------------------- */
+            /* CARRITO                                       */
+            /* --------------------------------------------- */
+
+            mostrarCarrito.checked =
+                configuracionGuardada.mostrar_carrito !== false;
+
+            botonCarrito.classList.toggle(
+                "oculto",
+                !mostrarCarrito.checked
+            );
+
+                /* --------------------------------------------- */
+/* CAMBIAR TIPO DE CARRITO                       */
+/* --------------------------------------------- */
+
+if (tipoBolsita) {
+
+    tipoBolsita.addEventListener(
+        "change",
+        function () {
+
+            if (!tipoBolsita.checked) {
+                return;
+            }
+
+            tipoCarritoSeleccionado =
+                "bolsita";
+
+            aplicarTipoCarrito();
+        }
+    );
+}
+
+
+if (tipoCarrito) {
+
+    tipoCarrito.addEventListener(
+        "change",
+        function () {
+
+            if (!tipoCarrito.checked) {
+                return;
+            }
+
+            tipoCarritoSeleccionado =
+                "carrito";
+
+            aplicarTipoCarrito();
+        }
+    );
+}
+
+
+            /* --------------------------------------------- */
+            /* LOGOTIPO                                      */
+            /* --------------------------------------------- */
+
+            mostrarLogotipo.checked =
+                configuracionGuardada.mostrar_logotipo !== false;
+
+          /* --------------------------------------------- */
+/* NOMBRE COMERCIAL                              */
+/* --------------------------------------------- */
+
+mostrarNombreComercial.checked =
+    configuracionGuardada.mostrar_nombre_comercial !== false;
+
+
+/* ================================================= */
+/*       CARGAR NOMBRE SEGÚN DISPOSITIVO             */
+/* ================================================= */
+
+nombreComercialEscritorio =
+    configuracionGuardada
+        .nombre_comercial_escritorio
+        || configuracionGuardada
+            .nombre_comercial
+        || "";
+
+nombreComercialMovil =
+    configuracionGuardada
+        .nombre_comercial_movil
+        || configuracionGuardada
+            .nombre_comercial
+        || "";
+
+
+/* ================================================= */
+/*       SELECCIONAR NOMBRE ACTUAL                   */
+/* ================================================= */
+
+if (window.innerWidth <= 768) {
+
+    nombreComercial.value =
+        nombreComercialMovil;
+
+} else {
+
+    nombreComercial.value =
+        nombreComercialEscritorio;
+}
+
+
+/* --------------------------------------------- */
+/* FUENTE DEL NOMBRE COMERCIAL                   */
+/* --------------------------------------------- */
+
+fuenteNombreComercial.value =
+    configuracionGuardada.fuente_nombre_comercial
+    || "Arial";
+            
+/* ================================================= */
+/*       CARGAR TAMAÑO SEGÚN DISPOSITIVO             */
+/* ================================================= */
+
+tamanoNombreComercialEscritorio =
+    configuracionGuardada
+        .tamano_nombre_comercial_escritorio
+        || configuracionGuardada
+            .tamano_nombre_comercial
+        || "20px";
+
+tamanoNombreComercialMovil =
+    configuracionGuardada
+        .tamano_nombre_comercial_movil
+        || configuracionGuardada
+            .tamano_nombre_comercial
+        || "20px";
+
+
+/* ================================================= */
+/*       CARGAR POSICIÓN ESCRITORIO                  */
+/* ================================================= */
+
+ajusteNombreComercialXEscritorio =
+    configuracionGuardada
+        .ajuste_nombre_comercial_x_escritorio
+        ?? configuracionGuardada
+            .ajuste_nombre_comercial_x
+        ?? 0;
+
+ajusteNombreComercialYEscritorio =
+    configuracionGuardada
+        .ajuste_nombre_comercial_y_escritorio
+        ?? configuracionGuardada
+            .ajuste_nombre_comercial_y
+        ?? 0;
+
+
+/* ================================================= */
+/*       CARGAR POSICIÓN MÓVIL                       */
+/* ================================================= */
+
+ajusteNombreComercialXMovil =
+    configuracionGuardada
+        .ajuste_nombre_comercial_x_movil
+        ?? configuracionGuardada
+            .ajuste_nombre_comercial_x
+        ?? 0;
+
+ajusteNombreComercialYMovil =
+    configuracionGuardada
+        .ajuste_nombre_comercial_y_movil
+        ?? configuracionGuardada
+            .ajuste_nombre_comercial_y
+        ?? 0;
+
+
+/* ================================================= */
+/*       SELECCIONAR DISPOSITIVO ACTUAL              */
+/* ================================================= */
+
+if (window.innerWidth <= 768) {
+
+    tamanoNombreComercial.value =
+        tamanoNombreComercialMovil;
+
+    ajusteNombreComercialX =
+        ajusteNombreComercialXMovil;
+
+    ajusteNombreComercialY =
+        ajusteNombreComercialYMovil;
+
+} else {
+
+    tamanoNombreComercial.value =
+        tamanoNombreComercialEscritorio;
+
+    ajusteNombreComercialX =
+        ajusteNombreComercialXEscritorio;
+
+    ajusteNombreComercialY =
+        ajusteNombreComercialYEscritorio;
+}
+
+
+/* ================================================= */
+/*       APLICAR FUENTE Y TAMAÑO                     */
+/* ================================================= */
+
+actualizarVariableCSS(
+    "--fuente-nombre-comercial",
+    fuenteNombreComercial.value
+);
+
+actualizarVariableCSS(
+    "--tamano-nombre-comercial",
+    tamanoNombreComercial.value
+);
+
+
+/* ================================================= */
+/*       APLICAR POSICIÓN                            */
+/* ================================================= */
+
+aplicarAjusteNombreComercial();
+
+
+            /* --------------------------------------------- */
+            /* BUSCADOR                                      */
+            /* --------------------------------------------- */
+
+            mostrarBuscador.checked =
+                configuracionGuardada.mostrar_buscador !== false;
+
+            buscador.classList.toggle(
+                "oculto",
+                !mostrarBuscador.checked
+            );
+
+
+            /* --------------------------------------------- */
+            /* POSICIÓN DEL LOGOTIPO                         */
+            /* --------------------------------------------- */
+
+            ajusteLogotipo =
+                configuracionGuardada.ajuste_logotipo_x ||
+                0;
+
+            aplicarAjusteLogotipo();
+        }
+
+        
+/* ================================================= */
+/*          CONFIGURACIÓN DEL CARRITO                */
+/* ================================================= */
+
+if (configuracionGuardada) {
+
+    tipoCarritoSeleccionado =
+        configuracionGuardada.tipo_carrito ?? "bolsita";
+
+    ajusteCarritoX =
+        configuracionGuardada.ajuste_carrito_x ?? 0;
+
+    ajusteCarritoY =
+        configuracionGuardada.ajuste_carrito_y ?? 0;
+
+    aplicarAjusteCarrito();
+
+    console.log("POSICIÓN DEL CARRITO AL CARGAR:", {
+        ajusteX: ajusteCarritoX,
+        ajusteY: ajusteCarritoY,
+        anchoPantalla: window.innerWidth
+    });
+}
+
+
+
+            /* --------------------------------------------- */
+/* OPCIÓN SELECCIONADA                           */
+/* --------------------------------------------- */
+
+if (tipoBolsita) {
+
+    tipoBolsita.checked =
+        tipoCarritoSeleccionado === "bolsita";
+}
+
+if (tipoCarrito) {
+
+    tipoCarrito.checked =
+        tipoCarritoSeleccionado === "carrito";
+}
+
+
+/* --------------------------------------------- */
+/* MOSTRAR ICONO SELECCIONADO                    */
+/* --------------------------------------------- */
+
+const iconoBolsita =
+    document.getElementById("icono-bolsita");
+
+const iconoCarrito =
+    document.getElementById("icono-carrito");
+
+
+function aplicarTipoCarrito() {
+
+    if (!iconoBolsita || !iconoCarrito) {
+        return;
     }
 
+    if (tipoCarritoSeleccionado === "carrito") {
 
-    /* ------------------------- */
-    /* BOTÓN MENÚ                */
-    /* ------------------------- */
+        iconoBolsita.classList.add("oculto");
+        iconoCarrito.classList.remove("oculto");
 
-    .boton-menu {
-        position: fixed;
+        iconoCarrito.style.display = "block";
 
-        top: 85vh;
-        left: 15px;
+    } else {
 
-        z-index: 4000;
+        iconoBolsita.classList.remove("oculto");
+        iconoCarrito.classList.add("oculto");
 
-        transform: none;
-
-        padding: 3px 10px;
-
-        font-size: 13px;
-
-        height: 25px;
-
-        -webkit-tap-highlight-color: transparent;
-
-        outline: none;
-    }
-
-    .boton-menu:active,
-    .boton-menu:focus {
-        outline: none;
-
-        box-shadow:
-            0 1px 0 #ffffff,
-            0 2px 4px rgba(0, 0, 0, 0.25);
-    }
-
-
-    /* ------------------------- */
-    /* LOGOTIPO EN TELÉFONO      */
-    /* ------------------------- */
-
-    #logotipo-franja {
-        left: 10px;
-        top: 25px;
-
-        height: 50px;
-
-        transform: none;
-    }
-
-
-    /* ------------------------- */
-    /* PANEL DEL MENÚ            */
-    /* ------------------------- */
-
-    .panel-menu {
-        position: fixed;
-
-        top: 101px;
-        bottom: 0;
-
-        left: 0;
-
-        width: 260px;
-        height: auto;
-
-        transform: translateY(100%);
-
-        transition: transform 0.25s ease;
-    }
-
-    .panel-menu.menu-abierto {
-        transform: translateY(0);
-    }
-
-
-    /* ------------------------- */
-    /* NOMBRE COMERCIAL          */
-    /* ------------------------- */
-
-    #nombre-comercial-encabezado {
-        max-width: 55%;
-
-        white-space: nowrap;
-
-        overflow: hidden;
-
-        text-overflow: ellipsis;
-    }
-
-
-    /* ------------------------- */
-    /* FORMULARIO LOGOTIPO       */
-    /* ------------------------- */
-
-    #formulario-logotipo {
-        width: 300px;
-
-        height: 45vh;
-
-        min-height: 0;
     }
 }
+
+
+aplicarTipoCarrito();
+
+
+/* ================================================= */
+/*                  MOSTRAR LOGOTIPO                  */
+/* ================================================= */
+
+if (
+    configuracionGuardada &&
+    configuracionGuardada.logotipo_url &&
+    configuracionGuardada.mostrar_logotipo !== false
+) {
+
+    const imagenLogotipo =
+        document.createElement("img");
+
+    imagenLogotipo.src =
+        configuracionGuardada.logotipo_url;
+
+    imagenLogotipo.id =
+        "logotipo-franja";
+
+    franjaSuperior.appendChild(
+        imagenLogotipo
+    );
+
+    aplicarAjusteLogotipo();
+}
+           
+        /* ================================================= */
+/*             MOSTRAR NOMBRE COMERCIAL               */
+/* ================================================= */
+
+const esMovilActual =
+    window.innerWidth <= 768;
+
+const nombreParaMostrar =
+    esMovilActual
+        ? nombreComercialMovil
+        : nombreComercialEscritorio;
+
+
+if (
+    configuracionGuardada &&
+    nombreParaMostrar &&
+    configuracionGuardada.mostrar_nombre_comercial !== false
+) {
+
+    const nombreEncabezado =
+        document.createElement("div");
+
+    nombreEncabezado.id =
+        "nombre-comercial-encabezado";
+
+    nombreEncabezado.textContent =
+        nombreParaMostrar;
+
+    franjaSuperior.appendChild(
+        nombreEncabezado
+    );
+
+    aplicarAjusteNombreComercial();
+}
+
+
+
+        /* ================================================= */
+        /*               TERMINÓ LA CARGA                    */
+        /* ================================================= */
+
+        franjaSuperior.classList.remove(
+            "cargando"
+        );
+
+
+        /* ================================================= */
+        /*                    MENÚ                           */
+        /* ================================================= */
+
+        botonMenu.addEventListener(
+            "click",
+            function () {
+
+                panelMenu.classList.toggle(
+                    "menu-abierto"
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*                OPCIÓN INICIO                      */
+        /* ================================================= */
+
+        if (opcionInicio) {
+
+            opcionInicio.addEventListener(
+                "click",
+                function () {
+
+                    panelMenu.classList.remove(
+                        "menu-abierto"
+                    );
+
+                    setTimeout(
+                        function () {
+
+                            formularioInicio.classList.add(
+                                "formulario-abierto"
+                            );
+
+                        },
+                        250
+                    );
+                }
+            );
+        }
+
+
+        /* ================================================= */
+        /*               OPCIÓN CABECERA                     */
+        /* ================================================= */
+
+        if (opcionesMenu[1]) {
+
+            opcionesMenu[1].addEventListener(
+                "click",
+                function () {
+
+                    panelMenu.classList.remove(
+                        "menu-abierto"
+                    );
+
+                    setTimeout(
+                        function () {
+
+                            formularioCabecera.classList.add(
+                                "formulario-abierto"
+                            );
+
+                        },
+                        250
+                    );
+                }
+            );
+        }
+
+
+        /* ================================================= */
+        /*          CONFIGURAR NOMBRE COMERCIAL               */
+        /* ================================================= */
+
+        botonNombreComercial.addEventListener(
+            "click",
+            function () {
+
+                formularioCabecera.classList.remove(
+                    "formulario-abierto"
+                );
+
+                formularioNombreComercial.classList.add(
+                    "formulario-abierto"
+                );
+            }
+        );
+
+          botonConfigurarCarrito.addEventListener("click", function () {
+          formularioCabecera.classList.remove("formulario-abierto");
+          formularioCarrito.classList.add("formulario-abierto");
+});
+
+
+        /* ================================================= */
+        /*            CONFIGURAR LOGOTIPO                    */
+        /* ================================================= */
+
+        botonConfigurarLogotipo.addEventListener(
+            "click",
+            function () {
+
+                formularioCabecera.classList.remove(
+                    "formulario-abierto"
+                );
+
+                formularioLogotipo.classList.add(
+                    "formulario-abierto"
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*              BOTÓN SELECCIONAR LOGO                */
+        /* ================================================= */
+
+        botonLogotipo.addEventListener(
+            "click",
+            function () {
+
+                archivoLogotipo.click();
+            }
+        );
+
+
+        /* ================================================= */
+        /*              VISTA PREVIA DEL LOGO                */
+        /* ================================================= */
+
+        archivoLogotipo.addEventListener(
+            "change",
+            function () {
+
+                const archivo =
+                    archivoLogotipo.files[0];
+
+                if (!archivo) {
+                    return;
+                }
+
+                const imagen =
+                    new Image();
+
+                imagen.onload =
+                    function () {
+
+                        const canvas =
+                            document.createElement(
+                                "canvas"
+                            );
+
+                        const contexto =
+                            canvas.getContext(
+                                "2d"
+                            );
+
+                        canvas.width =
+                            imagen.width;
+
+                        canvas.height =
+                            imagen.height;
+
+                        contexto.drawImage(
+                            imagen,
+                            0,
+                            0
+                        );
+
+                        const datos =
+                            contexto.getImageData(
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            );
+
+                        for (
+                            let i = 0;
+                            i < datos.data.length;
+                            i += 4
+                        ) {
+
+                            const rojo =
+                                datos.data[i];
+
+                            const verde =
+                                datos.data[i + 1];
+
+                            const azul =
+                                datos.data[i + 2];
+
+                            if (
+                                rojo > 240 &&
+                                verde > 240 &&
+                                azul > 240
+                            ) {
+
+                                datos.data[i + 3] = 0;
+                            }
+                        }
+
+                        contexto.putImageData(
+                            datos,
+                            0,
+                            0
+                        );
+
+                        const imagenTransparente =
+                            document.createElement(
+                                "img"
+                            );
+
+                        imagenTransparente.src =
+                            canvas.toDataURL(
+                                "image/png"
+                            );
+
+                        vistaLogotipo.innerHTML =
+                            "";
+
+                        vistaLogotipo.appendChild(
+                            imagenTransparente
+                        );
+                    };
+
+                imagen.src =
+                    URL.createObjectURL(
+                        archivo
+                    );
+            }
+        );
+
+
+        /* ================================================= */
+        /*       MOVIMIENTO DEL LOGOTIPO                     */
+        /* ================================================= */
+
+        flechaLogotipoIzquierda.addEventListener(
+            "mousedown",
+            function () {
+
+                iniciarMovimientoLogotipo(
+                    -1
+                );
+            }
+        );
+
+        flechaLogotipoDerecha.addEventListener(
+            "mousedown",
+            function () {
+
+                iniciarMovimientoLogotipo(
+                    1
+                );
+            }
+        );
+
+        document.addEventListener(
+            "mouseup",
+            detenerMovimientoLogotipo
+        );
+
+
+ /* ================================================= */
+/*     MOVIMIENTO DEL NOMBRE COMERCIAL               */
+/* ================================================= */
+
+let intervaloNombreComercial = null;
+
+/* ------------------------------------------------- */
+/* LIMITAR POSICIÓN DEL NOMBRE DENTRO DE LA FRANJA   */
+/* ------------------------------------------------- */
+
+function limitarAjusteNombreComercial() {
+
+    const nombreEncabezado =
+        document.getElementById(
+            "nombre-comercial-encabezado"
+        );
+
+    if (!nombreEncabezado) {
+        return;
+    }
+
+    const anchoFranja =
+        franjaSuperior.clientWidth;
+
+    const altoFranja =
+        franjaSuperior.clientHeight;
+
+    const anchoNombre =
+        nombreEncabezado.offsetWidth;
+
+    const altoNombre =
+        nombreEncabezado.offsetHeight;
+
+
+    /* --------------------------------------------- */
+    /* LÍMITES HORIZONTALES                           */
+    /* --------------------------------------------- */
+
+    const limiteX =
+        Math.floor(
+            Math.max(
+                0,
+                (anchoFranja - anchoNombre) / 2
+            )
+        );
+
+
+    /* --------------------------------------------- */
+    /* LÍMITES VERTICALES                             */
+    /* --------------------------------------------- */
+
+    const limiteY =
+        Math.floor(
+            Math.max(
+                0,
+                (altoFranja - altoNombre) / 2
+            )
+        );
+
+
+    ajusteNombreComercialX =
+        Math.round(
+            Math.max(
+                -limiteX,
+                Math.min(
+                    limiteX,
+                    ajusteNombreComercialX
+                )
+            )
+        );
+
+
+    ajusteNombreComercialY =
+        Math.round(
+            Math.max(
+                -limiteY,
+                Math.min(
+                    limiteY,
+                    ajusteNombreComercialY
+                )
+            )
+        );
+}
+
+/* ------------------------------------------------- */
+/* APLICAR POSICIÓN                                  */
+/* ------------------------------------------------- */
+
+function aplicarAjusteNombreComercial() {
+
+    limitarAjusteNombreComercial();
+
+    actualizarVariableCSS(
+        "--ajuste-x",
+        `${ajusteNombreComercialX}px`
+    );
+
+    actualizarVariableCSS(
+        "--ajuste-y",
+        `${ajusteNombreComercialY}px`
+    );
+}
+
+
+/* ------------------------------------------------- */
+/* MOVER NOMBRE                                      */
+/* ------------------------------------------------- */
+
+function moverNombreComercial(
+    direccionX,
+    direccionY
+) {
+
+    ajusteNombreComercialX +=
+        direccionX * 10;
+
+    ajusteNombreComercialY +=
+        direccionY * 10;
+
+    aplicarAjusteNombreComercial();
+}
+
+
+/* ------------------------------------------------- */
+/* INICIAR MOVIMIENTO                                */
+/* ------------------------------------------------- */
+
+function iniciarMovimientoNombreComercial(
+    direccionX,
+    direccionY
+) {
+
+    detenerMovimientoNombreComercial();
+
+    moverNombreComercial(
+        direccionX,
+        direccionY
+    );
+
+    intervaloNombreComercial =
+        setInterval(
+            function () {
+
+                moverNombreComercial(
+                    direccionX,
+                    direccionY
+                );
+
+            },
+            80
+        );
+}
+
+
+/* ------------------------------------------------- */
+/* DETENER MOVIMIENTO                                */
+/* ------------------------------------------------- */
+
+function detenerMovimientoNombreComercial() {
+
+    if (intervaloNombreComercial) {
+
+        clearInterval(
+            intervaloNombreComercial
+        );
+
+        intervaloNombreComercial = null;
+    }
+}
+
+
+/* ------------------------------------------------- */
+/* BOTONES DE MOVIMIENTO                             */
+/* ------------------------------------------------- */
+
+function configurarFlechaNombreComercial(
+    boton,
+    direccionX,
+    direccionY
+) {
+
+    if (!boton) {
+        return;
+    }
+
+
+    boton.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarMovimientoNombreComercial(
+                direccionX,
+                direccionY
+            );
+        }
+    );
+
+
+    boton.addEventListener(
+        "pointerup",
+        detenerMovimientoNombreComercial
+    );
+
+
+    boton.addEventListener(
+        "pointerleave",
+        detenerMovimientoNombreComercial
+    );
+
+
+    boton.addEventListener(
+        "pointercancel",
+        detenerMovimientoNombreComercial
+    );
+}
+
+
+/* ------------------------------------------------- */
+/* CONFIGURAR LAS CUATRO DIRECCIONES                 */
+/* ------------------------------------------------- */
+
+configurarFlechaNombreComercial(
+    flechaNombreComercialIzquierda,
+    -1,
+    0
+);
+
+configurarFlechaNombreComercial(
+    flechaNombreComercialDerecha,
+    1,
+    0
+);
+
+configurarFlechaNombreComercial(
+    flechaNombreComercialArriba,
+    0,
+    -1
+);
+
+configurarFlechaNombreComercial(
+    flechaNombreComercialAbajo,
+    0,
+    1
+);
+
+
+/* ------------------------------------------------- */
+/* SOLTAR EN CUALQUIER PARTE                         */
+/* ------------------------------------------------- */
+
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoNombreComercial
+);
+
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoNombreComercial
+);
+
+/* ================================================= */
+/*          MOVIMIENTO DEL CARRITO                   */
+/* ================================================= */
+
+function limitarAjusteCarrito() {
+
+    if (!botonCarrito) {
+        return;
+    }
+
+    const franjaRect =
+        franjaSuperior.getBoundingClientRect();
+
+    const carritoRect =
+        botonCarrito.getBoundingClientRect();
+
+
+    /* --------------------------------------------- */
+    /* LÍMITE HORIZONTAL IZQUIERDO                   */
+    /* --------------------------------------------- */
+
+    const limiteIzquierdo =
+        franjaRect.left -
+        carritoRect.left;
+
+
+    /* --------------------------------------------- */
+    /* LÍMITE HORIZONTAL DERECHO                     */
+    /* --------------------------------------------- */
+
+    const limiteDerecho =
+        franjaRect.right -
+        carritoRect.right;
+
+
+    /* --------------------------------------------- */
+    /* LÍMITE VERTICAL SUPERIOR                      */
+    /* --------------------------------------------- */
+
+    const limiteSuperior =
+        franjaRect.top -
+        carritoRect.top;
+
+
+    /* --------------------------------------------- */
+    /* LÍMITE VERTICAL INFERIOR                      */
+    /* --------------------------------------------- */
+
+    const limiteInferior =
+        franjaRect.bottom -
+        carritoRect.bottom;
+
+
+    ajusteCarritoX =
+        Math.max(
+            ajusteCarritoX + limiteIzquierdo,
+            Math.min(
+                ajusteCarritoX + limiteDerecho,
+                ajusteCarritoX
+            )
+        );
+
+    ajusteCarritoY =
+        Math.max(
+            ajusteCarritoY + limiteSuperior,
+            Math.min(
+                ajusteCarritoY + limiteInferior,
+                ajusteCarritoY
+            )
+        );
+}
+
+
+/* --------------------------------------------- */
+/* APLICAR POSICIÓN                              */
+/* --------------------------------------------- */
+
+function aplicarAjusteCarrito() {
+
+    actualizarVariableCSS(
+        "--ajuste-carrito-x",
+        `${ajusteCarritoX}px`
+    );
+
+    actualizarVariableCSS(
+        "--ajuste-carrito-y",
+        `${ajusteCarritoY}px`
+    );
+}
+
+
+/* --------------------------------------------- */
+/* MOVER CARRITO                                 */
+/* --------------------------------------------- */
+
+function moverCarrito(
+    direccionX,
+    direccionY
+) {
+
+    ajusteCarritoX +=
+        direccionX * 10;
+
+    ajusteCarritoY +=
+        direccionY * 10;
+
+    aplicarAjusteCarrito();
+}
+
+
+
+
+/* --------------------------------------------- */
+/* INICIAR MOVIMIENTO                            */
+/* --------------------------------------------- */
+
+function iniciarMovimientoCarrito(
+    direccionX,
+    direccionY
+) {
+
+    detenerMovimientoCarrito();
+
+    moverCarrito(
+        direccionX,
+        direccionY
+    );
+
+    intervaloCarrito =
+        setInterval(
+            function () {
+
+                moverCarrito(
+                    direccionX,
+                    direccionY
+                );
+
+            },
+            80
+        );
+}
+
+
+/* --------------------------------------------- */
+/* DETENER MOVIMIENTO                            */
+/* --------------------------------------------- */
+
+function detenerMovimientoCarrito() {
+
+    if (intervaloCarrito) {
+
+        clearInterval(
+            intervaloCarrito
+        );
+
+        intervaloCarrito = null;
+    }
+}
+
+
+/* --------------------------------------------- */
+/* CONFIGURAR FLECHA                             */
+/* --------------------------------------------- */
+
+function configurarFlechaCarrito(
+    boton,
+    direccionX,
+    direccionY
+) {
+
+    if (!boton) {
+        return;
+    }
+
+
+    boton.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarMovimientoCarrito(
+                direccionX,
+                direccionY
+            );
+        }
+    );
+
+
+    boton.addEventListener(
+        "pointerup",
+        detenerMovimientoCarrito
+    );
+
+
+    boton.addEventListener(
+        "pointerleave",
+        detenerMovimientoCarrito
+    );
+
+
+    boton.addEventListener(
+        "pointercancel",
+        detenerMovimientoCarrito
+    );
+}
+
+
+/* --------------------------------------------- */
+/* CUATRO DIRECCIONES                            */
+/* --------------------------------------------- */
+
+configurarFlechaCarrito(
+    flechaCarritoIzquierda,
+    -1,
+    0
+);
+
+configurarFlechaCarrito(
+    flechaCarritoDerecha,
+    1,
+    0
+);
+
+configurarFlechaCarrito(
+    flechaCarritoArriba,
+    0,
+    -1
+);
+
+configurarFlechaCarrito(
+    flechaCarritoAbajo,
+    0,
+    1
+);
+
+
+/* --------------------------------------------- */
+/* SOLTAR EN CUALQUIER PARTE                    */
+/* --------------------------------------------- */
+
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoCarrito
+);
+
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoCarrito
+);
+
+
+
+
+        /* ================================================= */
+        /*          CAMBIO DE FUENTE                          */
+        /* ================================================= */
+
+        fuenteNombreComercial.addEventListener(
+            "change",
+            function () {
+
+                actualizarVariableCSS(
+                    "--fuente-nombre-comercial",
+                    fuenteNombreComercial.value
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*          CAMBIO DE TAMAÑO                          */
+        /* ================================================= */
+
+        tamanoNombreComercial.addEventListener(
+            "change",
+            function () {
+
+                actualizarVariableCSS(
+                    "--tamano-nombre-comercial",
+                    tamanoNombreComercial.value
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*         ACEPTAR CONFIGURACIÓN LOGOTIPO             */
+        /* ================================================= */
+
+        aceptarLogotipo.addEventListener(
+            "click",
+            async function () {
+
+                const datosLogo = {
+
+                    mostrar_logotipo:
+                        mostrarLogotipo.checked,
+
+                    ajuste_logotipo_x:
+                        ajusteLogotipo
+                };
+
+
+                const {
+    error
+} = await clienteSupabase
+    .from(
+        "configuracion_inicio"
+    )
+    .update(
+        datosLogo
+    )
+    .eq(
+        "cliente_id",
+        clienteId
+    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Error al guardar configuración del logotipo:",
+                        error
+                    );
+
+                    return;
+                }
+
+
+                const imagenLogotipo =
+                    document.getElementById(
+                        "logotipo-franja"
+                    );
+
+
+                if (imagenLogotipo) {
+
+                    imagenLogotipo.classList.toggle(
+                        "oculto",
+                        !mostrarLogotipo.checked
+                    );
+                }
+
+
+                formularioLogotipo.classList.remove(
+                    "formulario-abierto"
+                );
+
+                formularioCabecera.classList.add(
+                    "formulario-abierto"
+                );
+            }
+        );
+
+
+           /* ================================================= */
+          /*          ACEPTAR CONFIGURACIÓN DEL CARRITO        */
+         /* ================================================= */
+
+           aceptarCarrito.addEventListener(
+          "click",
+           async function () {
+
+            const {
+    error
+} = await clienteSupabase
+    .from("configuracion_inicio")
+    .update({
+
+        mostrar_carrito:
+            mostrarCarrito.checked,
+
+        tipo_carrito:
+            tipoCarritoSeleccionado,
+
+        ajuste_carrito_x:
+            ajusteCarritoX,
+
+        ajuste_carrito_y:
+            ajusteCarritoY
+
+    })
+    .eq(
+        "cliente_id",
+        clienteId
+    );
+
+
+
+        if (error) {
+
+            console.error(
+                "Error al guardar configuración del carrito:",
+                error
+            );
+
+            return;
+        }
+
+
+        botonCarrito.classList.toggle(
+            "oculto",
+            !mostrarCarrito.checked
+        );
+
+
+        aplicarTipoCarrito();
+
+
+        formularioCarrito.classList.remove(
+            "formulario-abierto"
+        );
+
+
+        formularioCabecera.classList.add(
+            "formulario-abierto"
+        );
+    }
+);
+
+
+ /* ================================================= */
+/*       ACEPTAR NOMBRE COMERCIAL                    */
+/* ================================================= */
+
+aceptarNombreComercial.addEventListener(
+    "click",
+    async function () {
+
+
+        
+
+        /* --------------------------------------------- */
+        /* CREAR / OBTENER NOMBRE EN LA FRANJA           */
+        /* --------------------------------------------- */
+
+        let nombreEncabezado =
+            document.getElementById(
+                "nombre-comercial-encabezado"
+            );
+
+        if (!nombreEncabezado) {
+
+            nombreEncabezado =
+                document.createElement("div");
+
+            nombreEncabezado.id =
+                "nombre-comercial-encabezado";
+
+            franjaSuperior.appendChild(
+                nombreEncabezado
+            );
+        }
+
+
+        /* --------------------------------------------- */
+        /* IDENTIFICAR DISPOSITIVO                       */
+        /* --------------------------------------------- */
+
+        const esMovil =
+            window.innerWidth <= 768;
+
+
+        /* --------------------------------------------- */
+        /* GUARDAR NOMBRE SEGÚN DISPOSITIVO              */
+        /* --------------------------------------------- */
+
+        if (esMovil) {
+
+            nombreComercialMovil =
+                nombreComercial.value;
+
+        } else {
+
+            nombreComercialEscritorio =
+                nombreComercial.value;
+        }
+
+
+        /* --------------------------------------------- */
+        /* ACTUALIZAR TEXTO                              */
+        /* --------------------------------------------- */
+
+        nombreEncabezado.textContent =
+            nombreComercial.value;
+
+
+        /* --------------------------------------------- */
+        /* ACTUALIZAR FUENTE                             */
+        /* --------------------------------------------- */
+
+        actualizarVariableCSS(
+            "--fuente-nombre-comercial",
+            fuenteNombreComercial.value
+        );
+
+
+        /* --------------------------------------------- */
+        /* ACTUALIZAR TAMAÑO                             */
+        /* --------------------------------------------- */
+
+        actualizarVariableCSS(
+            "--tamano-nombre-comercial",
+            tamanoNombreComercial.value
+        );
+
+
+        /* --------------------------------------------- */
+        /* APLICAR POSICIÓN                              */
+        /* --------------------------------------------- */
+
+        aplicarAjusteNombreComercial();
+
+
+        /* --------------------------------------------- */
+        /* MOSTRAR / OCULTAR                             */
+        /* --------------------------------------------- */
+
+        nombreEncabezado.classList.toggle(
+            "oculto",
+            !mostrarNombreComercial.checked
+        );
+
+
+        /* ================================================= */
+        /*       GUARDAR TAMAÑO Y POSICIÓN                    */
+        /* ================================================= */
+
+        if (esMovil) {
+
+            tamanoNombreComercialMovil =
+                tamanoNombreComercial.value;
+
+            ajusteNombreComercialXMovil =
+                ajusteNombreComercialX;
+
+            ajusteNombreComercialYMovil =
+                ajusteNombreComercialY;
+
+        } else {
+
+            tamanoNombreComercialEscritorio =
+                tamanoNombreComercial.value;
+
+            ajusteNombreComercialXEscritorio =
+                ajusteNombreComercialX;
+
+            ajusteNombreComercialYEscritorio =
+                ajusteNombreComercialY;
+        }
+
+
+        /* ================================================= */
+        /*       DATOS GENERALES                              */
+        /* ================================================= */
+
+        const datosNombreComercial = {
+
+            fuente_nombre_comercial:
+                fuenteNombreComercial.value,
+
+            mostrar_nombre_comercial:
+                mostrarNombreComercial.checked
+        };
+
+
+        /* ================================================= */
+        /*       GUARDAR NOMBRE SEGÚN DISPOSITIVO             */
+        /* ================================================= */
+
+        if (esMovil) {
+
+            datosNombreComercial
+                .nombre_comercial_movil =
+                    nombreComercialMovil;
+
+        } else {
+
+            datosNombreComercial
+                .nombre_comercial_escritorio =
+                    nombreComercialEscritorio;
+        }
+
+
+        /* ================================================= */
+        /*       GUARDAR TAMAÑO Y POSICIÓN                    */
+        /* ================================================= */
+
+        if (esMovil) {
+
+            datosNombreComercial
+                .tamano_nombre_comercial_movil =
+                    tamanoNombreComercialMovil;
+
+            datosNombreComercial
+                .ajuste_nombre_comercial_x_movil =
+                    ajusteNombreComercialXMovil;
+
+            datosNombreComercial
+                .ajuste_nombre_comercial_y_movil =
+                    ajusteNombreComercialYMovil;
+
+        } else {
+
+            datosNombreComercial
+                .tamano_nombre_comercial_escritorio =
+                    tamanoNombreComercialEscritorio;
+
+            datosNombreComercial
+                .ajuste_nombre_comercial_x_escritorio =
+                    ajusteNombreComercialXEscritorio;
+
+            datosNombreComercial
+                .ajuste_nombre_comercial_y_escritorio =
+                    ajusteNombreComercialYEscritorio;
+        }
+
+
+        /* --------------------------------------------- */
+        /* GUARDAR EN SUPABASE                           */
+        /* --------------------------------------------- */
+
+        const {
+            error
+        } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update(datosNombreComercial)
+           .eq("cliente_id", clienteId);
+
+
+        /* --------------------------------------------- */
+        /* ERROR                                         */
+        /* --------------------------------------------- */
+
+        if (error) {
+
+            console.error(
+                "Error al guardar nombre comercial:",
+                error
+            );
+
+            return;
+        }
+
+
+        /* --------------------------------------------- */
+        /* CERRAR FORMULARIO                             */
+        /* --------------------------------------------- */
+
+        formularioNombreComercial.classList.remove(
+            "formulario-abierto"
+        );
+
+        formularioCabecera.classList.add(
+            "formulario-abierto"
+        );
+    }
+);
+      
+
+        /* ================================================= */
+        /*          ACEPTAR CONFIGURACIÓN CABECERA            */
+        /* ================================================= */
+
+        aceptarCabecera.addEventListener(
+            "click",
+            async function () {
+
+
+                const archivo =
+                    archivoLogotipo.files[0];
+
+
+                let logotipoUrl =
+                    configuracionGuardada?.logotipo_url ||
+                    null;
+
+
+                /* ----------------------------------------- */
+                /* SUBIR LOGOTIPO                            */
+                /* ----------------------------------------- */
+
+                if (archivo) {
+
+                    const nombreArchivo =
+                        `logotipo_${Date.now()}_${archivo.name}`;
+
+
+                    const {
+                        error: errorSubida
+                    } = await clienteSupabase
+                        .storage
+                        .from("imagenes")
+                        .upload(
+                            `logotipos/${nombreArchivo}`,
+                            archivo,
+                            {
+                                upsert: false
+                            }
+                        );
+
+
+                    if (errorSubida) {
+
+                        console.error(
+                            "Error al subir logotipo:",
+                            errorSubida
+                        );
+
+                        return;
+                    }
+
+
+                    const {
+                        data: urlLogotipo
+                    } =
+                        clienteSupabase
+                            .storage
+                            .from("imagenes")
+                            .getPublicUrl(
+                                `logotipos/${nombreArchivo}`
+                            );
+
+
+                    logotipoUrl =
+                        urlLogotipo.publicUrl;
+
+
+                    let imagenFranja =
+                        document.getElementById(
+                            "logotipo-franja"
+                        );
+
+
+                    if (!imagenFranja) {
+
+                        imagenFranja =
+                            document.createElement(
+                                "img"
+                            );
+
+                        imagenFranja.id =
+                            "logotipo-franja";
+
+                        franjaSuperior.appendChild(
+                            imagenFranja
+                        );
+                    }
+
+
+                    imagenFranja.src =
+                        logotipoUrl;
+
+
+                    imagenFranja.classList.toggle(
+                        "oculto",
+                        !mostrarLogotipo.checked
+                    );
+                }
+
+
+                /* ----------------------------------------- */
+                /* VISIBILIDAD                               */
+                /* ----------------------------------------- */
+
+                botonCarrito.classList.toggle(
+                    "oculto",
+                    !mostrarCarrito.checked
+                );
+
+
+                buscador.classList.toggle(
+                    "oculto",
+                    !mostrarBuscador.checked
+                );
+
+
+                /* ----------------------------------------- */
+                /* GUARDAR EN SUPABASE                       */
+                /* ----------------------------------------- */
+
+                const {
+                    error: errorGuardado
+                } = await clienteSupabase
+                    .from(
+                        "configuracion_inicio"
+                    )
+                   
+                   .update({
+
+    logotipo_url:
+        logotipoUrl,
+
+    mostrar_carrito:
+        mostrarCarrito.checked,
+
+    mostrar_nombre_comercial:
+        mostrarNombreComercial.checked,
+
+    mostrar_buscador:
+        mostrarBuscador.checked,
+
+    tipo_carrito:
+        tipoCarritoSeleccionado,
+
+    ajuste_carrito_x:
+        ajusteCarritoX,
+
+    ajuste_carrito_y:
+        ajusteCarritoY
+})
+
+     .eq(
+    "cliente_id",
+    clienteId
+);            
+
+
+                if (errorGuardado) {
+
+                    console.error(
+                        "Error al guardar encabezado:",
+                        errorGuardado
+                    );
+
+                    return;
+                }
+
+
+                formularioCabecera.classList.remove(
+                    "formulario-abierto"
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*         ACEPTAR CONFIGURACIÓN DE INICIO            */
+        /* ================================================= */
+
+        aceptarInicio.addEventListener(
+            "click",
+            async function () {
+
+
+                const archivo =
+                    archivoLogotipo.files[0];
+
+
+                let logotipoUrl =
+                    configuracionGuardada?.logotipo_url ||
+                    null;
+
+
+                /* ----------------------------------------- */
+                /* SUBIR LOGOTIPO                            */
+                /* ----------------------------------------- */
+
+                if (archivo) {
+
+                    const nombreArchivo =
+                        `logotipo_${Date.now()}_${archivo.name}`;
+
+
+                    const {
+                        error: errorSubida
+                    } = await clienteSupabase
+                        .storage
+                        .from("imagenes")
+                        .upload(
+                            `logotipos/${nombreArchivo}`,
+                            archivo,
+                            {
+                                upsert: false
+                            }
+                        );
+
+
+                    if (errorSubida) {
+
+                        console.error(
+                            "Error al subir logotipo:",
+                            errorSubida
+                        );
+
+                        return;
+                    }
+
+
+                    const {
+                        data: urlLogotipo
+                    } =
+                        clienteSupabase
+                            .storage
+                            .from("imagenes")
+                            .getPublicUrl(
+                                `logotipos/${nombreArchivo}`
+                            );
+
+
+                    logotipoUrl =
+                        urlLogotipo.publicUrl;
+
+
+                    let imagenFranja =
+                        document.getElementById(
+                            "logotipo-franja"
+                        );
+
+
+                    if (!imagenFranja) {
+
+                        imagenFranja =
+                            document.createElement(
+                                "img"
+                            );
+
+                        imagenFranja.id =
+                            "logotipo-franja";
+
+                        franjaSuperior.appendChild(
+                            imagenFranja
+                        );
+                    }
+
+
+                    imagenFranja.src =
+                        logotipoUrl;
+                }
+
+
+                /* ----------------------------------------- */
+                /* ACTUALIZAR VARIABLES CSS                  */
+                /* ----------------------------------------- */
+
+                actualizarVariableCSS(
+                    "--color-franjas",
+                    colorFranjas.value
+                );
+
+                actualizarVariableCSS(
+                    "--color-boton-menu",
+                    colorBotonMenu.value
+                );
+
+                actualizarVariableCSS(
+                    "--color-texto-menu",
+                    colorTextoMenu.value
+                );
+
+                actualizarVariableCSS(
+                    "--color-panel-menu",
+                    colorPanelMenu.value
+                );
+
+
+                /* ----------------------------------------- */
+                /* GUARDAR CONFIGURACIÓN                     */
+                /* ----------------------------------------- */
+
+                const configuracion = {
+
+                    
+                      cliente_id: clienteId,
+
+                    color_franjas:
+                        colorFranjas.value,
+
+                    color_boton_menu:
+                        colorBotonMenu.value,
+
+                    color_texto_menu:
+                        colorTextoMenu.value,
+
+                    color_panel_menu:
+                        colorPanelMenu.value,
+
+                    logotipo_url:
+                        logotipoUrl
+                };
+
+
+             const {
+    error
+} = await clienteSupabase
+    .from("configuracion_inicio")
+    .update(configuracion)
+    .eq(
+        "cliente_id",
+        clienteId
+    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Error al guardar configuración:",
+                        error
+                    );
+
+                    return;
+                }
+
+
+                formularioInicio.classList.remove(
+                    "formulario-abierto"
+                );
+            }
+        );
+
+
+        /* ================================================= */
+        /*                 BOTÓN DE BÚSQUEDA                  */
+        /* ================================================= */
+
+        botonBusqueda.addEventListener(
+            "click",
+            function () {
+
+                buscador.classList.toggle(
+                    "expandido"
+                );
+            }
+        );
+
+    }
+);
