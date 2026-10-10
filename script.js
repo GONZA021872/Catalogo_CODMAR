@@ -613,6 +613,25 @@ console.log(
            .eq("cliente_id", clienteId)
             .maybeSingle();
 
+        
+/* ========================================= */
+/* POSICIÓN BOTÓN ACEPTAR EN ESCRITORIO      */
+/* ========================================= */
+
+const botonAceptarNombreComercial = document.getElementById(
+    "aceptar-nombre-comercial"
+);
+
+if (botonAceptarNombreComercial && window.innerWidth > 768) {
+    const posicionGuardada =
+        configuracionGuardada?.aceptar_nombre_comercial_top_escritorio;
+
+    botonAceptarNombreComercial.style.top =
+        `${posicionGuardada ?? 315}px`;
+}
+
+
+
 
         /* ================================================= */
         /*                 ERROR DE CARGA                    */
@@ -927,20 +946,32 @@ aplicarAjusteNombreComercial();
             aplicarAjusteLogotipo();
         }
 
-             /* --------------------------------------------- */
-            /* CONFIGURACIÓN DEL CARRITO                     */
-           /* --------------------------------------------- */
+        
+/* ================================================= */
+/*          CONFIGURACIÓN DEL CARRITO                */
+/* ================================================= */
 
-            tipoCarritoSeleccionado =
-                 configuracionGuardada.tipo_carrito ?? "bolsita";
+if (configuracionGuardada) {
 
-            ajusteCarritoX =
-                 configuracionGuardada.ajuste_carrito_x ?? 0;
+    tipoCarritoSeleccionado =
+        configuracionGuardada.tipo_carrito ?? "bolsita";
 
-            ajusteCarritoY =
-             configuracionGuardada.ajuste_carrito_y ?? 0;
+    ajusteCarritoX =
+        configuracionGuardada.ajuste_carrito_x ?? 0;
 
-             aplicarAjusteCarrito();
+    ajusteCarritoY =
+        configuracionGuardada.ajuste_carrito_y ?? 0;
+
+    aplicarAjusteCarrito();
+
+    console.log("POSICIÓN DEL CARRITO AL CARGAR:", {
+        ajusteX: ajusteCarritoX,
+        ajusteY: ajusteCarritoY,
+        anchoPantalla: window.innerWidth
+    });
+}
+
+
 
             /* --------------------------------------------- */
 /* OPCIÓN SELECCIONADA                           */
@@ -1706,6 +1737,8 @@ function moverCarrito(
 }
 
 
+
+
 /* --------------------------------------------- */
 /* INICIAR MOVIMIENTO                            */
 /* --------------------------------------------- */
@@ -2024,6 +2057,9 @@ aceptarNombreComercial.addEventListener(
     "click",
     async function () {
 
+
+        
+
         /* --------------------------------------------- */
         /* CREAR / OBTENER NOMBRE EN LA FRANJA           */
         /* --------------------------------------------- */
@@ -2208,6 +2244,16 @@ aceptarNombreComercial.addEventListener(
                 .ajuste_nombre_comercial_y_escritorio =
                     ajusteNombreComercialYEscritorio;
         }
+
+if (window.innerWidth > 768) {
+    datosNombreComercial.aceptar_nombre_comercial_top_escritorio =
+        parseInt(
+            getComputedStyle(aceptarNombreComercial).top,
+            10
+        ) || 315;
+}
+
+
 
 
         /* --------------------------------------------- */
