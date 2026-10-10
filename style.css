@@ -42,6 +42,11 @@ body {
     --ajuste-carrito-x: 0px;
 --ajuste-carrito-y: 0px;
 
+/* POSICIÓN DEL BUSCADOR */
+
+--ajuste-buscador-x: 0px;
+--ajuste-buscador-y: 0px;
+
 
     /* TIPOGRAFÍA DEL NOMBRE COMERCIAL */
 
@@ -119,7 +124,11 @@ body {
     position: absolute;
     right: 150px;
     top: 60%;
-    transform: translateY(-50%);
+    
+transform: translate(
+    var(--ajuste-buscador-x, 0px),
+    calc(-50% + var(--ajuste-buscador-y, 0px))
+);
 
     width: 150px;
     height: 25px;
@@ -145,6 +154,7 @@ body {
     width: 200px;
 }
 
+
 #campo-busqueda {
     flex: 1;
     min-width: 0;
@@ -154,9 +164,11 @@ body {
     outline: none;
 
     padding: 0 8px;
+    font-size:14px;
 
-    font-size: 14px;
+    transform: translateY(2px);
 }
+
 
 .boton-busqueda {
     flex-shrink: 0;
@@ -429,6 +441,20 @@ body {
     bottom: 15px;
     left: 50%;
 
+    transform: translateX(-50%);
+}
+
+#aceptar-carrito {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#aceptar-buscador {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
     transform: translateX(-50%);
 }
 
@@ -809,6 +835,201 @@ body {
 }
 
 
+/* ========================================= */
+/*       CONTROL CIRCULAR DEL BUSCADOR       */
+/* ========================================= */
+
+.posicion-buscador-control {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  justify-content: flex-end;
+    gap: 10px;
+}
+
+.posicion-buscador-control > label {
+    order: 1;
+    position: relative;
+    top:28px;
+    width: auto;
+    margin: 0;
+    text-align: left;
+    white-space: nowrap;
+    
+}
+
+.posicion-buscador-control > .control-posicion-buscador {
+    order: 2;
+    flex-shrink: 0;
+    margin-left: 0;
+}
+
+
+
+
+#formulario-buscador #tamano-buscador {
+    display: block;
+    margin-left: auto;
+      margin-top: -40px;
+    width: 130px;
+}
+
+/* POSICIÓN DEL TEXTO TAMAÑO DEL BUSCADOR */
+
+#formulario-buscador label[for="tamano-buscador"] {
+    position: relative;
+    top: -22px;
+}
+
+
+.control-posicion-buscador {
+    width: 82px;
+    height: 82px;
+transform: translateY(-25px);
+
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+
+    align-items: center;
+    justify-items: center;
+
+       margin-left: auto;
+
+    border: 1px solid #999;
+    border-radius: 50%;
+
+    background: #f5f5f5;
+
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 #ffffff;
+}
+
+/* FLECHA ARRIBA */
+
+#flecha-buscador-arriba {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* FLECHA IZQUIERDA */
+
+#flecha-buscador-izquierda {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+/* CENTRO */
+
+#centro-buscador {
+    grid-column: 2;
+    grid-row: 2;
+
+    width: 14px;
+    height: 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #888;
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    font-size: 10px;
+    color: #444;
+}
+
+/* FLECHA DERECHA */
+
+#flecha-buscador-derecha {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+/* FLECHA ABAJO */
+
+#flecha-buscador-abajo {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+/* ESTILO DE LAS CUATRO FLECHAS */
+
+.control-posicion-buscador button {
+    width: 25px;
+    height: 25px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+    color: #444;
+
+    font-size: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    touch-action: none;
+}
+
+.control-posicion-buscador button:hover {
+    background: #e5e5e5;
+}
+
+.control-posicion-buscador button:active {
+    transform: scale(0.90);
+}
+
+
+
+/* ========================================= */
+/*      BUSCADOR EXTRAGRANDE                  */
+/* ========================================= */
+
+#buscador {
+    max-width: calc(100vw - 40px);
+}
+
+#buscador #campo-busqueda {
+    min-width: 0;
+}
+
+
+/* POSICIÓN Y TAMAÑO DEL TEXTO DEL BUSCADOR */
+
+.opcion-encabezado.posicion-buscador-control > label {
+    align-self: center;
+
+    position: relative !important;
+
+    /* MOVER A IZQUIERDA O DERECHA */
+    left:-110px;
+
+    /* MOVER ARRIBA O ABAJO */
+    top: -20px !important;
+
+    /* TAMAÑO DE LAS LETRAS */
+    font-size: 18px !important;
+
+    margin-top: 0 !important;
+
+    transform: none !important;
+}
+
+
+
+
+
 @media (min-width: 769px) {
     #aceptar-nombre-comercial {
         top: 315px;
@@ -864,15 +1085,15 @@ body {
     /* ------------------------- */
 
     .buscador {
-        width: 200px;
+    width: 200px;
 
-        margin-left: 80px;
+    margin-left: 80px;
 
-        position: relative;
+    position: relative;
 
-        left: 30px;
-        top: 50px;
-    }
+    left: calc(30px + var(--ajuste-buscador-x, 0px));
+    top: calc(50px + var(--ajuste-buscador-y, 0px));
+}
 
     .buscador:focus-within {
         width: 200px;
