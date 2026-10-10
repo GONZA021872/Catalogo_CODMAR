@@ -809,6 +809,13 @@ body {
 }
 
 
+@media (min-width: 769px) {
+    #aceptar-nombre-comercial {
+        top: 325px;
+    }
+}
+
+
 /* ============================= */
 /*          TELÉFONO             */
 /* ============================= */
