@@ -16,7 +16,6 @@ const clienteSupabase =
 
 
 
-
 /* ================================================= */
 /*              INICIO DE LA APLICACIÓN              */
 /* ================================================= */
@@ -208,6 +207,14 @@ if (!session) {
             "formulario-carrito"
     );
 
+
+            
+const formularioBuscador =
+    document.getElementById(
+        "formulario-buscador"
+    );
+
+
         /* ============================================= */
         /*           BOTONES DE CONFIGURACIÓN             */
         /* ============================================= */
@@ -221,6 +228,20 @@ if (!session) {
              document.getElementById(
             "boton-configurar-carrito"
     );
+
+           
+const botonConfigurarBuscador =
+    document.getElementById(
+        "boton-configurar-buscador"
+    );
+
+const aceptarBuscador =
+    document.getElementById(
+        "aceptar-buscador"
+    );
+
+           
+
 
           const aceptarCarrito =
                 document.getElementById(
@@ -341,6 +362,30 @@ console.log("ACEPTAR NOMBRE:", aceptarNombreComercial);
                 "boton-busqueda"
             );
 
+        
+/* ============================================= */
+/*       CONFIGURACIÓN DEL BUSCADOR               */
+/* ============================================= */
+
+const flechaBuscadorArriba =
+    document.getElementById("flecha-buscador-arriba");
+
+const flechaBuscadorIzquierda =
+    document.getElementById("flecha-buscador-izquierda");
+
+const flechaBuscadorDerecha =
+    document.getElementById("flecha-buscador-derecha");
+
+const flechaBuscadorAbajo =
+    document.getElementById("flecha-buscador-abajo");
+
+const centroBuscador =
+    document.getElementById("centro-buscador");
+
+const tamanoBuscador =
+    document.getElementById("tamano-buscador");
+
+
 
         /* ============================================= */
         /*                    LOGOTIPO                    */
@@ -420,10 +465,9 @@ const tipoCarrito =
         "tipo-carrito"
     );
 
-
-/* ================================================= */
-/*          FLECHAS DEL CARRITO                      */
-/* ================================================= */
+/* ============================================= */
+/*       FLECHAS DE POSICIÓN DEL CARRITO         */
+/* ============================================= */
 
 const flechaCarritoIzquierda =
     document.getElementById(
@@ -443,7 +487,8 @@ const flechaCarritoArriba =
 const flechaCarritoAbajo =
     document.getElementById(
         "flecha-carrito-abajo"
-    );  
+    );
+
 
 
         /* ============================================= */
@@ -483,14 +528,29 @@ let nombreComercialMovil = "";
 
 let tipoCarritoSeleccionado = "bolsita";
 
+
 let ajusteCarritoX = 0;
 
 let ajusteCarritoY = 0;
 
+/* VARIABLES DE POSICIÓN DEL BUSCADOR */
+
+let ajusteBuscadorX = 0;
+
+let ajusteBuscadorY = 0;
+
+/* TAMAÑO DEL BUSCADOR */
+
+let tamanoBuscadorSeleccionado = "mediano";
+
+/* INTERVALO PARA MANTENER LAS FLECHAS PRESIONADAS */
+
 let intervaloLogotipo = null;
 
 let intervaloCarrito = null;
-        
+
+let intervaloBuscador = null;
+
 
         /* ================================================= */
         /*       FUNCIÓN PARA ACTUALIZAR VARIABLES CSS       */
@@ -1195,6 +1255,27 @@ if (
 });
 
 
+            
+/* ================================================= */
+/*            CONFIGURAR BUSCADOR                    */
+/* ================================================= */
+
+botonConfigurarBuscador.addEventListener(
+    "click",
+    function () {
+
+        formularioCabecera.classList.remove(
+            "formulario-abierto"
+        );
+
+        formularioBuscador.classList.add(
+            "formulario-abierto"
+        );
+
+    }
+);
+      
+
         /* ================================================= */
         /*            CONFIGURAR LOGOTIPO                    */
         /* ================================================= */
@@ -1718,6 +1799,235 @@ function aplicarAjusteCarrito() {
 }
 
 
+/* ============================================= */
+/*       APLICAR TAMAÑO DEL BUSCADOR             */
+/* ============================================= */
+
+function aplicarTamanoBuscador() {
+
+    if (!buscador || !tamanoBuscador) {
+        return;
+    }
+
+   
+const tamanos = {
+    pequeno: {
+        ancho: "110px",
+        alto: "22px"
+    },
+    mediano: {
+        ancho: "150px",
+        alto: "25px"
+    },
+    grande: {
+        ancho: "250px",
+        alto: "32px"
+    },
+    extragrande: {
+        ancho: "calc(100vw - 250px)",
+        alto: "30px"
+    }
+};
+
+
+    const seleccionado =
+        tamanos[tamanoBuscadorSeleccionado] ||
+        tamanos.mediano;
+
+    buscador.style.width = seleccionado.ancho;
+    buscador.style.height = seleccionado.alto;
+
+    const campoBusqueda =
+        document.getElementById("campo-busqueda");
+
+    const botonBusqueda =
+        document.getElementById("boton-busqueda");
+
+    if (campoBusqueda) {
+        campoBusqueda.style.height = "100%";
+    }
+
+    if (botonBusqueda) {
+        botonBusqueda.style.height = "100%";
+        botonBusqueda.style.width = "35px";
+    }
+}
+
+
+/* ============================================= */
+/*       CAMBIAR TAMAÑO AL ELEGIR OPCIÓN         */
+/* ============================================= */
+
+if (tamanoBuscador) {
+
+    tamanoBuscador.addEventListener(
+        "change",
+        function () {
+
+            tamanoBuscadorSeleccionado =
+                tamanoBuscador.value;
+
+            aplicarTamanoBuscador();
+
+        }
+    );
+}
+
+
+
+/* --------------------------------------------- */
+/* APLICAR POSICIÓN DEL BUSCADOR                 */
+/* --------------------------------------------- */
+
+function aplicarAjusteBuscador() {
+
+    actualizarVariableCSS(
+        "--ajuste-buscador-x",
+        `${ajusteBuscadorX}px`
+    );
+
+    actualizarVariableCSS(
+        "--ajuste-buscador-y",
+        `${ajusteBuscadorY}px`
+    );
+
+}
+
+
+/* ============================================= */
+/*       MOVIMIENTO DEL BUSCADOR                 */
+/* ============================================= */
+
+function moverBuscador(direccionX, direccionY) {
+
+    ajusteBuscadorX += direccionX * 10;
+    ajusteBuscadorY += direccionY * 10;
+
+    aplicarAjusteBuscador();
+}
+
+
+/* ============================================= */
+/*       INICIAR MOVIMIENTO                      */
+/* ============================================= */
+
+function iniciarMovimientoBuscador(direccionX, direccionY) {
+
+    detenerMovimientoBuscador();
+
+    moverBuscador(direccionX, direccionY);
+
+    intervaloBuscador = setInterval(function () {
+
+        moverBuscador(direccionX, direccionY);
+
+    }, 80);
+}
+
+
+/* ============================================= */
+/*       DETENER MOVIMIENTO                      */
+/* ============================================= */
+
+function detenerMovimientoBuscador() {
+
+    if (intervaloBuscador) {
+
+        clearInterval(intervaloBuscador);
+
+        intervaloBuscador = null;
+    }
+}
+
+
+/* ============================================= */
+/*       CONFIGURAR CADA FLECHA                  */
+/* ============================================= */
+
+function configurarFlechaBuscador(
+    boton,
+    direccionX,
+    direccionY
+) {
+
+    if (!boton) {
+        return;
+    }
+
+    boton.addEventListener("pointerdown", function (evento) {
+
+        evento.preventDefault();
+
+        iniciarMovimientoBuscador(
+            direccionX,
+            direccionY
+        );
+
+    });
+
+    boton.addEventListener(
+        "pointerup",
+        detenerMovimientoBuscador
+    );
+
+    boton.addEventListener(
+        "pointerleave",
+        detenerMovimientoBuscador
+    );
+
+    boton.addEventListener(
+        "pointercancel",
+        detenerMovimientoBuscador
+    );
+}
+
+
+/* ============================================= */
+/*       CONECTAR LAS CUATRO FLECHAS             */
+/* ============================================= */
+
+configurarFlechaBuscador(
+    flechaBuscadorArriba,
+    0,
+    -1
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorIzquierda,
+    -1,
+    0
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorDerecha,
+    1,
+    0
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorAbajo,
+    0,
+    1
+);
+
+
+/* ============================================= */
+/*       DETENER AL SOLTAR EL BOTÓN              */
+/* ============================================= */
+
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoBuscador
+);
+
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoBuscador
+);
+
+
+
+
 /* --------------------------------------------- */
 /* MOVER CARRITO                                 */
 /* --------------------------------------------- */
@@ -1877,6 +2187,156 @@ document.addEventListener(
     "pointercancel",
     detenerMovimientoCarrito
 );
+
+
+/* --------------------------------------------- */
+/* MOVER BUSCADOR                                */
+/* --------------------------------------------- */
+
+function moverBuscador(
+    direccionX,
+    direccionY
+) {
+
+    ajusteBuscadorX += direccionX * 10;
+    ajusteBuscadorY += direccionY * 10;
+
+    aplicarAjusteBuscador();
+}
+
+
+/* --------------------------------------------- */
+/* INICIAR MOVIMIENTO                            */
+/* --------------------------------------------- */
+
+function iniciarMovimientoBuscador(
+    direccionX,
+    direccionY
+) {
+
+    detenerMovimientoBuscador();
+
+    moverBuscador(
+        direccionX,
+        direccionY
+    );
+
+    intervaloBuscador = setInterval(
+        function () {
+
+            moverBuscador(
+                direccionX,
+                direccionY
+            );
+
+        },
+        80
+    );
+}
+
+
+/* --------------------------------------------- */
+/* DETENER MOVIMIENTO                            */
+/* --------------------------------------------- */
+
+function detenerMovimientoBuscador() {
+
+    if (intervaloBuscador) {
+
+        clearInterval(intervaloBuscador);
+
+        intervaloBuscador = null;
+    }
+}
+
+
+/* --------------------------------------------- */
+/* CONFIGURAR FLECHA                             */
+/* --------------------------------------------- */
+
+function configurarFlechaBuscador(
+    boton,
+    direccionX,
+    direccionY
+) {
+
+    if (!boton) {
+        return;
+    }
+
+    boton.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarMovimientoBuscador(
+                direccionX,
+                direccionY
+            );
+        }
+    );
+
+    boton.addEventListener(
+        "pointerup",
+        detenerMovimientoBuscador
+    );
+
+    boton.addEventListener(
+        "pointerleave",
+        detenerMovimientoBuscador
+    );
+
+    boton.addEventListener(
+        "pointercancel",
+        detenerMovimientoBuscador
+    );
+}
+
+
+/* --------------------------------------------- */
+/* CUATRO DIRECCIONES                            */
+/* --------------------------------------------- */
+
+configurarFlechaBuscador(
+    flechaBuscadorIzquierda,
+    -1,
+    0
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorDerecha,
+    1,
+    0
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorArriba,
+    0,
+    -1
+);
+
+configurarFlechaBuscador(
+    flechaBuscadorAbajo,
+    0,
+    1
+);
+
+
+/* --------------------------------------------- */
+/* SOLTAR EN CUALQUIER PARTE                    */
+/* --------------------------------------------- */
+
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoBuscador
+);
+
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoBuscador
+);
+
 
 
 
@@ -2047,6 +2507,28 @@ document.addEventListener(
         );
     }
 );
+
+
+
+/* ================================================= */
+/*          ACEPTAR CONFIGURACIÓN DEL BUSCADOR        */
+/* ================================================= */
+
+aceptarBuscador.addEventListener(
+    "click",
+    function () {
+
+        formularioBuscador.classList.remove(
+            "formulario-abierto"
+        );
+
+        formularioCabecera.classList.add(
+            "formulario-abierto"
+        );
+
+    }
+);
+
 
 
  /* ================================================= */
