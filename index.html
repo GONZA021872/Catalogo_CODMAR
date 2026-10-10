@@ -159,12 +159,13 @@
         </button>
     </div>
 
-    <div class="opcion-encabezado">
-        <label>
-            Mostrar buscador
-            <input type="checkbox" id="mostrar-buscador" checked>
-        </label>
-    </div>
+    
+<div class="opcion-encabezado">
+    <button type="button" id="boton-configurar-buscador">
+        MOSTRAR BUSCADOR
+    </button>
+</div>
+
 
     <button id="aceptar-cabecera">
         ACEPTAR
@@ -259,6 +260,79 @@
     </button>
 
 </div>
+
+
+<!-- CONFIGURACIÓN DEL BUSCADOR -->
+
+<div class="formulario-inicio" id="formulario-buscador">
+
+    <h2>CONFIGURACIÓN DEL BUSCADOR</h2>
+
+    <div class="opcion-encabezado">
+        <label>
+            Mostrar buscador
+            <input type="checkbox" id="mostrar-buscador" checked>
+        </label>
+    </div>
+
+   
+
+    <div class="opcion-encabezado posicion-buscador-control">
+    <label>Posición del buscador</label>
+
+    <div class="control-posicion-buscador">
+
+        <button
+            type="button"
+            id="flecha-buscador-arriba"
+            aria-label="Subir buscador"
+        >▲</button>
+
+        <button
+            type="button"
+            id="flecha-buscador-izquierda"
+            aria-label="Mover buscador a la izquierda"
+        >◀</button>
+
+        <span id="centro-buscador">•</span>
+
+        <button
+            type="button"
+            id="flecha-buscador-derecha"
+            aria-label="Mover buscador a la derecha"
+        >▶</button>
+
+        <button
+            type="button"
+            id="flecha-buscador-abajo"
+            aria-label="Bajar buscador"
+        >▼</button>
+
+    </div>
+
+</div>
+
+
+    <div class="opcion-encabezado">
+        <label for="tamano-buscador">Tamaño del buscador</label>
+
+        <select id="tamano-buscador">
+            <option value="pequeno">Pequeño</option>
+            <option value="mediano" selected>Mediano</option>
+            <option value="grande">Grande</option>
+            <option value="extragrande">Extragrande</option>
+        </select>
+    </div>
+
+    <button type="button" id="aceptar-buscador">
+        ACEPTAR
+    </button>
+
+</div>
+
+
+
+
 
 <!-- CONFIGURACIÓN DEL LOGOTIPO -->
 
