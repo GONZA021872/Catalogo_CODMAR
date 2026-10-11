@@ -865,21 +865,73 @@ transform: translate(
 }
 
 
+/* ========================================= */
+/* CONTROL DE TAMAÑO DEL BUSCADOR            */
+/* ========================================= */
 
 
-#formulario-buscador #tamano-buscador {
-    display: block;
-    margin-left: auto;
-      margin-top: -40px;
-    width: 130px;
-}
+#formulario-buscador .tamano-buscador-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 
-/* POSICIÓN DEL TEXTO TAMAÑO DEL BUSCADOR */
-
-#formulario-buscador label[for="tamano-buscador"] {
     position: relative;
-    top: -22px;
+    top:-25px;
 }
+
+
+#formulario-buscador .tamano-buscador-control > label {
+    position: static;
+    margin: 0;
+    white-space: nowrap;
+    font-size: 16px;
+}
+
+.control-flechas-tamano-buscador {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    width: 70px;
+    height: 34px;
+
+    border: 1px solid #999;
+    border-radius: 6px;
+    background: #f5f5f5;
+
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 #ffffff;
+}
+
+.control-flechas-tamano-buscador button {
+    width: 25px;
+    height: 25px;
+    padding: 0;
+
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background: #ffffff;
+
+    font-size: 11px;
+    color: #444;
+    cursor: pointer;
+
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.control-flechas-tamano-buscador button:hover {
+    background: #eeeeee;
+}
+
+.control-flechas-tamano-buscador button:active {
+    transform: scale(0.94);
+}
+
+
+
 
 
 .control-posicion-buscador {
