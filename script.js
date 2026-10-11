@@ -382,8 +382,12 @@ const flechaBuscadorAbajo =
 const centroBuscador =
     document.getElementById("centro-buscador");
 
-const tamanoBuscador =
-    document.getElementById("tamano-buscador");
+
+const reducirBuscador =
+    document.getElementById("reducir-buscador");
+
+const agrandarBuscador =
+    document.getElementById("agrandar-buscador");
 
 
 
@@ -541,7 +545,8 @@ let ajusteBuscadorY = 0;
 
 /* TAMAÑO DEL BUSCADOR */
 
-let tamanoBuscadorSeleccionado = "mediano";
+let anchoBuscadorSeleccionado = 150;
+let altoBuscadorSeleccionado = 25;
 
 /* INTERVALO PARA MANTENER LAS FLECHAS PRESIONADAS */
 
@@ -1805,37 +1810,12 @@ function aplicarAjusteCarrito() {
 
 function aplicarTamanoBuscador() {
 
-    if (!buscador || !tamanoBuscador) {
+    if (!buscador) {
         return;
     }
 
-   
-const tamanos = {
-    pequeno: {
-        ancho: "110px",
-        alto: "22px"
-    },
-    mediano: {
-        ancho: "150px",
-        alto: "25px"
-    },
-    grande: {
-        ancho: "250px",
-        alto: "32px"
-    },
-    extragrande: {
-        ancho: "calc(100vw - 250px)",
-        alto: "30px"
-    }
-};
-
-
-    const seleccionado =
-        tamanos[tamanoBuscadorSeleccionado] ||
-        tamanos.mediano;
-
-    buscador.style.width = seleccionado.ancho;
-    buscador.style.height = seleccionado.alto;
+    buscador.style.width = anchoBuscadorSeleccionado + "px";
+    buscador.style.height = altoBuscadorSeleccionado + "px";
 
     const campoBusqueda =
         document.getElementById("campo-busqueda");
@@ -1855,23 +1835,66 @@ const tamanos = {
 
 
 /* ============================================= */
-/*       CAMBIAR TAMAÑO AL ELEGIR OPCIÓN         */
+/*       FLECHAS PARA CAMBIAR EL ANCHO           */
 /* ============================================= */
 
-if (tamanoBuscador) {
+let intervaloTamanoBuscador = null;
 
-    tamanoBuscador.addEventListener(
-        "change",
-        function () {
 
-            tamanoBuscadorSeleccionado =
-                tamanoBuscador.value;
+function cambiarAnchoBuscador(direccion) {
+    const anchoMaximo = Math.floor(window.innerWidth * 0.75);
 
-            aplicarTamanoBuscador();
-
-        }
+    anchoBuscadorSeleccionado = Math.max(
+        100,
+        Math.min(
+            anchoMaximo,
+            anchoBuscadorSeleccionado + direccion * 20
+        )
     );
+
+    aplicarTamanoBuscador();
 }
+
+
+function iniciarCambioTamanoBuscador(direccion) {
+    detenerCambioTamanoBuscador();
+
+    cambiarAnchoBuscador(direccion);
+
+    intervaloTamanoBuscador = setInterval(function () {
+        cambiarAnchoBuscador(direccion);
+    }, 80);
+}
+
+function detenerCambioTamanoBuscador() {
+    if (intervaloTamanoBuscador !== null) {
+        clearInterval(intervaloTamanoBuscador);
+        intervaloTamanoBuscador = null;
+    }
+}
+
+
+if (reducirBuscador) {
+    reducirBuscador.addEventListener("pointerdown", function (evento) {
+        evento.preventDefault();
+        iniciarCambioTamanoBuscador(1);
+    });
+}
+
+if (agrandarBuscador) {
+    agrandarBuscador.addEventListener("pointerdown", function (evento) {
+        evento.preventDefault();
+        iniciarCambioTamanoBuscador(-1);
+    });
+}
+
+
+document.addEventListener("pointerup", detenerCambioTamanoBuscador);
+document.addEventListener("pointercancel", detenerCambioTamanoBuscador);
+
+aplicarTamanoBuscador();
+
+
 
 
 
