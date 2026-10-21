@@ -9,23 +9,85 @@
     <link rel="stylesheet" href="style.css">
 </head>
 
+<body>
 
- <body>
+    <!-- ========================================= -->
+    <!--          ACCESO DE USUARIO CODMAR         -->
+    <!-- ========================================= -->
 
-<!-- ACCESO DE USUARIO -->
-<div id="pantalla-login">
+    
+<div id="pantalla-login" style="display: none;">
 
-    <h2>ACCESO</h2>
+    <div class="login-contenedor">
+
+
+            <div class="login-encabezado">
+
+                <div class="login-icono">
+                    <svg
+                        viewBox="0 0 24 24"
+                        width="38"
+                        height="38"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true">
+
+                        <path d="M3 10 12 3l9 7"></path>
+                        <path d="M5 9v11h14V9"></path>
+                        <path d="M9 20v-7h6v7"></path>
+
+                    </svg>
+                </div>
+
+                <h1>CODMAR</h1>
+
+                <p>PLATAFORMA DE GESTIÓN COMERCIAL</p>
+
+            </div>
+
+        
+<div class="login-formulario">
+
+    <h2>Acceso a tu cuenta</h2>
+
+    <p class="login-descripcion">
+        Ingresa tus datos para continuar.
+    </p>
+
+    <label for="login-email">
+        Correo electrónico
+    </label>
 
     <input
         type="email"
         id="login-email"
-        placeholder="Correo electrónico">
+        placeholder="correo@negocio.com"
+        autocomplete="username"
+        required>
 
-    <input
-        type="password"
-        id="login-password"
-        placeholder="Contraseña">
+    <label for="login-password">
+        Contraseña
+    </label>
+
+    <div class="contenedor-password">
+        <input
+            type="password"
+            id="login-password"
+            placeholder="Ingresa tu contraseña"
+            autocomplete="current-password"
+            required>
+
+        <button
+            type="button"
+            id="mostrar-password"
+            aria-label="Mostrar contraseña"
+            title="Mostrar contraseña">
+            👁
+        </button>
+    </div>
 
     <button
         type="button"
@@ -33,60 +95,162 @@
         INICIAR SESIÓN
     </button>
 
-    <div id="mensaje-login"></div>
-
-</div>
-
-
-<div id="pagina-inicio">
- 
- 
-   <!-- FRANJA SUPERIOR -->  
-<div class="barra-inicio-superior cargando"> 
-
-    <button class="boton-menu" id="boton-menu"> 
-        ☰ Menú 
-    </button>
-
-    <div class="buscador" id="buscador">  
-
-        <button class="boton-busqueda" id="boton-busqueda">  
-            🔍  
-        </button>  
-
-        <input  
-            type="text"  
-            id="campo-busqueda"  
-            placeholder="Buscar..."  
-        >  
-
-    </div>  
-
-   <button class="boton-carrito" aria-label="Carrito">
-
-    <span
-        class="bolsita"
-        id="icono-bolsita"
-    ></span>
-
-    <span
-        class="icono-carrito"
-        id="icono-carrito"
-    ></span>
-
+<button
+    type="button"
+    id="boton-mostrar-registro">
+    REGISTRAR MI NEGOCIO
 </button>
 
+<div id="formulario-registro" hidden>
+
+    <h2>Registrar negocio</h2>
+
+    <label for="registro-nombre-comercial">
+        Nombre comercial
+    </label>
+
+    <input
+        type="text"
+        id="registro-nombre-comercial"
+        placeholder="Nombre de tu negocio"
+        autocomplete="organization"
+        required>
+
+    <label for="registro-email">
+        Correo electrónico
+    </label>
+
+    <input
+        type="email"
+        id="registro-email"
+        placeholder="correo@negocio.com"
+        autocomplete="email"
+        required>
+
+    <label for="registro-password">
+        Contraseña
+    </label>
+
+    <input
+        type="password"
+        id="registro-password"
+        placeholder="Crea una contraseña"
+        autocomplete="new-password"
+        required>
+
+    <button
+        type="button"
+        id="boton-registrar-negocio">
+        CREAR CUENTA
+    </button>
+
+    <button
+        type="button"
+        id="boton-cancelar-registro">
+        VOLVER AL ACCESO
+    </button>
+
+    <div
+        id="mensaje-registro"
+        role="status"
+        aria-live="polite">
+    </div>
+
 </div>
 
-<!-- ESPACIO CENTRAL -->  
-<div class="contenido-inicio">  
-</div>  
 
-<!-- FRANJA INFERIOR -->  
-<div class="barra-inicio-inferior">  
-</div>  
+    <div
+        id="mensaje-login"
+        role="status"
+        aria-live="polite">
+    </div>
 
+    <p class="login-seguridad">
+        Acceso seguro a tu negocio
+    </p>
+
+</div>
+</escape>
+   
+
+
+
+    </div>
+
+</div>
+<!-- FIN DE pantalla-login -->
+
+
+    
+
+
+    <!-- ========================================= -->
+    <!--          PLATAFORMA COMERCIAL             -->
+    <!-- ========================================= -->
+
+    <div id="pagina-inicio" style="display: none;">
+
+        <!-- FRANJA SUPERIOR -->
+
+        <div class="barra-inicio-superior cargando">
+
+            <button
+                class="boton-menu"
+                id="boton-menu"
+                type="button">
+                ☰ Menú
+            </button>
+
+            <div class="buscador" id="buscador">
+
+                <button
+                    class="boton-busqueda"
+                    id="boton-busqueda"
+                    type="button">
+                    🔍
+                </button>
+
+                <input
+                    type="text"
+                    id="campo-busqueda"
+                    placeholder="Buscar...">
+
+            </div>
+
+            <button
+                class="boton-carrito"
+                aria-label="Carrito"
+                type="button">
+
+                <span
+                    class="bolsita"
+                    id="icono-bolsita">
+                </span>
+
+                <span
+                    class="icono-carrito"
+                    id="icono-carrito">
+                </span>
+
+            </button>
+
+        </div>
+
+
+        <!-- ESPACIO CENTRAL -->
+
+        <div class="contenido-inicio">
+        </div>
+
+
+        <!-- FRANJA INFERIOR -->
+
+        <div class="barra-inicio-inferior">
+        </div>
+
+        
 <!-- MENÚ DESPLEGABLE -->
+
 <div class="panel-menu" id="panel-menu">
 
     <div class="opcion-menu">
@@ -101,252 +265,313 @@
         Configuración
     </div>
 
-</div>
-
-
-<!-- CONFIGURACIÓN DE INICIO -->
-<div class="formulario-inicio" id="formulario-inicio">
-
-    <h2>CONFIGURACIÓN DE INICIO</h2>
-
-    <div class="opcion-color">
-        <label>Color de franjas</label>
-        <input type="color" id="color-franjas" value="#18a69f">
+    <div class="opcion-menu" id="boton-salir">
+        Salir
     </div>
-
-    <div class="opcion-color">
-        <label>Color del botón Menú</label>
-        <input type="color" id="color-boton-menu" value="#159c96">
-    </div>
-
-    <div class="opcion-color">
-        <label>Color del texto Menú</label>
-        <input type="color" id="color-texto-menu" value="#f2f2f2">
-    </div>
-
-    <div class="opcion-color">
-        <label>Color del menú desplegable</label>
-        <input type="color" id="color-panel-menu" value="#D8E2EE">
-    </div>
-
-    <button id="aceptar-inicio">
-        ACEPTAR
-    </button>
 
 </div>
 
-<!-- CONFIGURACIÓN DE ENCABEZADO -->
+       
 
-<div class="formulario-inicio" id="formulario-cabecera">
+        <!-- ========================================= -->
+        <!--          CONFIGURACIÓN DE INICIO          -->
+        <!-- ========================================= -->
 
-    <h2>CONFIGURACIÓN DE ENCABEZADO</h2>
+        <div class="formulario-inicio" id="formulario-inicio">
 
-    <div class="opcion-encabezado">
-        <button type="button" id="boton-configurar-logotipo">
-            CONFIGURAR LOGOTIPO
-        </button>
-    </div>
+            <h2>CONFIGURACIÓN DE INICIO</h2>
 
-    <div class="opcion-encabezado">
-        <button type="button" id="boton-nombre-comercial">
-            MOSTRAR NOMBRE COMERCIAL
-        </button>
-    </div>
+            <div class="opcion-color">
+                <label for="color-franjas">Color de franjas</label>
+                <input
+                    type="color"
+                    id="color-franjas"
+                    value="#18a69f">
+            </div>
 
-    <div class="opcion-encabezado">
-        <button type="button" id="boton-configurar-carrito">
-            MOSTRAR CARRITO
-        </button>
-    </div>
+            <div class="opcion-color">
+                <label for="color-boton-menu">Color del botón Menú</label>
+                <input
+                    type="color"
+                    id="color-boton-menu"
+                    value="#159c96">
+            </div>
 
-    
-<div class="opcion-encabezado">
-    <button type="button" id="boton-configurar-buscador">
-        MOSTRAR BUSCADOR
-    </button>
-</div>
+            <div class="opcion-color">
+                <label for="color-texto-menu">Color del texto Menú</label>
+                <input
+                    type="color"
+                    id="color-texto-menu"
+                    value="#f2f2f2">
+            </div>
 
+            <div class="opcion-color">
+                <label for="color-panel-menu">Color del menú desplegable</label>
+                <input
+                    type="color"
+                    id="color-panel-menu"
+                    value="#D8E2EE">
+            </div>
 
-    <button id="aceptar-cabecera">
-        ACEPTAR
-    </button>
-
-</div>
-
-<!-- CONFIGURACIÓN DEL CARRITO -->
-
-<div class="formulario-inicio" id="formulario-carrito">
-
-    <h2>CONFIGURACIÓN DEL CARRITO</h2>
-
-    <div class="opcion-encabezado">
-
-        <label>
-            Mostrar carrito
-            <input
-                type="checkbox"
-                id="mostrar-carrito"
-                checked>
-        </label>
-
-    </div>
-
-    <div class="opciones-tipo-carrito">
-
-        <label>
-            <input
-                type="radio"
-                name="tipo-carrito"
-                id="tipo-bolsita"
-                value="bolsita"
-                checked>
-            Bolsita
-        </label>
-
-        <label>
-            <input
-                type="radio"
-                name="tipo-carrito"
-                id="tipo-carrito"
-                value="carrito">
-            Carrito
-        </label>
-
-    </div>
-
-    <div class="opcion-encabezado posicion-carrito-control">
-
-        <label>
-            Posición del carrito
-        </label>
-
-        <div class="control-posicion-carrito">
-
-            <button
-                type="button"
-                id="flecha-carrito-arriba">
-                ▲
-            </button>
-
-            <button
-                type="button"
-                id="flecha-carrito-izquierda">
-                ◀
-            </button>
-
-            <button
-                type="button"
-                id="centro-carrito">
-            </button>
-
-            <button
-                type="button"
-                id="flecha-carrito-derecha">
-                ▶
-            </button>
-
-            <button
-                type="button"
-                id="flecha-carrito-abajo">
-                ▼
+            <button id="aceptar-inicio" type="button">
+                ACEPTAR
             </button>
 
         </div>
 
-    </div>
 
-    <button id="aceptar-carrito">
-        ACEPTAR
-    </button>
+        <!-- ========================================= -->
+        <!--        CONFIGURACIÓN DE ENCABEZADO        -->
+        <!-- ========================================= -->
 
-</div>
+        <div class="formulario-inicio" id="formulario-cabecera">
+
+            <h2>CONFIGURACIÓN DE ENCABEZADO</h2>
+
+            <div class="opcion-encabezado">
+                <button
+                    type="button"
+                    id="boton-configurar-logotipo">
+                    CONFIGURAR LOGOTIPO
+                </button>
+            </div>
+
+            <div class="opcion-encabezado">
+                <button
+                    type="button"
+                    id="boton-nombre-comercial">
+                    MOSTRAR NOMBRE COMERCIAL
+                </button>
+            </div>
+
+            <div class="opcion-encabezado">
+                <button
+                    type="button"
+                    id="boton-configurar-carrito">
+                    MOSTRAR CARRITO
+                </button>
+            </div>
+
+            <div class="opcion-encabezado">
+                <button
+                    type="button"
+                    id="boton-configurar-buscador">
+                    MOSTRAR BUSCADOR
+                </button>
+            </div>
+
+            <button id="aceptar-cabecera" type="button">
+                ACEPTAR
+            </button>
+
+        </div>
 
 
-<!-- CONFIGURACIÓN DEL BUSCADOR -->
+        <!-- ========================================= -->
+        <!--          CONFIGURACIÓN DEL CARRITO        -->
+        <!-- ========================================= -->
+
+        <div class="formulario-inicio" id="formulario-carrito">
+
+            <h2>CONFIGURACIÓN DEL CARRITO</h2>
+
+            <div class="opcion-encabezado">
+
+                <label for="mostrar-carrito">
+                    Mostrar carrito
+                </label>
+
+                <input
+                    type="checkbox"
+                    id="mostrar-carrito"
+                    checked>
+
+            </div>
+
+            <div class="opciones-tipo-carrito">
+
+                <label>
+                    <input
+                        type="radio"
+                        name="tipo-carrito"
+                        id="tipo-bolsita"
+                        value="bolsita"
+                        checked>
+                    Bolsita
+                </label>
+
+                <label>
+                    <input
+                        type="radio"
+                        name="tipo-carrito"
+                        id="tipo-carrito"
+                        value="carrito">
+                    Carrito
+                </label>
+
+            </div>
+
+            <div class="opcion-encabezado posicion-carrito-control">
+
+                <label>Posición del carrito</label>
+
+                <div class="control-posicion-carrito">
+
+                    <button
+                        type="button"
+                        id="flecha-carrito-arriba">
+                        ▲
+                    </button>
+
+                    <button
+                        type="button"
+                        id="flecha-carrito-izquierda">
+                        ◀
+                    </button>
+
+                    <button
+                        type="button"
+                        id="centro-carrito">
+                    </button>
+
+                    <button
+                        type="button"
+                        id="flecha-carrito-derecha">
+                        ▶
+                    </button>
+
+                    <button
+                        type="button"
+                        id="flecha-carrito-abajo">
+                        ▼
+                    </button>
+
+                </div>
+
+            </div>
+
+            <button id="aceptar-carrito" type="button">
+                ACEPTAR
+            </button>
+
+        </div>
+
+<!-- ========================================= -->
+<!--       CONFIGURACIÓN DEL BUSCADOR          -->
+<!-- ========================================= -->
 
 <div class="formulario-inicio" id="formulario-buscador">
 
     <h2>CONFIGURACIÓN DEL BUSCADOR</h2>
 
+    <!-- MOSTRAR U OCULTAR -->
+
     <div class="opcion-encabezado">
-        <label>
+
+        <label for="mostrar-buscador">
             Mostrar buscador
-            <input type="checkbox" id="mostrar-buscador" checked>
         </label>
+
+        <input
+            type="checkbox"
+            id="mostrar-buscador"
+            checked>
+
     </div>
 
-   
+    <!-- POSICIÓN DEL BUSCADOR -->
 
     <div class="opcion-encabezado posicion-buscador-control">
-    <label>Posición del buscador</label>
 
-    <div class="control-posicion-buscador">
+        <label>Posición del buscador</label>
 
-        <button
-            type="button"
-            id="flecha-buscador-arriba"
-            aria-label="Subir buscador"
-        >▲</button>
+        <div class="control-posicion-buscador">
 
-        <button
-            type="button"
-            id="flecha-buscador-izquierda"
-            aria-label="Mover buscador a la izquierda"
-        >◀</button>
+            <button
+                type="button"
+                id="flecha-buscador-arriba"
+                aria-label="Mover arriba">▲</button>
 
-        <span id="centro-buscador">•</span>
+            <button
+                type="button"
+                id="flecha-buscador-izquierda"
+                aria-label="Mover izquierda">◀</button>
 
-        <button
-            type="button"
-            id="flecha-buscador-derecha"
-            aria-label="Mover buscador a la derecha"
-        >▶</button>
+            <span id="centro-buscador">●</span>
 
-        <button
-            type="button"
-            id="flecha-buscador-abajo"
-            aria-label="Bajar buscador"
-        >▼</button>
+            <button
+                type="button"
+                id="flecha-buscador-derecha"
+                aria-label="Mover derecha">▶</button>
+
+            <button
+                type="button"
+                id="flecha-buscador-abajo"
+                aria-label="Mover abajo">▼</button>
+
+        </div>
 
     </div>
 
-</div>
+    <!-- TAMAÑO DEL BUSCADOR -->
 
+    <div class="opcion-encabezado tamano-buscador-control">
 
-<div class="opcion-encabezado tamano-buscador-control">
-    <label>Tamaño del buscador</label>
+        <label>Tamaño del buscador</label>
 
-    <div class="control-flechas-tamano-buscador">
-        <button type="button" id="reducir-buscador" aria-label="Reducir ancho">◀</button>
-        <button type="button" id="agrandar-buscador" aria-label="Aumentar ancho">▶</button>
+        <div class="control-flechas-tamano-buscador">
+
+            <button
+                type="button"
+                id="reducir-buscador"
+                aria-label="Reducir tamaño">◀</button>
+
+            <button
+                type="button"
+                id="agrandar-buscador"
+                aria-label="Agrandar tamaño">▶</button>
+
+        </div>
+
     </div>
-</div>
 
-   
+    <!-- ACEPTAR -->
 
-    <button type="button" id="aceptar-buscador">
+    <button
+        type="button"
+        id="aceptar-buscador">
         ACEPTAR
     </button>
 
 </div>
 
-
-
-
-
-<!-- CONFIGURACIÓN DEL LOGOTIPO -->
+   
+<!-- ========================================= -->
+<!--          CONFIGURACIÓN DEL LOGOTIPO      -->
+<!-- ========================================= -->
 
 <div class="formulario-inicio" id="formulario-logotipo">
 
     <h2>CONFIGURACIÓN DEL LOGOTIPO</h2>
 
     <div class="opcion-encabezado">
-        <label>Mostrar logotipo</label>
-        <input type="checkbox" id="mostrar-logotipo" checked>
+
+        <label for="mostrar-logotipo">
+            Mostrar logotipo
+        </label>
+
+        <input
+            type="checkbox"
+            id="mostrar-logotipo"
+            checked>
+
     </div>
 
     <div class="opcion-encabezado">
-        <button type="button" id="boton-logotipo">
+
+        <button
+            type="button"
+            id="boton-logotipo">
             SELECCIONAR ARCHIVO
         </button>
 
@@ -355,6 +580,7 @@
             id="archivo-logotipo"
             accept="image/*"
             hidden>
+
     </div>
 
     <div id="vista-logotipo">
@@ -363,30 +589,47 @@
 
     <div class="opcion-encabezado posicion-logotipo-control">
 
-    <label>Posición del logotipo</label>
+        <label>Posición del logotipo</label>
 
-    <div class="control-flechas-logotipo">
+      <div class="control-flechas-logotipo control-posicion-logotipo">
 
-        <button
-            type="button"
-            id="flecha-logotipo-izquierda"
-            aria-label="Mover logotipo a la izquierda">
-            ◀
-        </button>
+            <button
+                type="button"
+                id="flecha-logotipo-arriba"
+                aria-label="Subir logotipo">
+                ▲
+            </button>
 
-        <span id="valor-ajuste-logotipo">Centro</span>
+            <button
+                type="button"
+                id="flecha-logotipo-izquierda"
+                aria-label="Mover logotipo a la izquierda">
+                ◀
+            </button>
 
-        <button
-            type="button"
-            id="flecha-logotipo-derecha"
-            aria-label="Mover logotipo a la derecha">
-            ▶
-        </button>
-</div>
+           <span id="valor-ajuste-logotipo"></span>
 
-</div>
-    
-    <button id="aceptar-logotipo">
+            <button
+                type="button"
+                id="flecha-logotipo-derecha"
+                aria-label="Mover logotipo a la derecha">
+                ▶
+            </button>
+
+            <button
+                type="button"
+                id="flecha-logotipo-abajo"
+                aria-label="Bajar logotipo">
+                ▼
+            </button>
+
+        </div>
+
+    </div>
+
+    <button
+        type="button"
+        id="aceptar-logotipo">
         ACEPTAR
     </button>
 
@@ -394,132 +637,164 @@
 
 
 
-<div class="formulario-inicio" id="formulario-nombre-comercial">
+        <!-- ========================================= -->
+        <!--      CONFIGURACIÓN DEL NOMBRE COMERCIAL   -->
+        <!-- ========================================= -->
 
-    <h2>CONFIGURACIÓN DEL NOMBRE COMERCIAL</h2>
+        <div
+            class="formulario-inicio"
+            id="formulario-nombre-comercial">
 
-    <div class="opcion-encabezado">
-        <label>Nombre comercial</label>
-        <input
-            type="text"
-            id="nombre-comercial"
-            placeholder="Escribe el nombre de tu negocio">
+            <h2>CONFIGURACIÓN DEL NOMBRE COMERCIAL</h2>
+
+            <div class="opcion-encabezado">
+
+                <label for="nombre-comercial">
+                    Nombre comercial
+                </label>
+
+                <input
+                    type="text"
+                    id="nombre-comercial"
+                    placeholder="Escribe el nombre de tu negocio">
+
+            </div>
+
+            <div class="opcion-encabezado">
+
+                <label for="fuente-nombre-comercial">
+                    Tipo de letra
+                </label>
+
+                <select id="fuente-nombre-comercial">
+                    <option value="Arial">Arial</option>
+                    <option value="Calibri">Calibri</option>
+                    <option value="Cambria">Cambria</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Georgia">Georgia</option>
+                    <option value="Verdana">Verdana</option>
+                    <option value="Tahoma">Tahoma</option>
+                    <option value="Trebuchet MS">Trebuchet MS</option>
+                    <option value="Courier New">Courier New</option>
+                    <option value="Lucida Console">Lucida Console</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Comic Sans MS">Comic Sans MS</option>
+                    <option value="Arial Narrow">Arial Narrow</option>
+                    <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
+                    <option value="Garamond">Garamond</option>
+                    <option value="Book Antiqua">Book Antiqua</option>
+                    <option value="Century Gothic">Century Gothic</option>
+                    <option value="Palatino Linotype">Palatino Linotype</option>
+                    <option value="Segoe UI">Segoe UI</option>
+                    <option value="Roboto">Roboto</option>
+                    <option value="Open Sans">Open Sans</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Poppins">Poppins</option>
+                </select>
+
+            </div>
+
+            <div class="opcion-encabezado">
+
+                <label for="tamano-nombre-comercial">
+                    Tamaño de letra
+                </label>
+
+                <select id="tamano-nombre-comercial">
+                    <option value="14px">14</option>
+                    <option value="16px">16</option>
+                    <option value="18px">18</option>
+                    <option value="20px">20</option>
+                    <option value="24px">24</option>
+                    <option value="28px">28</option>
+                    <option value="32px">32</option>
+                    <option value="36px">36</option>
+                    <option value="40px">40</option>
+                    <option value="48px">48</option>
+                    <option value="56px">56</option>
+                    <option value="64px">64</option>
+                    <option value="72px">72</option>
+                    <option value="80px">80</option>
+                    <option value="96px">96</option>
+                    <option value="112px">112</option>
+                    <option value="128px">128</option>
+                </select>
+
+            </div>
+
+            <div
+                class="opcion-encabezado posicion-nombre-comercial-control">
+
+                <label>Posición del nombre comercial</label>
+
+                <div class="control-posicion-nombre-comercial">
+
+                    <button
+                        type="button"
+                        id="flecha-nombre-comercial-arriba"
+                        aria-label="Subir nombre comercial">
+                        ▲
+                    </button>
+
+                    <button
+                        type="button"
+                        id="flecha-nombre-comercial-izquierda"
+                        aria-label="Mover nombre comercial a la izquierda">
+                        ◀
+                    </button>
+
+                    <span id="centro-nombre-comercial">
+                        Centro
+                    </span>
+
+                    <button
+                        type="button"
+                        id="flecha-nombre-comercial-derecha"
+                        aria-label="Mover nombre comercial a la derecha">
+                        ▶
+                    </button>
+
+                    <button
+                        type="button"
+                        id="flecha-nombre-comercial-abajo"
+                        aria-label="Bajar nombre comercial">
+                        ▼
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="opcion-encabezado mostrar-nombre-comercial">
+
+                <label for="mostrar-nombre-comercial">
+                    Mostrar nombre comercial
+                </label>
+
+                <input
+                    type="checkbox"
+                    id="mostrar-nombre-comercial"
+                    checked>
+
+            </div>
+
+            <button
+                id="aceptar-nombre-comercial"
+                type="button">
+                ACEPTAR
+            </button>
+
+        </div>
+
     </div>
-
-<div class="opcion-encabezado">
-    <label>Tipo de letra</label>
-
-    <select id="fuente-nombre-comercial">
-        <option value="Arial">Arial</option>
-        <option value="Calibri">Calibri</option>
-        <option value="Cambria">Cambria</option>
-        <option value="Times New Roman">Times New Roman</option>
-        <option value="Georgia">Georgia</option>
-        <option value="Verdana">Verdana</option>
-        <option value="Tahoma">Tahoma</option>
-        <option value="Trebuchet MS">Trebuchet MS</option>
-        <option value="Courier New">Courier New</option>
-        <option value="Lucida Console">Lucida Console</option>
-        <option value="Impact">Impact</option>
-        <option value="Comic Sans MS">Comic Sans MS</option>
-        <option value="Arial Narrow">Arial Narrow</option>
-        <option value="Franklin Gothic Medium">Franklin Gothic Medium</option>
-        <option value="Garamond">Garamond</option>
-        <option value="Book Antiqua">Book Antiqua</option>
-        <option value="Century Gothic">Century Gothic</option>
-        <option value="Palatino Linotype">Palatino Linotype</option>
-        <option value="Segoe UI">Segoe UI</option>
-        <option value="Roboto">Roboto</option>
-        <option value="Open Sans">Open Sans</option>
-        <option value="Montserrat">Montserrat</option>
-        <option value="Poppins">Poppins</option>
-    </select>
-</div>
-
-<div class="opcion-encabezado">
-    <label>Tamaño de letra</label>
-
-   <select id="tamano-nombre-comercial">
-    <option value="14px">14</option>
-    <option value="16px">16</option>
-    <option value="18px">18</option>
-    <option value="20px">20</option>
-    <option value="24px">24</option>
-    <option value="28px">28</option>
-    <option value="32px">32</option>
-    <option value="36px">36</option>
-    <option value="40px">40</option>
-    <option value="48px">48</option>
-    <option value="56px">56</option>
-    <option value="64px">64</option>
-    <option value="72px">72</option>
-    <option value="80px">80</option>
-    <option value="96px">96</option>
-    <option value="112px">112</option>
-    <option value="128px">128</option>
-</select>
-
-</div>
-
-<div class="opcion-encabezado posicion-nombre-comercial-control">
-
-    <label>Posición del nombre comercial</label>
-
-    <div class="control-posicion-nombre-comercial">
-
-        <button
-            type="button"
-            id="flecha-nombre-comercial-arriba"
-            aria-label="Subir nombre comercial">
-            ▲
-        </button>
-
-        <button
-            type="button"
-            id="flecha-nombre-comercial-izquierda"
-            aria-label="Mover nombre comercial a la izquierda">
-            ◀
-        </button>
-
-        <span id="centro-nombre-comercial">
-            Centro
-        </span>
-
-        <button
-            type="button"
-            id="flecha-nombre-comercial-derecha"
-            aria-label="Mover nombre comercial a la derecha">
-            ▶
-        </button>
-
-        <button
-            type="button"
-            id="flecha-nombre-comercial-abajo"
-            aria-label="Bajar nombre comercial">
-            ▼
-        </button>
-
-    </div>
-
-</div>
-
-<div class="opcion-encabezado mostrar-nombre-comercial">
-    <label>Mostrar nombre comercial</label>
-    <input
-        type="checkbox"
-        id="mostrar-nombre-comercial"
-        checked>
-</div>
-
-<button id="aceptar-nombre-comercial">ACEPTAR</button>
-
-</div>
+    <!-- FIN DE pagina-inicio -->
 
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ========================================= -->
+    <!--              ARCHIVOS JAVASCRIPT          -->
+    <!-- ========================================= -->
 
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="script.js"></script>
 
-</body>
 
-</html>
