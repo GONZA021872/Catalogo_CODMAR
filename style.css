@@ -32,6 +32,7 @@ body {
     /* POSICIÓN DEL LOGOTIPO */
 
     --ajuste-logotipo-x: 0px;
+    --ajuste-logotipo-y: 0px;
 
 
     /* POSICIÓN DEL NOMBRE COMERCIAL */
@@ -65,6 +66,19 @@ body {
     position: relative;
     background: white;
 }
+
+/* Evitar que CODMAR aparezca antes de tiempo */
+#pagina-inicio[style*="display: none"] {
+    display: none !important;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    background-color: #101827;
+}
+
 
 
 /* ============================= */
@@ -143,16 +157,14 @@ transform: translate(
 
     overflow: hidden;
 
-    transition: width 0.3s ease;
+   transition: none;
 }
 
 .buscador.visible {
     visibility: visible;
 }
 
-.buscador:focus-within {
-    width: 200px;
-}
+
 
 
 #campo-busqueda {
@@ -438,7 +450,7 @@ transform: translate(
 #aceptar-logotipo {
     position: absolute;
 
-    bottom: 15px;
+    bottom: 5px;
     left: 50%;
 
     transform: translateX(-50%);
@@ -472,37 +484,6 @@ transform: translate(
     bottom: 18px;
 }
 
-
-/* ============================= */
-/*       VISTA DEL LOGOTIPO      */
-/* ============================= */
-
-#vista-logotipo {
-    width: 120px;
-    height: 80px;
-
-    margin: -50px 0 10px 230px;
-
-    padding: 10px;
-
-    border: 1px solid #999;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    overflow: hidden;
-}
-
-#vista-logotipo img {
-    max-width: 100%;
-    max-height: 100%;
-
-    object-fit: contain;
-}
-
-
 /* ============================= */
 /*       LOGOTIPO EN FRANJA      */
 /* ============================= */
@@ -518,12 +499,11 @@ transform: translate(
     left: 50%;
     top: 10px;
 
-    transform:
-        translateX(
-            calc(-50% + var(--ajuste-logotipo-x))
-        );
+    transform: translate(
+        calc(-50% + var(--ajuste-logotipo-x, 0px)),
+        var(--ajuste-logotipo-y, 0px)
+    );
 }
-
 
 /* ============================= */
 /*       ESTADO DE CARGA         */
@@ -535,7 +515,6 @@ transform: translate(
 .barra-inicio-superior.cargando #logotipo-franja {
     visibility: hidden;
 }
-
 
 /* ============================= */
 /*      NOMBRE COMERCIAL         */
@@ -580,57 +559,112 @@ transform: translate(
 }
 
 
+/* ========================================= */
+/* RECUADRO DE VISTA PREVIA DEL LOGOTIPO     */
+/* ========================================= */
+
+#vista-logotipo {
+    width: 90px;
+    height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-left: auto;
+    margin-right: 0;
+    margin-top: -68px;
+    margin-bottom: 15px;
+
+    padding: 8px;
+
+    border: 1px solid #999;
+    border-radius: 6px;
+
+    background-color: #f5f5f5;
+    color: #555;
+
+    font-size: 12px;
+    text-align: center;
+
+    overflow: hidden;
+}
+
+/* IMAGEN ADAPTADA AL RECUADRO */
+
+#vista-logotipo img {
+    display: block;
+
+    max-width: 100%;
+    max-height: 100%;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+}
+
+
 /* ============================= */
 /* CONTROL DE POSICIÓN LOGOTIPO  */
 /* ============================= */
 
 .posicion-logotipo-control {
     display: flex;
-
     align-items: center;
-
     gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .control-flechas-logotipo {
-    display: flex;
+    width: 90px;
+    height: 90px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+    
+
+.control-flechas-logotipo {
+    width: 90px;
+    height: 90px;
+    box-sizing: border-box;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
 
     align-items: center;
-    justify-content: center;
-
-    gap: 4px;
-
-    width: 145px;
-    height: 34px;
+    justify-items: center;
 
     border: 1px solid #999;
-    border-radius: 6px;
-
+    border-radius: 50%;
     background: #f5f5f5;
 
     box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.15),
+        0 1px 3px rgba(0, 0, 0, 0.18),
         inset 0 1px 0 #ffffff;
 }
 
 .control-flechas-logotipo button {
     width: 25px;
     height: 25px;
-
     padding: 0;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     border: 1px solid #aaa;
-    border-radius: 4px;
-
+    border-radius: 50%;
     background: #ffffff;
 
     font-size: 11px;
     color: #444;
-
     cursor: pointer;
 
-    box-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .control-flechas-logotipo button:hover {
@@ -641,15 +675,39 @@ transform: translate(
     transform: scale(0.94);
 }
 
-#valor-ajuste-logotipo {
-    width: 55px;
-
-    text-align: center;
-
-    font-size: 15px;
-
-    color: #0c0c0c;
+#flecha-logotipo-arriba {
+    grid-column: 2;
+    grid-row: 1;
 }
+
+#flecha-logotipo-izquierda {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+#valor-ajuste-logotipo {
+    grid-column: 2;
+    grid-row: 2;
+    width: 10px;
+    height: 10px;
+    box-sizing: border-box;
+    border: 1px solid #444;
+    border-radius: 50%;
+    margin: 0;
+    padding: 0;
+    font-size: 0;
+}
+
+#flecha-logotipo-derecha {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+#flecha-logotipo-abajo {
+    grid-column: 2;
+    grid-row: 3;
+}
+
 
 /* ========================================= */
 /* CONTROLES CIRCULARES DE POSICIÓN           */
@@ -1080,6 +1138,230 @@ transform: translateY(-25px);
 
 
 
+/* ============================================= */
+/*          PANTALLA DE ACCESO CODMAR            */
+/* ============================================= */
+
+#pantalla-login {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background: #101827;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#pantalla-login .login-contenedor {
+    width: 100%;
+    max-width: 430px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+#pantalla-login .login-encabezado {
+    padding: 30px 20px 26px;
+    text-align: center;
+    color: #ffffff;
+    background: #101827;
+}
+
+#pantalla-login .login-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    color: #ffffff;
+}
+
+#pantalla-login .login-encabezado h1 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 3px;
+}
+
+#pantalla-login .login-encabezado p {
+    margin: 9px 0 0;
+    color: #c2cbd8;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+}
+
+#pantalla-login .login-formulario {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    color: #172235;
+}
+
+#pantalla-login .login-formulario h2 {
+    margin: 0 0 8px;
+    font-size: 23px;
+    font-weight: 700;
+}
+
+#pantalla-login .login-descripcion {
+    margin: 0 0 25px;
+    color: #64748b;
+    font-size: 14px;
+}
+
+#pantalla-login .login-formulario label {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+#pantalla-login #login-email,
+#pantalla-login #login-password {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    margin: 0 0 20px;
+    padding: 0 13px;
+    box-sizing: border-box;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    outline: none;
+    background: #ffffff;
+    color: #172235;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#pantalla-login #login-email:focus,
+#pantalla-login #login-password:focus {
+    border-color: #315783;
+    box-shadow: 0 0 0 3px rgba(49, 87, 131, 0.12);
+}
+
+#pantalla-login #boton-login {
+    width: 100%;
+    min-height: 47px;
+    margin-top: 2px;
+    border: none;
+    border-radius: 7px;
+    background: #172b49;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.7px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#pantalla-login #boton-login:hover {
+    background: #25466f;
+}
+
+#pantalla-login #boton-login:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+#pantalla-login #mensaje-login {
+    margin-top: 14px;
+    color: #b42318;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#pantalla-login .login-seguridad {
+    margin: 20px 0 0;
+    text-align: center;
+    color: #64748b;
+    font-size: 12px;
+}
+
+
+
+/* OJO PROFESIONAL PARA LA CONTRASEÑA */
+
+.contenedor-password {
+    position: relative;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#pantalla-login .contenedor-password input {
+    display: block;
+    width: 100%;
+    height: 46px;
+    margin: 0;
+    padding: 0 48px 0 13px;
+    box-sizing: border-box;
+}
+
+#mostrar-password {
+    position: absolute;
+    top: 23px;
+    right: 12px;
+    transform: translateY(-50%);
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+    color: #475569;
+
+    cursor: pointer;
+    font-size: 23px;
+    line-height: 1;
+}
+
+#mostrar-password:hover {
+    color: #172b49;
+}
+
+#mostrar-password:focus-visible {
+    outline: 2px solid #315783;
+    outline-offset: 2px;
+    border-radius: 5px;
+}
+
+
+
+
+@media (max-width: 480px) {
+    #pantalla-login {
+        padding: 16px;
+    }
+
+    #pantalla-login .login-encabezado {
+        padding: 25px 16px 22px;
+    }
+
+    #pantalla-login .login-formulario {
+        padding: 25px 22px;
+    }
+
+    #pantalla-login .login-formulario h2 {
+        font-size: 21px;
+    }
+}
+
+
+
 
 
 @media (min-width: 769px) {
@@ -1105,29 +1387,24 @@ transform: translateY(-25px);
 
 
     /* ------------------------- */
-    /* BOTÓN DE LOGOTIPO          */
+    /* BOTÓN DE LOGOTIPO         */
     /* ------------------------- */
 
     #boton-logotipo {
         width: 130px;
-
         padding: 7px 5px;
-
         font-size: 10px;
-
         margin-left: -20px;
     }
 
 
     /* ------------------------- */
-    /* VISTA DEL LOGOTIPO         */
+    /* VISTA DEL LOGOTIPO        */
     /* ------------------------- */
 
     #vista-logotipo {
         margin-left: 125px;
-
         font-size: 12px;
-
         white-space: normal;
     }
 
@@ -1137,42 +1414,33 @@ transform: translateY(-25px);
     /* ------------------------- */
 
     .buscador {
-    width: 200px;
-
-    margin-left: 80px;
-
-    position: relative;
-
-    left: calc(30px + var(--ajuste-buscador-x, 0px));
-    top: calc(50px + var(--ajuste-buscador-y, 0px));
-}
-
-    .buscador:focus-within {
         width: 200px;
+        margin-left: 80px;
+        position: relative;
+        left: calc(30px + var(--ajuste-buscador-x, 0px));
+        top: calc(50px + var(--ajuste-buscador-y, 0px));
     }
 
+    
 
-       
+
     /* ------------------------- */
     /* CARRITO                   */
     /* ------------------------- */
 
-    
-.boton-carrito {
-    position: fixed;
-    right: 20px;
-    top: 50px;
-    left: auto;
-    margin: 0;
-    transform: translate(
-        var(--ajuste-carrito-x),
-        var(--ajuste-carrito-y)
-    );
-    box-sizing: border-box;
-    z-index: 3001;
-}
-
-     
+    .boton-carrito {
+        position: fixed;
+        right: 20px;
+        top: 50px;
+        left: auto;
+        margin: 0;
+        transform: translate(
+            var(--ajuste-carrito-x),
+            var(--ajuste-carrito-y)
+        );
+        box-sizing: border-box;
+        z-index: 3001;
+    }
 
 
     /* ------------------------- */
@@ -1190,29 +1458,20 @@ transform: translateY(-25px);
 
     .boton-menu {
         position: fixed;
-
         top: 85vh;
         left: 15px;
-
         z-index: 4000;
-
         transform: none;
-
         padding: 3px 10px;
-
         font-size: 13px;
-
         height: 25px;
-
         -webkit-tap-highlight-color: transparent;
-
         outline: none;
     }
 
     .boton-menu:active,
     .boton-menu:focus {
         outline: none;
-
         box-shadow:
             0 1px 0 #ffffff,
             0 2px 4px rgba(0, 0, 0, 0.25);
@@ -1226,10 +1485,7 @@ transform: translateY(-25px);
     #logotipo-franja {
         left: 10px;
         top: 25px;
-
         height: 50px;
-
-        transform: none;
     }
 
 
@@ -1239,17 +1495,12 @@ transform: translateY(-25px);
 
     .panel-menu {
         position: fixed;
-
         top: 101px;
         bottom: 0;
-
         left: 0;
-
         width: 260px;
         height: auto;
-
         transform: translateY(100%);
-
         transition: transform 0.25s ease;
     }
 
@@ -1264,11 +1515,8 @@ transform: translateY(-25px);
 
     #nombre-comercial-encabezado {
         max-width: 55%;
-
         white-space: nowrap;
-
         overflow: hidden;
-
         text-overflow: ellipsis;
     }
 
@@ -1279,9 +1527,66 @@ transform: translateY(-25px);
 
     #formulario-logotipo {
         width: 300px;
-
         height: 45vh;
-
         min-height: 0;
     }
+
+     /* POSICIÓN DEL CONTROL DE LOGOTIPO EN TELÉFONO */
+
+#formulario-logotipo .posicion-logotipo-control {
+    width: 100%;
+    box-sizing: border-box;
+    gap: 6px;
+}
+
+#formulario-logotipo .control-flechas-logotipo {
+    width: 90px;
+    height: 90px;
+    margin-left: auto;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+
+
+    /* ------------------------- */
+    /* LETRAS DE LOS CONTROLES   */
+    /* ------------------------- */
+
+    .opcion-encabezado label {
+        position: relative;
+        left: -20px;
+        font-size: 16px !important;
+    }
+
+
+    /* ------------------------- */
+    /* POSICIÓN DEL BUSCADOR     */
+    /* ------------------------- */
+
+    .opcion-encabezado.posicion-buscador-control > label {
+        left: 18px !important;
+        font-size: 16px !important;
+    }
+
+    .posicion-buscador-control .control-posicion-buscador {
+        position: relative !important;
+        left: 20px !important;
+    }
+
+    .posicion-buscador-control input[type="range"] {
+        margin-left: auto !important;
+    }
+
+
+    /* ------------------------- */
+    /* TAMAÑO DEL BUSCADOR       */
+    /* ------------------------- */
+
+    .opcion-encabezado.tamano-buscador-control > label {
+        position: relative !important;
+        left: -20px !important;
+        font-size: 16px !important;
+    }
+
 }
