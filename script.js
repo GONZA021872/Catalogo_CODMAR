@@ -15,1045 +15,1242 @@ const clienteSupabase =
     );
 
 
-
 /* ================================================= */
 /*              INICIO DE LA APLICACIÓN              */
 /* ================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async function () {
+document.addEventListener("DOMContentLoaded", async function () {
 
-/* ================================================= */
-/*              SESIÓN DEL USUARIO                  */
-/* ================================================= */
+    /* ================================================= */
+    /*              SESIÓN DEL USUARIO                   */
+    /* ================================================= */
 
-const {
-    data: { session },
-    error: errorSesion
-} = await clienteSupabase.auth.getSession();
+    const pantallaLogin =
+        document.getElementById("pantalla-login");
 
-if (errorSesion) {
+    const paginaInicio =
+        document.getElementById("pagina-inicio");
 
-    console.error(
-        "Error al obtener la sesión:",
-        errorSesion
-    );
+    // Ocultar ambas pantallas mientras se comprueba la sesión.
+    pantallaLogin.style.display = "none";
+    paginaInicio.style.display = "none";
 
-}
+    const {
+        data: { session },
+        error: errorSesion
+    } = await clienteSupabase.auth.getSession();
 
+    if (errorSesion) {
+        console.error(
+            "Error al obtener la sesión:",
+            errorSesion
+        );
+    }
 
-if (!session) {
+    if (session) {
+        console.log(
+            "Usuario autenticado:",
+            session.user.id
+        );
 
-    console.log(
-        "No hay usuario autenticado."
-    );
+        pantallaLogin.style.setProperty(
+            "display", "none", "important"
+        );
 
-    document.getElementById(
-        "pantalla-login"
-    ).style.display = "block";
+        paginaInicio.style.setProperty(
+            "display", "block", "important"
+        );
 
-    document.getElementById(
-        "pagina-inicio"
-    ).style.display = "none";
+    } else {
+        console.log("No hay usuario autenticado.");
 
-} else {
+        paginaInicio.style.setProperty(
+            "display", "none", "important"
+        );
 
-    console.log(
-        "Usuario autenticado:",
-        session.user.id
-    );
-
-    document.getElementById(
-        "pantalla-login"
-    ).style.display = "none";
-
-    document.getElementById(
-        "pagina-inicio"
-    ).style.display = "block";
-
-}
-    
-
-/* ================================================= */
-/*                INICIO DE SESIÓN                   */
-/* ================================================= */
-
-const botonLogin =
-    document.getElementById("boton-login");
-
-const loginEmail =
-    document.getElementById("login-email");
-
-const loginPassword =
-    document.getElementById("login-password");
-
-const mensajeLogin =
-    document.getElementById("mensaje-login");
+        pantallaLogin.style.setProperty(
+            "display", "flex", "important"
+        );
+    }
 
 
-if (botonLogin) {
+    /* ================================================= */
+    /*                  BOTÓN SALIR                      */
+    /* ================================================= */
 
-    botonLogin.addEventListener(
-        "click",
-        async function () {
+    const botonSalir =
+        document.getElementById("boton-salir");
 
-            const email =
-                loginEmail.value.trim();
+    if (botonSalir) {
+        botonSalir.addEventListener("click", async () => {
 
-            const password =
-                loginPassword.value;
-
-            mensajeLogin.textContent = "";
-
-
-            const {
-                data,
-                error
-            } = await clienteSupabase.auth.signInWithPassword({
-
-                email: email,
-
-                password: password
-
-            });
-
+            const { error } =
+                await clienteSupabase.auth.signOut();
 
             if (error) {
-
                 console.error(
-                    "Error al iniciar sesión:",
+                    "Error al cerrar sesión:",
                     error
                 );
 
-                mensajeLogin.textContent =
-                    "Correo o contraseña incorrectos.";
+                alert(
+                    "No se pudo cerrar la sesión. Intenta nuevamente."
+                );
 
                 return;
             }
 
-
-            console.log(
-                "Sesión iniciada:",
-                data.user.id
+            paginaInicio.style.setProperty(
+                "display", "none", "important"
             );
 
+            pantallaLogin.style.setProperty(
+                "display", "flex", "important"
+            );
 
-            document.getElementById(
-                "pantalla-login"
-            ).style.display = "none";
-
-
-            document.getElementById(
-                "pagina-inicio"
-            ).style.display = "block";
+            console.log("Sesión cerrada correctamente.");
+        });
+    }
 
 
-            location.reload();
+    /* ================================================= */
+    /*                INICIO DE SESIÓN                   */
+    /* ================================================= */
+
+    const botonLogin =
+        document.getElementById("boton-login");
+
+    const loginEmail =
+        document.getElementById("login-email");
+
+    const loginPassword =
+        document.getElementById("login-password");
+
+    const mensajeLogin =
+        document.getElementById("mensaje-login");
+
+    if (botonLogin) {
+        botonLogin.addEventListener("click", async function () {
+
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value;
+
+            mensajeLogin.textContent = "";
+            botonLogin.disabled = true;
+
+            try {
+                const { data, error } =
+                    await clienteSupabase.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                if (error) {
+                    console.error(
+                        "Error al iniciar sesión:",
+                        error
+                    );
+
+                    mensajeLogin.textContent =
+                        "Correo o contraseña incorrectos.";
+
+                    return;
+                }
+
+                if (data.session) {
+                    // Recargar para iniciar toda la configuración
+                    // con la sesión ya establecida.
+                    window.location.reload();
+                    return;
+                }
+
+            } catch (error) {
+                console.error(
+                    "Error inesperado al iniciar sesión:",
+                    error
+                );
+
+                mensajeLogin.textContent =
+                    "No fue posible iniciar sesión. Inténtalo nuevamente.";
+
+            } finally {
+                botonLogin.disabled = false;
+            }
+        });
+    }
+
+
+/* ================================================= */
+/*          REGISTRO DE NUEVO NEGOCIO                */
+/* ================================================= */
+
+const botonMostrarRegistro =
+    document.getElementById("boton-mostrar-registro");
+
+const formularioRegistro =
+    document.getElementById("formulario-registro");
+
+const botonCancelarRegistro =
+    document.getElementById("boton-cancelar-registro");
+
+const botonRegistrarNegocio =
+    document.getElementById("boton-registrar-negocio");
+
+const registroNombreComercial =
+    document.getElementById("registro-nombre-comercial");
+
+const registroEmail =
+    document.getElementById("registro-email");
+
+const registroPassword =
+    document.getElementById("registro-password");
+
+const mensajeRegistro =
+    document.getElementById("mensaje-registro");
+
+
+if (botonMostrarRegistro && formularioRegistro) {
+    botonMostrarRegistro.addEventListener("click", function () {
+        formularioRegistro.hidden = false;
+        mensajeRegistro.textContent = "";
+    });
+}
+
+
+if (botonCancelarRegistro && formularioRegistro) {
+    botonCancelarRegistro.addEventListener("click", function () {
+        formularioRegistro.hidden = true;
+        mensajeRegistro.textContent = "";
+    });
+}
+
+
+if (
+    botonRegistrarNegocio &&
+    registroNombreComercial &&
+    registroEmail &&
+    registroPassword &&
+    mensajeRegistro
+) {
+    botonRegistrarNegocio.addEventListener(
+        "click",
+        async function () {
+
+            const nombreNegocio =
+                registroNombreComercial.value.trim();
+
+            const emailNuevo =
+                registroEmail.value.trim();
+
+            const passwordNuevo =
+                registroPassword.value;
+
+            mensajeRegistro.textContent = "";
+
+            if (!nombreNegocio || !emailNuevo || !passwordNuevo) {
+                mensajeRegistro.textContent =
+                    "Completa todos los campos.";
+                return;
+            }
+
+            if (!registroEmail.checkValidity()) {
+                mensajeRegistro.textContent =
+                    "Introduce un correo electrónico válido.";
+                return;
+            }
+
+            if (passwordNuevo.length < 6) {
+                mensajeRegistro.textContent =
+                    "La contraseña debe tener al menos 6 caracteres.";
+                return;
+            }
+
+            botonRegistrarNegocio.disabled = true;
+
+            try {
+                const { data, error } =
+                    await clienteSupabase.auth.signUp({
+                        email: emailNuevo,
+                        password: passwordNuevo,
+                        options: {
+                            data: {
+                                nombre_comercial: nombreNegocio
+                            }
+                        }
+                    });
+
+                if (error) {
+                    console.error(
+                        "Error al registrar negocio:",
+                        error
+                    );
+
+                    mensajeRegistro.textContent =
+                        "No se pudo crear la cuenta: " +
+                        error.message;
+
+                    return;
+                }
+
+                if (data.session) {
+                    mensajeRegistro.textContent =
+                        "Cuenta creada. Entrando al sistema...";
+
+                    window.location.reload();
+                    return;
+                }
+
+                mensajeRegistro.textContent =
+                    "Registro recibido. Revisa tu correo para " +
+                    "confirmar la cuenta si Supabase lo solicita.";
+
+            } catch (error) {
+                console.error(
+                    "Error inesperado en el registro:",
+                    error
+                );
+
+                mensajeRegistro.textContent =
+                    "Ocurrió un error al registrar el negocio.";
+
+            } finally {
+                botonRegistrarNegocio.disabled = false;
+            }
         }
     );
-
-}
-
-/* ================================================= */
-/*       DETENER CARGA SI NO HAY SESIÓN              */
-/* ================================================= */
-
-if (!session) {
-    return;
 }
 
 
 
-        /* ============================================= */
-        /*              ELEMENTOS DEL MENÚ              */
-        /* ============================================= */
+    /* ================================================= */
+    /*       DETENER CARGA SI NO HAY SESIÓN              */
+    /* ================================================= */
 
-        const botonMenu =
-            document.getElementById("boton-menu");
+    if (!session) {
+        return;
+    }
 
-        const panelMenu =
-            document.getElementById("panel-menu");
 
-        const opcionesMenu =
-            document.querySelectorAll(".opcion-menu");
+    /* ================================================= */
+    /*       IDENTIFICAR DISPOSITIVO INICIAL             */
+    /* ================================================= */
 
-        const opcionInicio =
-            document.querySelector(".opcion-menu");
+    const esMovil =
+        window.matchMedia("(max-width: 768px)").matches;
 
 
-        /* ============================================= */
-        /*                 FORMULARIOS                    */
-        /* ============================================= */
+    /* ================================================= */
+    /*                ELEMENTOS DEL MENÚ                 */
+    /* ================================================= */
 
-        const formularioInicio =
-            document.getElementById("formulario-inicio");
+    const botonMenu =
+        document.getElementById("boton-menu");
 
-        const formularioCabecera =
-            document.getElementById("formulario-cabecera");
+    const panelMenu =
+        document.getElementById("panel-menu");
 
-        const formularioNombreComercial =
-            document.getElementById(
-                "formulario-nombre-comercial"
-            );
+    const opcionesMenu =
+        document.querySelectorAll(".opcion-menu");
 
-        const formularioLogotipo =
-            document.getElementById(
-                "formulario-logotipo"
-            );
+    const opcionInicio =
+        document.querySelector(".opcion-menu");
 
-            const formularioCarrito =
-            document.getElementById(
-            "formulario-carrito"
-    );
 
+    /* ================================================= */
+    /*                   FORMULARIOS                     */
+    /* ================================================= */
 
-            
-const formularioBuscador =
-    document.getElementById(
-        "formulario-buscador"
-    );
+    const formularioInicio =
+        document.getElementById("formulario-inicio");
 
+    const formularioCabecera =
+        document.getElementById("formulario-cabecera");
 
-        /* ============================================= */
-        /*           BOTONES DE CONFIGURACIÓN             */
-        /* ============================================= */
+    const formularioNombreComercial =
+        document.getElementById("formulario-nombre-comercial");
 
-        const botonNombreComercial =
-            document.getElementById(
-                "boton-nombre-comercial"
-            );
-  
-        const botonConfigurarCarrito =
-             document.getElementById(
-            "boton-configurar-carrito"
-    );
+    const formularioLogotipo =
+        document.getElementById("formulario-logotipo");
 
-           
-const botonConfigurarBuscador =
-    document.getElementById(
-        "boton-configurar-buscador"
-    );
+    const formularioCarrito =
+        document.getElementById("formulario-carrito");
 
-const aceptarBuscador =
-    document.getElementById(
-        "aceptar-buscador"
-    );
+    const formularioBuscador =
+        document.getElementById("formulario-buscador");
 
-           
 
+    /* ================================================= */
+    /*           BOTONES DE CONFIGURACIÓN                */
+    /* ================================================= */
 
-          const aceptarCarrito =
-                document.getElementById(
-               "aceptar-carrito"
-    );  
+    const botonNombreComercial =
+        document.getElementById("boton-nombre-comercial");
 
+    const botonConfigurarCarrito =
+        document.getElementById("boton-configurar-carrito");
 
-        const aceptarNombreComercial =
-            document.getElementById(
-                "aceptar-nombre-comercial"
-            );
+    const botonConfigurarBuscador =
+        document.getElementById("boton-configurar-buscador");
 
-        const botonConfigurarLogotipo =
-            document.getElementById(
-                "boton-configurar-logotipo"
-            );
+    const aceptarBuscador =
+        document.getElementById("aceptar-buscador");
 
-        const aceptarLogotipo =
-            document.getElementById(
-                "aceptar-logotipo"
-            );
+    const aceptarCarrito =
+        document.getElementById("aceptar-carrito");
 
-        const aceptarInicio =
-            document.getElementById(
-                "aceptar-inicio"
-            );
-
-            console.log("BOTONES DE CONFIGURACIÓN CARGADOS");
-console.log("ACEPTAR NOMBRE:", aceptarNombreComercial);
-
-        const aceptarCabecera =
-            document.getElementById(
-                "aceptar-cabecera"
-            );
+    const aceptarNombreComercial =
+        document.getElementById("aceptar-nombre-comercial");
 
+    const botonConfigurarLogotipo =
+        document.getElementById("boton-configurar-logotipo");
 
-        /* ============================================= */
-        /*               CONFIGURACIÓN GENERAL            */
-        /* ============================================= */
+    const aceptarLogotipo =
+        document.getElementById("aceptar-logotipo");
 
-        const colorFranjas =
-            document.getElementById(
-                "color-franjas"
-            );
+    const aceptarInicio =
+        document.getElementById("aceptar-inicio");
 
-        const colorBotonMenu =
-            document.getElementById(
-                "color-boton-menu"
-            );
+    const aceptarCabecera =
+        document.getElementById("aceptar-cabecera");
 
-        const colorTextoMenu =
-            document.getElementById(
-                "color-texto-menu"
-            );
+   
+    /* ================================================= */
+    /*              CONFIGURACIÓN GENERAL               */
+    /* ================================================= */
 
-        const colorPanelMenu =
-            document.getElementById(
-                "color-panel-menu"
-            );
+    const colorFranjas =
+        document.getElementById("color-franjas");
 
+    const colorBotonMenu =
+        document.getElementById("color-boton-menu");
 
-        /* ============================================= */
-        /*                    CARRITO                     */
-        /* ============================================= */
+    const colorTextoMenu =
+        document.getElementById("color-texto-menu");
 
-        const mostrarCarrito =
-            document.getElementById(
-                "mostrar-carrito"
-            );
+    const colorPanelMenu =
+        document.getElementById("color-panel-menu");
 
-        const botonCarrito =
-            document.querySelector(
-                ".boton-carrito"
-            );
 
 
-        /* ============================================= */
-        /*              NOMBRE COMERCIAL                  */
-        /* ============================================= */
 
-        const mostrarNombreComercial =
-            document.getElementById(
-                "mostrar-nombre-comercial"
-            );
 
-        const nombreComercial =
-            document.getElementById(
-                "nombre-comercial"
-            );
 
-        const fuenteNombreComercial =
-            document.getElementById(
-                "fuente-nombre-comercial"
-            );
+    /* ================================================= */
+    /*                      CARRITO                      */
+    /* ================================================= */
 
-        const tamanoNombreComercial =
-            document.getElementById(
-                "tamano-nombre-comercial"
-            );
+    const mostrarCarrito =
+        document.getElementById("mostrar-carrito");
 
+    const botonCarrito =
+        document.querySelector(".boton-carrito");
 
-        /* ============================================= */
-        /*                    BUSCADOR                    */
-        /* ============================================= */
 
-        const mostrarBuscador =
-            document.getElementById(
-                "mostrar-buscador"
-            );
+    /* ================================================= */
+    /*                 NOMBRE COMERCIAL                  */
+    /* ================================================= */
 
-        const buscador =
-            document.getElementById(
-                "buscador"
-            );
+    const mostrarNombreComercial =
+        document.getElementById("mostrar-nombre-comercial");
 
-        const botonBusqueda =
-            document.getElementById(
-                "boton-busqueda"
-            );
+    const nombreComercial =
+        document.getElementById("nombre-comercial");
 
-        
-/* ============================================= */
-/*       CONFIGURACIÓN DEL BUSCADOR               */
-/* ============================================= */
+    const fuenteNombreComercial =
+        document.getElementById("fuente-nombre-comercial");
 
-const flechaBuscadorArriba =
-    document.getElementById("flecha-buscador-arriba");
+    const tamanoNombreComercial =
+        document.getElementById("tamano-nombre-comercial");
 
-const flechaBuscadorIzquierda =
-    document.getElementById("flecha-buscador-izquierda");
 
-const flechaBuscadorDerecha =
-    document.getElementById("flecha-buscador-derecha");
+    /* ================================================= */
+    /*                     BUSCADOR                      */
+    /* ================================================= */
 
-const flechaBuscadorAbajo =
-    document.getElementById("flecha-buscador-abajo");
+    const mostrarBuscador =
+        document.getElementById("mostrar-buscador");
 
-const centroBuscador =
-    document.getElementById("centro-buscador");
+    const buscador =
+        document.getElementById("buscador");
 
+    const botonBusqueda =
+        document.getElementById("boton-busqueda");
 
-const reducirBuscador =
-    document.getElementById("reducir-buscador");
 
-const agrandarBuscador =
-    document.getElementById("agrandar-buscador");
+    /* ================================================= */
+    /*              CONFIGURACIÓN DEL BUSCADOR           */
+    /* ================================================= */
 
+    const flechaBuscadorArriba =
+        document.getElementById("flecha-buscador-arriba");
 
+    const flechaBuscadorIzquierda =
+        document.getElementById("flecha-buscador-izquierda");
 
-        /* ============================================= */
-        /*                    LOGOTIPO                    */
-        /* ============================================= */
+    const flechaBuscadorDerecha =
+        document.getElementById("flecha-buscador-derecha");
 
-        const archivoLogotipo =
-            document.getElementById(
-                "archivo-logotipo"
-            );
+    const flechaBuscadorAbajo =
+        document.getElementById("flecha-buscador-abajo");
 
-        const vistaLogotipo =
-            document.getElementById(
-                "vista-logotipo"
-            );
+    const centroBuscador =
+        document.getElementById("centro-buscador");
 
-        const botonLogotipo =
-            document.getElementById(
-                "boton-logotipo"
-            );
+    const reducirBuscador =
+        document.getElementById("reducir-buscador");
 
-        const mostrarLogotipo =
-            document.getElementById(
-                "mostrar-logotipo"
-            );
+    const agrandarBuscador =
+        document.getElementById("agrandar-buscador");
 
 
-        /* ============================================= */
-        /*        FLECHAS DEL LOGOTIPO                   */
-        /* ============================================= */
+    /* ================================================= */
+    /*                     LOGOTIPO                      */
+    /* ================================================= */
 
-        const flechaLogotipoIzquierda =
-            document.getElementById(
-                "flecha-logotipo-izquierda"
-            );
+    const archivoLogotipo =
+        document.getElementById("archivo-logotipo");
 
-        const flechaLogotipoDerecha =
-            document.getElementById(
-                "flecha-logotipo-derecha"
-            );
+    const vistaLogotipo =
+        document.getElementById("vista-logotipo");
 
+    const botonLogotipo =
+        document.getElementById("boton-logotipo");
 
-        /* ============================================= */
-        /*       FLECHAS DEL NOMBRE COMERCIAL             */
-        /* ============================================= */
+    const mostrarLogotipo =
+        document.getElementById("mostrar-logotipo");
 
-        const flechaNombreComercialIzquierda =
-            document.getElementById(
-                "flecha-nombre-comercial-izquierda"
-            );
-
-        const flechaNombreComercialDerecha =
-            document.getElementById(
-                "flecha-nombre-comercial-derecha"
-            );
-
-        const flechaNombreComercialArriba =
-            document.getElementById(
-                "flecha-nombre-comercial-arriba"
-            );
-
-        const flechaNombreComercialAbajo =
-            document.getElementById(
-                "flecha-nombre-comercial-abajo"
-            );
-
-         /* ================================================= */
-/*          CONFIGURACIÓN DEL CARRITO                */
+    
+/* ================================================= */
+/*                FLECHAS DEL LOGOTIPO               */
 /* ================================================= */
 
-const tipoBolsita =
-    document.getElementById(
-        "tipo-bolsita"
-    );
+const flechaLogotipoIzquierda =
+    document.getElementById("flecha-logotipo-izquierda");
 
-const tipoCarrito =
-    document.getElementById(
-        "tipo-carrito"
-    );
+const flechaLogotipoDerecha =
+    document.getElementById("flecha-logotipo-derecha");
 
-/* ============================================= */
-/*       FLECHAS DE POSICIÓN DEL CARRITO         */
-/* ============================================= */
+const flechaLogotipoArriba =
+    document.getElementById("flecha-logotipo-arriba");
 
-const flechaCarritoIzquierda =
-    document.getElementById(
-        "flecha-carrito-izquierda"
-    );
+const flechaLogotipoAbajo =
+    document.getElementById("flecha-logotipo-abajo");
 
-const flechaCarritoDerecha =
-    document.getElementById(
-        "flecha-carrito-derecha"
-    );
+   
 
-const flechaCarritoArriba =
-    document.getElementById(
-        "flecha-carrito-arriba"
-    );
+    /* ================================================= */
+    /*            FLECHAS DEL NOMBRE COMERCIAL           */
+    /* ================================================= */
 
-const flechaCarritoAbajo =
-    document.getElementById(
-        "flecha-carrito-abajo"
-    );
+    const flechaNombreComercialIzquierda =
+        document.getElementById("flecha-nombre-comercial-izquierda");
+
+    const flechaNombreComercialDerecha =
+        document.getElementById("flecha-nombre-comercial-derecha");
+
+    const flechaNombreComercialArriba =
+        document.getElementById("flecha-nombre-comercial-arriba");
+
+    const flechaNombreComercialAbajo =
+        document.getElementById("flecha-nombre-comercial-abajo");
 
 
+    /* ================================================= */
+    /*               CONFIGURACIÓN DEL CARRITO           */
+    /* ================================================= */
 
-        /* ============================================= */
-        /*             FRANJAS PRINCIPALES                */
-        /* ============================================= */
+    const tipoBolsita =
+        document.getElementById("tipo-bolsita");
 
-        const franjaSuperior =
-            document.querySelector(
-                ".barra-inicio-superior"
-            );
+    const tipoCarrito =
+        document.getElementById("tipo-carrito");
 
-        const franjaInferior =
-            document.querySelector(
-                ".barra-inicio-inferior"
-            );
 
-        /* ================================================= */
-/*          VARIABLES DE FUNCIONAMIENTO              */
+    /* ================================================= */
+    /*          FLECHAS DE POSICIÓN DEL CARRITO          */
+    /* ================================================= */
+
+    const flechaCarritoIzquierda =
+        document.getElementById("flecha-carrito-izquierda");
+
+    const flechaCarritoDerecha =
+        document.getElementById("flecha-carrito-derecha");
+
+    const flechaCarritoArriba =
+        document.getElementById("flecha-carrito-arriba");
+
+    const flechaCarritoAbajo =
+        document.getElementById("flecha-carrito-abajo");
+
+
+    /* ================================================= */
+    /*                FRANJAS PRINCIPALES                */
+    /* ================================================= */
+
+    const franjaSuperior =
+        document.querySelector(".barra-inicio-superior");
+
+    const franjaInferior =
+        document.querySelector(".barra-inicio-inferior");
+
+
+    /* ================================================= */
+    /*            VARIABLES DE FUNCIONAMIENTO            */
+    /* ================================================= */
+
+    let ajusteLogotipo = 0;
+
+   // Posición horizontal del logotipo.
+   let ajusteLogotipoEscritorio = 0;
+   let ajusteLogotipoMovil = 0;
+
+  // Posición vertical del logotipo.
+    let ajusteLogotipoYEscritorio = 0;
+    let ajusteLogotipoYMovil = 0;
+
+    let ajusteNombreComercialX = 0;
+    let ajusteNombreComercialY = 0;
+
+    let tamanoNombreComercialEscritorio = "20px";
+    let tamanoNombreComercialMovil = "20px";
+
+    let ajusteNombreComercialXEscritorio = 0;
+    let ajusteNombreComercialYEscritorio = 0;
+
+    let ajusteNombreComercialXMovil = 0;
+    let ajusteNombreComercialYMovil = 0;
+
+    let nombreComercialEscritorio = "";
+    let nombreComercialMovil = "";
+
+    let tipoCarritoSeleccionado = "bolsita";
+
+
+    // Posición del carrito en computadora.
+    let ajusteCarritoXEscritorio = 0;
+    let ajusteCarritoYEscritorio = 0;
+
+    // Posición del carrito en celular.
+    let ajusteCarritoXMovil = 0;
+    let ajusteCarritoYMovil = 0;
+
+    // Posición activa del carrito.
+    let ajusteCarritoX = 0;
+    let ajusteCarritoY = 0;
+
+    
 /* ================================================= */
-
-let ajusteLogotipo = 0;
-
-let ajusteNombreComercialX = 0;
-let ajusteNombreComercialY = 0;
-
-let tamanoNombreComercialEscritorio = "20px";
-let tamanoNombreComercialMovil = "20px";
-
-let ajusteNombreComercialXEscritorio = 0;
-let ajusteNombreComercialYEscritorio = 0;
-
-let ajusteNombreComercialXMovil = 0;
-let ajusteNombreComercialYMovil = 0;
-
-let nombreComercialEscritorio = "";
-let nombreComercialMovil = "";
-
-let tipoCarritoSeleccionado = "bolsita";
-
-
-let ajusteCarritoX = 0;
-
-let ajusteCarritoY = 0;
-
-/* VARIABLES DE POSICIÓN DEL BUSCADOR */
+/*              VARIABLES DEL BUSCADOR               */
+/* ================================================= */
 
 let ajusteBuscadorX = 0;
 
 let ajusteBuscadorY = 0;
 
-/* TAMAÑO DEL BUSCADOR */
-
 let anchoBuscadorSeleccionado = 150;
+
 let altoBuscadorSeleccionado = 25;
 
-/* INTERVALO PARA MANTENER LAS FLECHAS PRESIONADAS */
+    
 
-let intervaloLogotipo = null;
+    /* ================================================= */
+    /*             VARIABLES DE LOS INTERVALOS           */
+    /* ================================================= */
 
-let intervaloCarrito = null;
+    let intervaloLogotipo = null;
+    let intervaloCarrito = null;
+    let intervaloBuscador = null;
 
-let intervaloBuscador = null;
 
+    /* ================================================= */
+    /*          ACTUALIZAR VARIABLES CSS                 */
+    /* ================================================= */
 
-        /* ================================================= */
-        /*       FUNCIÓN PARA ACTUALIZAR VARIABLES CSS       */
-        /* ================================================= */
-
-        function actualizarVariableCSS(
+    function actualizarVariableCSS(variable, valor) {
+        document.documentElement.style.setProperty(
             variable,
             valor
-        ) {
-            document.documentElement.style.setProperty(
-                variable,
-                valor
-            );
-        }
+        );
+    }
 
 
-        /* ================================================= */
-        /*              LOGOTIPO: POSICIÓN                   */
-        /* ================================================= */
+    /* ================================================= */
+    /*                LOGOTIPO: POSICIÓN                 */
+    /* ================================================= */
 
-        function aplicarAjusteLogotipo() {
+   
+function aplicarAjusteLogotipo() {
 
-            actualizarVariableCSS(
-                "--ajuste-logotipo-x",
-                `${ajusteLogotipo}px`
-            );
-        }
+    const esMovilActual =
+        window.matchMedia("(max-width: 768px)").matches;
 
+    const ajusteXActual = esMovilActual
+        ? ajusteLogotipoMovil
+        : ajusteLogotipoEscritorio;
 
-        function moverLogotipo(direccion) {
+    const ajusteYActual = esMovilActual
+        ? ajusteLogotipoYMovil
+        : ajusteLogotipoYEscritorio;
 
-            ajusteLogotipo +=
-                direccion * 10;
-
-            aplicarAjusteLogotipo();
-        }
-
-
-        function iniciarMovimientoLogotipo(
-            direccion
-        ) {
-
-            moverLogotipo(direccion);
-
-            intervaloLogotipo =
-                setInterval(
-                    function () {
-                        moverLogotipo(
-                            direccion
-                        );
-                    },
-                    80
-                );
-        }
-
-
-        function detenerMovimientoLogotipo() {
-
-            clearInterval(
-                intervaloLogotipo
-            );
-
-            intervaloLogotipo = null;
-        }
-
-        /* ================================================= */
-/*          IDENTIFICAR CLIENTE DEL USUARIO          */
-/* ================================================= */
-
-const {
-    data: usuarioCliente,
-    error: errorUsuarioCliente
-} = await clienteSupabase
-    .from("usuarios")
-    .select("cliente_id")
-    .eq("auth_user_id", session.user.id)
-    .maybeSingle();
-
-
-if (errorUsuarioCliente) {
-
-    console.error(
-        "Error al obtener cliente del usuario:",
-        errorUsuarioCliente
+    actualizarVariableCSS(
+        "--ajuste-logotipo-x",
+        `${ajusteXActual}px`
     );
 
-}
-
-
-if (!usuarioCliente) {
-
-    console.error(
-        "El usuario no tiene un cliente asignado."
-    );
-
-    return;
-}
-
-
-const clienteId =
-    usuarioCliente.cliente_id;
-
-
-console.log(
-    "CLIENTE ACTUAL:",
-    clienteId
-);
-
-
-         /* ================================================= */
-        /*             CARGAR CONFIGURACIÓN                  */
-        /* ================================================= */
-
-        const {
-            data: configuracionGuardada,
-            error
-        } = await clienteSupabase
-            .from("configuracion_inicio")
-            .select("*")
-           .eq("cliente_id", clienteId)
-            .maybeSingle();
-
-        
-/* ========================================= */
-/* POSICIÓN BOTÓN ACEPTAR EN ESCRITORIO      */
-/* ========================================= */
-
-const botonAceptarNombreComercial = document.getElementById(
-    "aceptar-nombre-comercial"
-);
-
-if (botonAceptarNombreComercial && window.innerWidth > 768) {
-    const posicionGuardada =
-        configuracionGuardada?.aceptar_nombre_comercial_top_escritorio;
-
-    botonAceptarNombreComercial.style.top =
-        `${posicionGuardada ?? 315}px`;
-}
-
-
-
-
-        /* ================================================= */
-        /*                 ERROR DE CARGA                    */
-        /* ================================================= */
-
-        if (error) {
-
-            console.error(
-                "Error al cargar configuración:",
-                error
-            );
-        }
-
-
-        /* ================================================= */
-        /*        APLICAR CONFIGURACIÓN GUARDADA             */
-        /* ================================================= */
-
-        if (configuracionGuardada) {
-
-
-            /* --------------------------------------------- */
-            /* COLORES                                        */
-            /* --------------------------------------------- */
-
-            actualizarVariableCSS(
-                "--color-franjas",
-                configuracionGuardada.color_franjas ||
-                "white"
-            );
-
-            actualizarVariableCSS(
-                "--color-boton-menu",
-                configuracionGuardada.color_boton_menu ||
-                "#159c96"
-            );
-
-            actualizarVariableCSS(
-                "--color-texto-menu",
-                configuracionGuardada.color_texto_menu ||
-                "#f2f2f2"
-            );
-
-            actualizarVariableCSS(
-                "--color-panel-menu",
-                configuracionGuardada.color_panel_menu ||
-                "#D8E2EE"
-            );
-
-
-            /* --------------------------------------------- */
-            /* CONTROLES DE COLOR                             */
-            /* --------------------------------------------- */
-
-            colorFranjas.value =
-                configuracionGuardada.color_franjas ||
-                "#ffffff";
-
-            colorBotonMenu.value =
-                configuracionGuardada.color_boton_menu ||
-                "#159c96";
-
-            colorTextoMenu.value =
-                configuracionGuardada.color_texto_menu ||
-                "#f2f2f2";
-
-            colorPanelMenu.value =
-                configuracionGuardada.color_panel_menu ||
-                "#D8E2EE";
-
-
-            /* --------------------------------------------- */
-            /* CARRITO                                       */
-            /* --------------------------------------------- */
-
-            mostrarCarrito.checked =
-                configuracionGuardada.mostrar_carrito !== false;
-
-            botonCarrito.classList.toggle(
-                "oculto",
-                !mostrarCarrito.checked
-            );
-
-                /* --------------------------------------------- */
-/* CAMBIAR TIPO DE CARRITO                       */
-/* --------------------------------------------- */
-
-if (tipoBolsita) {
-
-    tipoBolsita.addEventListener(
-        "change",
-        function () {
-
-            if (!tipoBolsita.checked) {
-                return;
-            }
-
-            tipoCarritoSeleccionado =
-                "bolsita";
-
-            aplicarTipoCarrito();
-        }
+    actualizarVariableCSS(
+        "--ajuste-logotipo-y",
+        `${ajusteYActual}px`
     );
 }
 
 
-if (tipoCarrito) {
+function moverLogotipo(direccionX, direccionY = 0) {
 
-    tipoCarrito.addEventListener(
-        "change",
-        function () {
+    const esMovilActual =
+        window.matchMedia("(max-width: 768px)").matches;
 
-            if (!tipoCarrito.checked) {
-                return;
-            }
+    if (esMovilActual) {
+        ajusteLogotipoMovil += direccionX * 10;
+        ajusteLogotipoYMovil += direccionY * 10;
+    } else {
+        ajusteLogotipoEscritorio += direccionX * 10;
+        ajusteLogotipoYEscritorio += direccionY * 10;
+    }
 
-            tipoCarritoSeleccionado =
-                "carrito";
-
-            aplicarTipoCarrito();
-        }
-    );
+    aplicarAjusteLogotipo();
 }
 
 
-            /* --------------------------------------------- */
-            /* LOGOTIPO                                      */
-            /* --------------------------------------------- */
+function iniciarMovimientoLogotipo(direccionX, direccionY = 0) {
 
-            mostrarLogotipo.checked =
-                configuracionGuardada.mostrar_logotipo !== false;
+    detenerMovimientoLogotipo();
 
-          /* --------------------------------------------- */
-/* NOMBRE COMERCIAL                              */
-/* --------------------------------------------- */
+    moverLogotipo(direccionX, direccionY);
 
-mostrarNombreComercial.checked =
-    configuracionGuardada.mostrar_nombre_comercial !== false;
-
-
-/* ================================================= */
-/*       CARGAR NOMBRE SEGÚN DISPOSITIVO             */
-/* ================================================= */
-
-nombreComercialEscritorio =
-    configuracionGuardada
-        .nombre_comercial_escritorio
-        || configuracionGuardada
-            .nombre_comercial
-        || "";
-
-nombreComercialMovil =
-    configuracionGuardada
-        .nombre_comercial_movil
-        || configuracionGuardada
-            .nombre_comercial
-        || "";
-
-
-/* ================================================= */
-/*       SELECCIONAR NOMBRE ACTUAL                   */
-/* ================================================= */
-
-if (window.innerWidth <= 768) {
-
-    nombreComercial.value =
-        nombreComercialMovil;
-
-} else {
-
-    nombreComercial.value =
-        nombreComercialEscritorio;
+    intervaloLogotipo = setInterval(function () {
+        moverLogotipo(direccionX, direccionY);
+    }, 80);
 }
 
 
-/* --------------------------------------------- */
-/* FUENTE DEL NOMBRE COMERCIAL                   */
-/* --------------------------------------------- */
+function detenerMovimientoLogotipo() {
 
-fuenteNombreComercial.value =
-    configuracionGuardada.fuente_nombre_comercial
-    || "Arial";
-            
-/* ================================================= */
-/*       CARGAR TAMAÑO SEGÚN DISPOSITIVO             */
-/* ================================================= */
-
-tamanoNombreComercialEscritorio =
-    configuracionGuardada
-        .tamano_nombre_comercial_escritorio
-        || configuracionGuardada
-            .tamano_nombre_comercial
-        || "20px";
-
-tamanoNombreComercialMovil =
-    configuracionGuardada
-        .tamano_nombre_comercial_movil
-        || configuracionGuardada
-            .tamano_nombre_comercial
-        || "20px";
-
-
-/* ================================================= */
-/*       CARGAR POSICIÓN ESCRITORIO                  */
-/* ================================================= */
-
-ajusteNombreComercialXEscritorio =
-    configuracionGuardada
-        .ajuste_nombre_comercial_x_escritorio
-        ?? configuracionGuardada
-            .ajuste_nombre_comercial_x
-        ?? 0;
-
-ajusteNombreComercialYEscritorio =
-    configuracionGuardada
-        .ajuste_nombre_comercial_y_escritorio
-        ?? configuracionGuardada
-            .ajuste_nombre_comercial_y
-        ?? 0;
-
-
-/* ================================================= */
-/*       CARGAR POSICIÓN MÓVIL                       */
-/* ================================================= */
-
-ajusteNombreComercialXMovil =
-    configuracionGuardada
-        .ajuste_nombre_comercial_x_movil
-        ?? configuracionGuardada
-            .ajuste_nombre_comercial_x
-        ?? 0;
-
-ajusteNombreComercialYMovil =
-    configuracionGuardada
-        .ajuste_nombre_comercial_y_movil
-        ?? configuracionGuardada
-            .ajuste_nombre_comercial_y
-        ?? 0;
-
-
-/* ================================================= */
-/*       SELECCIONAR DISPOSITIVO ACTUAL              */
-/* ================================================= */
-
-if (window.innerWidth <= 768) {
-
-    tamanoNombreComercial.value =
-        tamanoNombreComercialMovil;
-
-    ajusteNombreComercialX =
-        ajusteNombreComercialXMovil;
-
-    ajusteNombreComercialY =
-        ajusteNombreComercialYMovil;
-
-} else {
-
-    tamanoNombreComercial.value =
-        tamanoNombreComercialEscritorio;
-
-    ajusteNombreComercialX =
-        ajusteNombreComercialXEscritorio;
-
-    ajusteNombreComercialY =
-        ajusteNombreComercialYEscritorio;
+    if (intervaloLogotipo !== null) {
+        clearInterval(intervaloLogotipo);
+        intervaloLogotipo = null;
+    }
 }
 
+  
 
+    /* ================================================= */
+    /*          IDENTIFICAR CLIENTE DEL USUARIO          */
+    /* ================================================= */
+
+    const {
+        data: usuarioCliente,
+        error: errorUsuarioCliente
+    } = await clienteSupabase
+        .from("usuarios")
+        .select("cliente_id")
+        .eq("auth_user_id", session.user.id)
+        .maybeSingle();
+
+
+    if (errorUsuarioCliente) {
+        console.error(
+            "Error al obtener cliente del usuario:",
+            errorUsuarioCliente
+        );
+    }
+
+
+    if (!usuarioCliente) {
+        console.error(
+            "El usuario no tiene un cliente asignado."
+        );
+
+        return;
+    }
+
+
+    const clienteId = usuarioCliente.cliente_id;
+
+    console.log("CLIENTE ACTUAL:", clienteId);
+
+
+    /* ================================================= */
+    /*               CARGAR CONFIGURACIÓN                */
+    /* ================================================= */
+
+    const {
+        data: configuracionGuardada,
+        error
+    } = await clienteSupabase
+        .from("configuracion_inicio")
+        .select("*")
+        .eq("cliente_id", clienteId)
+        .maybeSingle();
+
+
+   
 /* ================================================= */
-/*       APLICAR FUENTE Y TAMAÑO                     */
-/* ================================================= */
-
-actualizarVariableCSS(
-    "--fuente-nombre-comercial",
-    fuenteNombreComercial.value
-);
-
-actualizarVariableCSS(
-    "--tamano-nombre-comercial",
-    tamanoNombreComercial.value
-);
-
-
-/* ================================================= */
-/*       APLICAR POSICIÓN                            */
-/* ================================================= */
-
-aplicarAjusteNombreComercial();
-
-
-            /* --------------------------------------------- */
-            /* BUSCADOR                                      */
-            /* --------------------------------------------- */
-
-            mostrarBuscador.checked =
-                configuracionGuardada.mostrar_buscador !== false;
-
-            buscador.classList.toggle(
-                "oculto",
-                !mostrarBuscador.checked
-            );
-
-
-            /* --------------------------------------------- */
-            /* POSICIÓN DEL LOGOTIPO                         */
-            /* --------------------------------------------- */
-
-            ajusteLogotipo =
-                configuracionGuardada.ajuste_logotipo_x ||
-                0;
-
-            aplicarAjusteLogotipo();
-        }
-
-        
-/* ================================================= */
-/*          CONFIGURACIÓN DEL CARRITO                */
+/*          RECUPERAR CONFIGURACIÓN DEL BUSCADOR      */
 /* ================================================= */
 
 if (configuracionGuardada) {
 
-    tipoCarritoSeleccionado =
-        configuracionGuardada.tipo_carrito ?? "bolsita";
+    ajusteBuscadorX = Number(
+        (esMovil
+            ? configuracionGuardada.ajuste_buscador_x_movil
+            : configuracionGuardada.ajuste_buscador_x_escritorio)
+        ?? configuracionGuardada.ajuste_buscador_x
+        ?? 0
+    );
 
-    ajusteCarritoX =
-        configuracionGuardada.ajuste_carrito_x ?? 0;
+    ajusteBuscadorY = Number(
+        (esMovil
+            ? configuracionGuardada.ajuste_buscador_y_movil
+            : configuracionGuardada.ajuste_buscador_y_escritorio)
+        ?? configuracionGuardada.ajuste_buscador_y
+        ?? 0
+    );
 
-    ajusteCarritoY =
-        configuracionGuardada.ajuste_carrito_y ?? 0;
+    anchoBuscadorSeleccionado = Number(
+        (esMovil
+            ? configuracionGuardada.ancho_buscador_movil
+            : configuracionGuardada.ancho_buscador_escritorio)
+        ?? configuracionGuardada.ancho_buscador
+        ?? 150
+    );
 
-    aplicarAjusteCarrito();
-
-    console.log("POSICIÓN DEL CARRITO AL CARGAR:", {
-        ajusteX: ajusteCarritoX,
-        ajusteY: ajusteCarritoY,
-        anchoPantalla: window.innerWidth
-    });
+    altoBuscadorSeleccionado = Number(
+        (esMovil
+            ? configuracionGuardada.alto_buscador_movil
+            : configuracionGuardada.alto_buscador_escritorio)
+        ?? configuracionGuardada.alto_buscador
+        ?? 25
+    );
 }
 
 
+     aplicarTamanoBuscador();
+    aplicarAjusteBuscador();
 
-            /* --------------------------------------------- */
-/* OPCIÓN SELECCIONADA                           */
+    /* ================================================= */
+    /*       POSICIÓN DEL BOTÓN ACEPTAR EN ESCRITORIO     */
+    /* ================================================= */
+
+    const botonAceptarNombreComercial =
+        document.getElementById("aceptar-nombre-comercial");
+
+    if (botonAceptarNombreComercial && window.innerWidth > 768) {
+
+        const posicionGuardada =
+            configuracionGuardada?.aceptar_nombre_comercial_top_escritorio;
+
+        botonAceptarNombreComercial.style.top =
+            `${posicionGuardada ?? 315}px`;
+    }
+
+    /* ================================================= */
+    /*                 ERROR DE CARGA                    */
+    /* ================================================= */
+
+    if (error) {
+        console.error(
+            "Error al cargar configuración:",
+            error
+        );
+    }
+
+    if (configuracionGuardada) {
+
+        /* --------------------------------------------- */
+        /* COLORES SEGÚN DISPOSITIVO                     */
+        /* --------------------------------------------- */
+
+        const colorFranjasActual = esMovil
+            ? (
+                configuracionGuardada.color_franjas_movil
+                || configuracionGuardada.color_franjas
+                || "#ffffff"
+            )
+            : (
+                configuracionGuardada.color_franjas_escritorio
+                || configuracionGuardada.color_franjas
+                || "#ffffff"
+            );
+
+        const colorBotonMenuActual = esMovil
+            ? (
+                configuracionGuardada.color_boton_menu_movil
+                || configuracionGuardada.color_boton_menu
+                || "#159c96"
+            )
+            : (
+                configuracionGuardada.color_boton_menu_escritorio
+                || configuracionGuardada.color_boton_menu
+                || "#159c96"
+            );
+   
+        const colorTextoMenuActual = esMovil
+            ? (
+                configuracionGuardada.color_texto_menu_movil
+                || configuracionGuardada.color_texto_menu
+                || "#f2f2f2"
+            )
+            : (
+                configuracionGuardada.color_texto_menu_escritorio
+                || configuracionGuardada.color_texto_menu
+                || "#f2f2f2"
+            );
+
+        const colorPanelMenuActual = esMovil
+            ? (
+                configuracionGuardada.color_panel_menu_movil
+                || configuracionGuardada.color_panel_menu
+                || "#D8E2EE"
+            )
+            : (
+                configuracionGuardada.color_panel_menu_escritorio
+                || configuracionGuardada.color_panel_menu
+                || "#D8E2EE"
+            );
+
+        actualizarVariableCSS(
+            "--color-franjas",
+            colorFranjasActual
+        );
+
+        actualizarVariableCSS(
+            "--color-boton-menu",
+            colorBotonMenuActual
+        );
+
+        actualizarVariableCSS(
+            "--color-texto-menu",
+            colorTextoMenuActual
+        );
+
+        actualizarVariableCSS(
+            "--color-panel-menu",
+            colorPanelMenuActual
+        );
+
+        /* CONTROLES DE COLOR */
+
+        colorFranjas.value = colorFranjasActual;
+        colorBotonMenu.value = colorBotonMenuActual;
+        colorTextoMenu.value = colorTextoMenuActual;
+        colorPanelMenu.value = colorPanelMenuActual;
+
+        /* --------------------------------------------- */
+        /* CARRITO                                       */
+        /* --------------------------------------------- */
+
+        mostrarCarrito.checked =
+            configuracionGuardada.mostrar_carrito !== false;
+
+        botonCarrito.classList.toggle(
+            "oculto",
+            !mostrarCarrito.checked
+        );
+
+
+        /* --------------------------------------------- */
+        /* CAMBIAR TIPO DE CARRITO                       */
+        /* --------------------------------------------- */
+
+        if (tipoBolsita) {
+            tipoBolsita.addEventListener("change", function () {
+
+                if (!tipoBolsita.checked) {
+                    return;
+                }
+
+                tipoCarritoSeleccionado = "bolsita";
+
+                aplicarTipoCarrito();
+            });
+        }
+
+
+        if (tipoCarrito) {
+            tipoCarrito.addEventListener("change", function () {
+
+                if (!tipoCarrito.checked) {
+                    return;
+                }
+
+                tipoCarritoSeleccionado = "carrito";
+
+                aplicarTipoCarrito();
+            });
+        }
+
+
+        /* --------------------------------------------- */
+        /* LOGOTIPO                                      */
+        /* --------------------------------------------- */
+
+        mostrarLogotipo.checked =
+            configuracionGuardada.mostrar_logotipo !== false;
+
+
+        /* --------------------------------------------- */
+        /* NOMBRE COMERCIAL                              */
+        /* --------------------------------------------- */
+
+        mostrarNombreComercial.checked =
+            configuracionGuardada.mostrar_nombre_comercial !== false;
+
+
+        /* ================================================= */
+        /*       CARGAR NOMBRE SEGÚN DISPOSITIVO             */
+        /* ================================================= */
+
+        nombreComercialEscritorio =
+            configuracionGuardada.nombre_comercial_escritorio
+            || configuracionGuardada.nombre_comercial
+            || "";
+
+        nombreComercialMovil =
+            configuracionGuardada.nombre_comercial_movil
+            || configuracionGuardada.nombre_comercial
+            || "";
+
+
+        /* ================================================= */
+        /*       SELECCIONAR NOMBRE ACTUAL                   */
+        /* ================================================= */
+
+        if (esMovil) {
+            nombreComercial.value = nombreComercialMovil;
+        } else {
+            nombreComercial.value = nombreComercialEscritorio;
+        }
+
+
+        /* --------------------------------------------- */
+        /* FUENTE DEL NOMBRE COMERCIAL                   */
+        /* --------------------------------------------- */
+
+        fuenteNombreComercial.value =
+            configuracionGuardada.fuente_nombre_comercial || "Arial";
+
+
+        /* ================================================= */
+        /*       CARGAR TAMAÑO SEGÚN DISPOSITIVO             */
+        /* ================================================= */
+
+        tamanoNombreComercialEscritorio =
+            configuracionGuardada.tamano_nombre_comercial_escritorio
+            || configuracionGuardada.tamano_nombre_comercial
+            || "20px";
+
+        tamanoNombreComercialMovil =
+            configuracionGuardada.tamano_nombre_comercial_movil
+            || configuracionGuardada.tamano_nombre_comercial
+            || "20px";
+
+
+        /* ================================================= */
+        /*       CARGAR POSICIÓN ESCRITORIO                  */
+        /* ================================================= */
+
+        ajusteNombreComercialXEscritorio =
+            configuracionGuardada.ajuste_nombre_comercial_x_escritorio
+            ?? configuracionGuardada.ajuste_nombre_comercial_x
+            ?? 0;
+
+        ajusteNombreComercialYEscritorio =
+            configuracionGuardada.ajuste_nombre_comercial_y_escritorio
+            ?? configuracionGuardada.ajuste_nombre_comercial_y
+            ?? 0;
+
+
+        /* ================================================= */
+        /*       CARGAR POSICIÓN MÓVIL                       */
+        /* ================================================= */
+
+        ajusteNombreComercialXMovil =
+            configuracionGuardada.ajuste_nombre_comercial_x_movil
+            ?? configuracionGuardada.ajuste_nombre_comercial_x
+            ?? 0;
+
+        ajusteNombreComercialYMovil =
+            configuracionGuardada.ajuste_nombre_comercial_y_movil
+            ?? configuracionGuardada.ajuste_nombre_comercial_y
+            ?? 0;
+
+
+        /* ================================================= */
+        /*       SELECCIONAR DISPOSITIVO ACTUAL              */
+        /* ================================================= */
+
+        if (esMovil) {
+
+            tamanoNombreComercial.value =
+                tamanoNombreComercialMovil;
+
+            ajusteNombreComercialX =
+                ajusteNombreComercialXMovil;
+
+            ajusteNombreComercialY =
+                ajusteNombreComercialYMovil;
+
+        } else {
+
+            tamanoNombreComercial.value =
+                tamanoNombreComercialEscritorio;
+
+            ajusteNombreComercialX =
+                ajusteNombreComercialXEscritorio;
+
+            ajusteNombreComercialY =
+                ajusteNombreComercialYEscritorio;
+        }
+
+
+        /* ================================================= */
+        /*       APLICAR FUENTE Y TAMAÑO                     */
+        /* ================================================= */
+
+        actualizarVariableCSS(
+            "--fuente-nombre-comercial",
+            fuenteNombreComercial.value
+        );
+
+        actualizarVariableCSS(
+            "--tamano-nombre-comercial",
+            tamanoNombreComercial.value
+        );
+
+
+        /* ================================================= */
+        /*       APLICAR POSICIÓN                            */
+        /* ================================================= */
+
+        aplicarAjusteNombreComercial();
+
+
+        /* --------------------------------------------- */
+        /* BUSCADOR                                      */
+        /* --------------------------------------------- */
+
+        mostrarBuscador.checked =
+            configuracionGuardada.mostrar_buscador !== false;
+
+        buscador.classList.toggle(
+            "oculto",
+            !mostrarBuscador.checked
+        );
+
+
+        /* --------------------------------------------- */
+/* POSICIÓN DEL LOGOTIPO                         */
 /* --------------------------------------------- */
 
-if (tipoBolsita) {
+ajusteLogotipoEscritorio =
+    configuracionGuardada.ajuste_logotipo_x ?? 0;
 
-    tipoBolsita.checked =
-        tipoCarritoSeleccionado === "bolsita";
-}
+ajusteLogotipoMovil =
+    configuracionGuardada.ajuste_logotipo_x_movil ?? 0;
 
-if (tipoCarrito) {
+ajusteLogotipoYEscritorio =
+    configuracionGuardada.ajuste_logotipo_y_escritorio ?? 0;
 
-    tipoCarrito.checked =
-        tipoCarritoSeleccionado === "carrito";
-}
+ajusteLogotipoYMovil =
+    configuracionGuardada.ajuste_logotipo_y_movil ?? 0;
 
+aplicarAjusteLogotipo();
+    }
+
+
+       /* ================================================= */
+/*             CONFIGURACIÓN DEL CARRITO             */
+/* ================================================= */
+
+if (configuracionGuardada) {
+
+   tipoCarritoSeleccionado = esMovil
+    ? (
+        configuracionGuardada.tipo_carrito_movil
+        ?? configuracionGuardada.tipo_carrito
+        ?? "bolsita"
+    )
+    : (
+        configuracionGuardada.tipo_carrito_escritorio
+        ?? configuracionGuardada.tipo_carrito
+        ?? "bolsita"
+    );
+
+
+        // Cargar posición guardada para computadora.
+        ajusteCarritoXEscritorio =
+            configuracionGuardada.ajuste_carrito_x_escritorio
+            ?? configuracionGuardada.ajuste_carrito_x
+            ?? 0;
+
+        ajusteCarritoYEscritorio =
+            configuracionGuardada.ajuste_carrito_y_escritorio
+            ?? configuracionGuardada.ajuste_carrito_y
+            ?? 0;
+
+
+        // Cargar posición guardada para celular.
+        ajusteCarritoXMovil =
+            configuracionGuardada.ajuste_carrito_x_movil
+            ?? configuracionGuardada.ajuste_carrito_x
+            ?? 0;
+
+        ajusteCarritoYMovil =
+            configuracionGuardada.ajuste_carrito_y_movil
+            ?? configuracionGuardada.ajuste_carrito_y
+            ?? 0;
+
+
+        // Seleccionar la posición del dispositivo actual.
+        if (esMovil) {
+
+            ajusteCarritoX = ajusteCarritoXMovil;
+            ajusteCarritoY = ajusteCarritoYMovil;
+
+        } else {
+
+            ajusteCarritoX = ajusteCarritoXEscritorio;
+            ajusteCarritoY = ajusteCarritoYEscritorio;
+        }
+
+
+        aplicarAjusteCarrito();
+
+
+        console.log("POSICIÓN DEL CARRITO AL CARGAR:", {
+            dispositivo: esMovil ? "celular" : "computadora",
+            ajusteX: ajusteCarritoX,
+            ajusteY: ajusteCarritoY,
+            anchoPantalla: window.innerWidth
+        });
+    }
+
+
+    /* --------------------------------------------- */
+    /* OPCIÓN SELECCIONADA                           */
+    /* --------------------------------------------- */
+
+    if (tipoBolsita) {
+        tipoBolsita.checked =
+            tipoCarritoSeleccionado === "bolsita";
+    }
+
+    if (tipoCarrito) {
+        tipoCarrito.checked =
+            tipoCarritoSeleccionado === "carrito";
+    }
+
+   
 
 /* --------------------------------------------- */
 /* MOSTRAR ICONO SELECCIONADO                    */
@@ -1076,14 +1273,12 @@ function aplicarTipoCarrito() {
 
         iconoBolsita.classList.add("oculto");
         iconoCarrito.classList.remove("oculto");
-
         iconoCarrito.style.display = "block";
 
     } else {
 
         iconoBolsita.classList.remove("oculto");
         iconoCarrito.classList.add("oculto");
-
     }
 }
 
@@ -1095,29 +1290,30 @@ aplicarTipoCarrito();
 /*                  MOSTRAR LOGOTIPO                  */
 /* ================================================= */
 
+// Se reutiliza esMovil, declarado en el bloque anterior.
+
+const logotipoUrl = esMovil
+    ? configuracionGuardada?.logotipo_url_movil
+    : configuracionGuardada?.logotipo_url_escritorio;
+
 if (
     configuracionGuardada &&
-    configuracionGuardada.logotipo_url &&
+    logotipoUrl &&
     configuracionGuardada.mostrar_logotipo !== false
 ) {
 
-    const imagenLogotipo =
-        document.createElement("img");
+    const imagenLogotipo = document.createElement("img");
 
-    imagenLogotipo.src =
-        configuracionGuardada.logotipo_url;
+    imagenLogotipo.src = logotipoUrl;
+    imagenLogotipo.id = "logotipo-franja";
 
-    imagenLogotipo.id =
-        "logotipo-franja";
-
-    franjaSuperior.appendChild(
-        imagenLogotipo
-    );
+    franjaSuperior.appendChild(imagenLogotipo);
 
     aplicarAjusteLogotipo();
 }
-           
-        /* ================================================= */
+
+
+/* ================================================= */
 /*             MOSTRAR NOMBRE COMERCIAL               */
 /* ================================================= */
 
@@ -1145,317 +1341,280 @@ if (
     nombreEncabezado.textContent =
         nombreParaMostrar;
 
-    franjaSuperior.appendChild(
-        nombreEncabezado
-    );
+    franjaSuperior.appendChild(nombreEncabezado);
 
     aplicarAjusteNombreComercial();
 }
 
 
+/* ================================================= */
+/*               TERMINÓ LA CARGA                    */
+/* ================================================= */
 
-        /* ================================================= */
-        /*               TERMINÓ LA CARGA                    */
-        /* ================================================= */
-
-        franjaSuperior.classList.remove(
-            "cargando"
-        );
+franjaSuperior.classList.remove("cargando");
 
 
-        /* ================================================= */
-        /*                    MENÚ                           */
-        /* ================================================= */
+/* ================================================= */
+/*                    MENÚ                           */
+/* ================================================= */
 
-        botonMenu.addEventListener(
-            "click",
-            function () {
+botonMenu.addEventListener("click", function () {
 
-                panelMenu.classList.toggle(
-                    "menu-abierto"
-                );
-            }
-        );
-
-
-        /* ================================================= */
-        /*                OPCIÓN INICIO                      */
-        /* ================================================= */
-
-        if (opcionInicio) {
-
-            opcionInicio.addEventListener(
-                "click",
-                function () {
-
-                    panelMenu.classList.remove(
-                        "menu-abierto"
-                    );
-
-                    setTimeout(
-                        function () {
-
-                            formularioInicio.classList.add(
-                                "formulario-abierto"
-                            );
-
-                        },
-                        250
-                    );
-                }
-            );
-        }
-
-
-        /* ================================================= */
-        /*               OPCIÓN CABECERA                     */
-        /* ================================================= */
-
-        if (opcionesMenu[1]) {
-
-            opcionesMenu[1].addEventListener(
-                "click",
-                function () {
-
-                    panelMenu.classList.remove(
-                        "menu-abierto"
-                    );
-
-                    setTimeout(
-                        function () {
-
-                            formularioCabecera.classList.add(
-                                "formulario-abierto"
-                            );
-
-                        },
-                        250
-                    );
-                }
-            );
-        }
-
-
-        /* ================================================= */
-        /*          CONFIGURAR NOMBRE COMERCIAL               */
-        /* ================================================= */
-
-        botonNombreComercial.addEventListener(
-            "click",
-            function () {
-
-                formularioCabecera.classList.remove(
-                    "formulario-abierto"
-                );
-
-                formularioNombreComercial.classList.add(
-                    "formulario-abierto"
-                );
-            }
-        );
-
-          botonConfigurarCarrito.addEventListener("click", function () {
-          formularioCabecera.classList.remove("formulario-abierto");
-          formularioCarrito.classList.add("formulario-abierto");
+    panelMenu.classList.toggle("menu-abierto");
 });
 
 
-            
 /* ================================================= */
-/*            CONFIGURAR BUSCADOR                    */
+/*                OPCIÓN INICIO                      */
 /* ================================================= */
 
-botonConfigurarBuscador.addEventListener(
-    "click",
-    function () {
+if (opcionInicio) {
 
-        formularioCabecera.classList.remove(
-            "formulario-abierto"
-        );
+    opcionInicio.addEventListener("click", function () {
 
-        formularioBuscador.classList.add(
-            "formulario-abierto"
-        );
+        panelMenu.classList.remove("menu-abierto");
 
+        setTimeout(function () {
+
+            formularioInicio.classList.add(
+                "formulario-abierto"
+            );
+
+        }, 250);
+    });
+}
+
+
+/* ================================================= */
+/*               OPCIÓN CABECERA                     */
+/* ================================================= */
+
+if (opcionesMenu[1]) {
+
+    opcionesMenu[1].addEventListener("click", function () {
+
+        panelMenu.classList.remove("menu-abierto");
+
+        setTimeout(function () {
+
+            formularioCabecera.classList.add(
+                "formulario-abierto"
+            );
+
+        }, 250);
+    });
+}
+
+
+/* ================================================= */
+/*          CONFIGURAR NOMBRE COMERCIAL               */
+/* ================================================= */
+
+botonNombreComercial.addEventListener("click", function () {
+
+    formularioCabecera.classList.remove(
+        "formulario-abierto"
+    );
+
+    formularioNombreComercial.classList.add(
+        "formulario-abierto"
+    );
+});
+
+
+/* ================================================= */
+/*              CONFIGURAR CARRITO                   */
+/* ================================================= */
+
+botonConfigurarCarrito.addEventListener("click", function () {
+
+    formularioCabecera.classList.remove(
+        "formulario-abierto"
+    );
+
+    formularioCarrito.classList.add(
+        "formulario-abierto"
+    );
+});
+
+
+/* ================================================= */
+/*              CONFIGURAR BUSCADOR                  */
+/* ================================================= */
+
+botonConfigurarBuscador.addEventListener("click", function () {
+
+    formularioCabecera.classList.remove(
+        "formulario-abierto"
+    );
+
+    formularioBuscador.classList.add(
+        "formulario-abierto"
+    );
+});
+
+
+/* ================================================= */
+/*              CONFIGURAR LOGOTIPO                  */
+/* ================================================= */
+
+botonConfigurarLogotipo.addEventListener("click", function () {
+
+    formularioCabecera.classList.remove(
+        "formulario-abierto"
+    );
+
+    formularioLogotipo.classList.add(
+        "formulario-abierto"
+    );
+});
+
+
+/* ================================================= */
+/*              BOTÓN SELECCIONAR LOGO               */
+/* ================================================= */
+
+botonLogotipo.addEventListener("click", function () {
+
+    archivoLogotipo.click();
+});
+
+
+/* ================================================= */
+/*              VISTA PREVIA DEL LOGO                */
+/* ================================================= */
+
+archivoLogotipo.addEventListener("change", function () {
+
+    const archivo = archivoLogotipo.files[0];
+
+    if (!archivo) {
+        return;
     }
+
+    const imagen = new Image();
+
+    imagen.onload = function () {
+
+        const canvas = document.createElement("canvas");
+        const contexto = canvas.getContext("2d");
+
+        canvas.width = imagen.width;
+        canvas.height = imagen.height;
+
+        contexto.drawImage(
+            imagen,
+            0,
+            0
+        );
+
+        const datos = contexto.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+        for (
+            let i = 0;
+            i < datos.data.length;
+            i += 4
+        ) {
+
+            const rojo = datos.data[i];
+            const verde = datos.data[i + 1];
+            const azul = datos.data[i + 2];
+
+            if (
+                rojo > 240 &&
+                verde > 240 &&
+                azul > 240
+            ) {
+                datos.data[i + 3] = 0;
+            }
+        }
+
+        contexto.putImageData(datos, 0, 0);
+
+        const imagenTransparente =
+            document.createElement("img");
+
+        imagenTransparente.src =
+            canvas.toDataURL("image/png");
+
+        vistaLogotipo.innerHTML = "";
+
+        vistaLogotipo.appendChild(
+            imagenTransparente
+        );
+    };
+
+    imagen.src = URL.createObjectURL(archivo);
+});
+
+
+/* ================================================= */
+/*             MOVIMIENTO DEL LOGOTIPO               */
+/* ================================================= */
+
+function configurarFlechaLogotipo(boton, direccionX, direccionY = 0) {
+
+    if (!boton) {
+        return;
+    }
+
+    boton.addEventListener("pointerdown", function (evento) {
+
+        evento.preventDefault();
+
+        detenerMovimientoLogotipo();
+        iniciarMovimientoLogotipo(direccionX, direccionY);
+    });
+}
+
+
+configurarFlechaLogotipo(
+    flechaLogotipoIzquierda,
+    -1,
+    0
 );
-      
 
-        /* ================================================= */
-        /*            CONFIGURAR LOGOTIPO                    */
-        /* ================================================= */
+configurarFlechaLogotipo(
+    flechaLogotipoDerecha,
+    1,
+    0
+);
 
-        botonConfigurarLogotipo.addEventListener(
-            "click",
-            function () {
+configurarFlechaLogotipo(
+    flechaLogotipoArriba,
+    0,
+    -1
+);
 
-                formularioCabecera.classList.remove(
-                    "formulario-abierto"
-                );
-
-                formularioLogotipo.classList.add(
-                    "formulario-abierto"
-                );
-            }
-        );
-
-
-        /* ================================================= */
-        /*              BOTÓN SELECCIONAR LOGO                */
-        /* ================================================= */
-
-        botonLogotipo.addEventListener(
-            "click",
-            function () {
-
-                archivoLogotipo.click();
-            }
-        );
+configurarFlechaLogotipo(
+    flechaLogotipoAbajo,
+    0,
+    1
+);
 
 
-        /* ================================================= */
-        /*              VISTA PREVIA DEL LOGO                */
-        /* ================================================= */
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoLogotipo
+);
 
-        archivoLogotipo.addEventListener(
-            "change",
-            function () {
-
-                const archivo =
-                    archivoLogotipo.files[0];
-
-                if (!archivo) {
-                    return;
-                }
-
-                const imagen =
-                    new Image();
-
-                imagen.onload =
-                    function () {
-
-                        const canvas =
-                            document.createElement(
-                                "canvas"
-                            );
-
-                        const contexto =
-                            canvas.getContext(
-                                "2d"
-                            );
-
-                        canvas.width =
-                            imagen.width;
-
-                        canvas.height =
-                            imagen.height;
-
-                        contexto.drawImage(
-                            imagen,
-                            0,
-                            0
-                        );
-
-                        const datos =
-                            contexto.getImageData(
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
-
-                        for (
-                            let i = 0;
-                            i < datos.data.length;
-                            i += 4
-                        ) {
-
-                            const rojo =
-                                datos.data[i];
-
-                            const verde =
-                                datos.data[i + 1];
-
-                            const azul =
-                                datos.data[i + 2];
-
-                            if (
-                                rojo > 240 &&
-                                verde > 240 &&
-                                azul > 240
-                            ) {
-
-                                datos.data[i + 3] = 0;
-                            }
-                        }
-
-                        contexto.putImageData(
-                            datos,
-                            0,
-                            0
-                        );
-
-                        const imagenTransparente =
-                            document.createElement(
-                                "img"
-                            );
-
-                        imagenTransparente.src =
-                            canvas.toDataURL(
-                                "image/png"
-                            );
-
-                        vistaLogotipo.innerHTML =
-                            "";
-
-                        vistaLogotipo.appendChild(
-                            imagenTransparente
-                        );
-                    };
-
-                imagen.src =
-                    URL.createObjectURL(
-                        archivo
-                    );
-            }
-        );
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoLogotipo
+);
 
 
-        /* ================================================= */
-        /*       MOVIMIENTO DEL LOGOTIPO                     */
-        /* ================================================= */
-
-        flechaLogotipoIzquierda.addEventListener(
-            "mousedown",
-            function () {
-
-                iniciarMovimientoLogotipo(
-                    -1
-                );
-            }
-        );
-
-        flechaLogotipoDerecha.addEventListener(
-            "mousedown",
-            function () {
-
-                iniciarMovimientoLogotipo(
-                    1
-                );
-            }
-        );
-
-        document.addEventListener(
-            "mouseup",
-            detenerMovimientoLogotipo
-        );
-
-
- /* ================================================= */
-/*     MOVIMIENTO DEL NOMBRE COMERCIAL               */
+/* ================================================= */
+/*          MOVIMIENTO DEL NOMBRE COMERCIAL           */
 /* ================================================= */
 
 let intervaloNombreComercial = null;
+
 
 /* ------------------------------------------------- */
 /* LIMITAR POSICIÓN DEL NOMBRE DENTRO DE LA FRANJA   */
@@ -1485,55 +1644,42 @@ function limitarAjusteNombreComercial() {
         nombreEncabezado.offsetHeight;
 
 
-    /* --------------------------------------------- */
-    /* LÍMITES HORIZONTALES                           */
-    /* --------------------------------------------- */
+    const limiteX = Math.floor(
+        Math.max(
+            0,
+            (anchoFranja - anchoNombre) / 2
+        )
+    );
 
-    const limiteX =
-        Math.floor(
-            Math.max(
-                0,
-                (anchoFranja - anchoNombre) / 2
+    const limiteY = Math.floor(
+        Math.max(
+            0,
+            (altoFranja - altoNombre) / 2
+        )
+    );
+
+
+    ajusteNombreComercialX = Math.round(
+        Math.max(
+            -limiteX,
+            Math.min(
+                limiteX,
+                ajusteNombreComercialX
             )
-        );
+        )
+    );
 
-
-    /* --------------------------------------------- */
-    /* LÍMITES VERTICALES                             */
-    /* --------------------------------------------- */
-
-    const limiteY =
-        Math.floor(
-            Math.max(
-                0,
-                (altoFranja - altoNombre) / 2
+    ajusteNombreComercialY = Math.round(
+        Math.max(
+            -limiteY,
+            Math.min(
+                limiteY,
+                ajusteNombreComercialY
             )
-        );
-
-
-    ajusteNombreComercialX =
-        Math.round(
-            Math.max(
-                -limiteX,
-                Math.min(
-                    limiteX,
-                    ajusteNombreComercialX
-                )
-            )
-        );
-
-
-    ajusteNombreComercialY =
-        Math.round(
-            Math.max(
-                -limiteY,
-                Math.min(
-                    limiteY,
-                    ajusteNombreComercialY
-                )
-            )
-        );
+        )
+    );
 }
+
 
 /* ------------------------------------------------- */
 /* APLICAR POSICIÓN                                  */
@@ -1559,16 +1705,10 @@ function aplicarAjusteNombreComercial() {
 /* MOVER NOMBRE                                      */
 /* ------------------------------------------------- */
 
-function moverNombreComercial(
-    direccionX,
-    direccionY
-) {
+function moverNombreComercial(direccionX, direccionY) {
 
-    ajusteNombreComercialX +=
-        direccionX * 10;
-
-    ajusteNombreComercialY +=
-        direccionY * 10;
+    ajusteNombreComercialX += direccionX * 10;
+    ajusteNombreComercialY += direccionY * 10;
 
     aplicarAjusteNombreComercial();
 }
@@ -1590,18 +1730,14 @@ function iniciarMovimientoNombreComercial(
         direccionY
     );
 
-    intervaloNombreComercial =
-        setInterval(
-            function () {
+    intervaloNombreComercial = setInterval(function () {
 
-                moverNombreComercial(
-                    direccionX,
-                    direccionY
-                );
-
-            },
-            80
+        moverNombreComercial(
+            direccionX,
+            direccionY
         );
+
+    }, 80);
 }
 
 
@@ -1613,9 +1749,7 @@ function detenerMovimientoNombreComercial() {
 
     if (intervaloNombreComercial) {
 
-        clearInterval(
-            intervaloNombreComercial
-        );
+        clearInterval(intervaloNombreComercial);
 
         intervaloNombreComercial = null;
     }
@@ -1636,32 +1770,25 @@ function configurarFlechaNombreComercial(
         return;
     }
 
+    boton.addEventListener("pointerdown", function (evento) {
 
-    boton.addEventListener(
-        "pointerdown",
-        function (evento) {
+        evento.preventDefault();
 
-            evento.preventDefault();
-
-            iniciarMovimientoNombreComercial(
-                direccionX,
-                direccionY
-            );
-        }
-    );
-
+        iniciarMovimientoNombreComercial(
+            direccionX,
+            direccionY
+        );
+    });
 
     boton.addEventListener(
         "pointerup",
         detenerMovimientoNombreComercial
     );
 
-
     boton.addEventListener(
         "pointerleave",
         detenerMovimientoNombreComercial
     );
-
 
     boton.addEventListener(
         "pointercancel",
@@ -1713,13 +1840,14 @@ document.addEventListener(
     detenerMovimientoNombreComercial
 );
 
+
 /* ================================================= */
-/*          MOVIMIENTO DEL CARRITO                   */
+/*             MOVIMIENTO DEL CARRITO                */
 /* ================================================= */
 
 function limitarAjusteCarrito() {
 
-    if (!botonCarrito) {
+    if (!botonCarrito || !franjaSuperior) {
         return;
     }
 
@@ -1730,67 +1858,58 @@ function limitarAjusteCarrito() {
         botonCarrito.getBoundingClientRect();
 
 
-    /* --------------------------------------------- */
-    /* LÍMITE HORIZONTAL IZQUIERDO                   */
-    /* --------------------------------------------- */
-
     const limiteIzquierdo =
-        franjaRect.left -
-        carritoRect.left;
-
-
-    /* --------------------------------------------- */
-    /* LÍMITE HORIZONTAL DERECHO                     */
-    /* --------------------------------------------- */
+        franjaRect.left - carritoRect.left;
 
     const limiteDerecho =
-        franjaRect.right -
-        carritoRect.right;
-
-
-    /* --------------------------------------------- */
-    /* LÍMITE VERTICAL SUPERIOR                      */
-    /* --------------------------------------------- */
+        franjaRect.right - carritoRect.right;
 
     const limiteSuperior =
-        franjaRect.top -
-        carritoRect.top;
-
-
-    /* --------------------------------------------- */
-    /* LÍMITE VERTICAL INFERIOR                      */
-    /* --------------------------------------------- */
+        franjaRect.top - carritoRect.top;
 
     const limiteInferior =
-        franjaRect.bottom -
-        carritoRect.bottom;
+        franjaRect.bottom - carritoRect.bottom;
 
 
-    ajusteCarritoX =
-        Math.max(
-            ajusteCarritoX + limiteIzquierdo,
-            Math.min(
-                ajusteCarritoX + limiteDerecho,
-                ajusteCarritoX
-            )
-        );
+    // Mantener el carrito dentro de los límites de la franja.
 
-    ajusteCarritoY =
-        Math.max(
-            ajusteCarritoY + limiteSuperior,
-            Math.min(
-                ajusteCarritoY + limiteInferior,
-                ajusteCarritoY
-            )
-        );
+    ajusteCarritoX = Math.max(
+        ajusteCarritoX + limiteIzquierdo,
+        Math.min(
+            ajusteCarritoX + limiteDerecho,
+            ajusteCarritoX
+        )
+    );
+
+    ajusteCarritoY = Math.max(
+        ajusteCarritoY + limiteSuperior,
+        Math.min(
+            ajusteCarritoY + limiteInferior,
+            ajusteCarritoY
+        )
+    );
 }
 
 
 /* --------------------------------------------- */
-/* APLICAR POSICIÓN                              */
+/* APLICAR POSICIÓN DEL CARRITO                  */
 /* --------------------------------------------- */
 
 function aplicarAjusteCarrito() {
+
+    const esMovilCarrito =
+        window.matchMedia("(max-width: 768px)").matches;
+
+    if (esMovilCarrito) {
+
+        ajusteCarritoX = ajusteCarritoXMovil;
+        ajusteCarritoY = ajusteCarritoYMovil;
+
+    } else {
+
+        ajusteCarritoX = ajusteCarritoXEscritorio;
+        ajusteCarritoY = ajusteCarritoYEscritorio;
+    }
 
     actualizarVariableCSS(
         "--ajuste-carrito-x",
@@ -1805,8 +1924,9 @@ function aplicarAjusteCarrito() {
 
 
 /* ============================================= */
-/*       APLICAR TAMAÑO DEL BUSCADOR             */
+/*       APLICAR TAMAÑO DEL BUSCADOR              */
 /* ============================================= */
+
 
 function aplicarTamanoBuscador() {
 
@@ -1814,8 +1934,17 @@ function aplicarTamanoBuscador() {
         return;
     }
 
-    buscador.style.width = anchoBuscadorSeleccionado + "px";
-    buscador.style.height = altoBuscadorSeleccionado + "px";
+    buscador.style.boxSizing = "border-box";
+
+    buscador.style.width =
+        anchoBuscadorSeleccionado + "px";
+
+    buscador.style.height =
+        altoBuscadorSeleccionado + "px";
+
+    buscador.style.flex = "0 0 auto";
+    buscador.style.minWidth = "0";
+    buscador.style.maxWidth = "none";
 
     const campoBusqueda =
         document.getElementById("campo-busqueda");
@@ -1824,25 +1953,31 @@ function aplicarTamanoBuscador() {
         document.getElementById("boton-busqueda");
 
     if (campoBusqueda) {
+        campoBusqueda.style.boxSizing = "border-box";
         campoBusqueda.style.height = "100%";
+        campoBusqueda.style.minWidth = "0";
     }
 
     if (botonBusqueda) {
+        botonBusqueda.style.boxSizing = "border-box";
         botonBusqueda.style.height = "100%";
         botonBusqueda.style.width = "35px";
+        botonBusqueda.style.flex = "0 0 35px";
     }
 }
 
 
 /* ============================================= */
-/*       FLECHAS PARA CAMBIAR EL ANCHO           */
+/*       FLECHAS PARA CAMBIAR EL ANCHO            */
 /* ============================================= */
 
 let intervaloTamanoBuscador = null;
 
 
 function cambiarAnchoBuscador(direccion) {
-    const anchoMaximo = Math.floor(window.innerWidth * 0.75);
+
+    const anchoMaximo =
+        Math.floor(window.innerWidth * 0.75);
 
     anchoBuscadorSeleccionado = Math.max(
         100,
@@ -1857,50 +1992,86 @@ function cambiarAnchoBuscador(direccion) {
 
 
 function iniciarCambioTamanoBuscador(direccion) {
+
     detenerCambioTamanoBuscador();
 
     cambiarAnchoBuscador(direccion);
 
     intervaloTamanoBuscador = setInterval(function () {
+
         cambiarAnchoBuscador(direccion);
+
     }, 80);
 }
 
+
 function detenerCambioTamanoBuscador() {
+
     if (intervaloTamanoBuscador !== null) {
+
         clearInterval(intervaloTamanoBuscador);
+
         intervaloTamanoBuscador = null;
     }
 }
 
 
+
+
+
+
+
+
+/* --------------------------------------------- */
+/* BOTÓN REDUCIR                                 */
+/* --------------------------------------------- */
+
 if (reducirBuscador) {
-    reducirBuscador.addEventListener("pointerdown", function (evento) {
-        evento.preventDefault();
-        iniciarCambioTamanoBuscador(1);
-    });
+
+    reducirBuscador.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarCambioTamanoBuscador(-1);
+        }
+    );
 }
+
+
+/* --------------------------------------------- */
+/* BOTÓN AGRANDAR                                */
+/* --------------------------------------------- */
 
 if (agrandarBuscador) {
-    agrandarBuscador.addEventListener("pointerdown", function (evento) {
-        evento.preventDefault();
-        iniciarCambioTamanoBuscador(-1);
-    });
+
+    agrandarBuscador.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarCambioTamanoBuscador(1);
+        }
+    );
 }
 
 
-document.addEventListener("pointerup", detenerCambioTamanoBuscador);
-document.addEventListener("pointercancel", detenerCambioTamanoBuscador);
+document.addEventListener(
+    "pointerup",
+    detenerCambioTamanoBuscador
+);
 
-aplicarTamanoBuscador();
+document.addEventListener(
+    "pointercancel",
+    detenerCambioTamanoBuscador
+);
 
 
-
-
-
-/* --------------------------------------------- */
-/* APLICAR POSICIÓN DEL BUSCADOR                 */
-/* --------------------------------------------- */
+/* ============================================= */
+/*       POSICIÓN DEL BUSCADOR                   */
+/* ============================================= */
 
 function aplicarAjusteBuscador() {
 
@@ -1913,18 +2084,19 @@ function aplicarAjusteBuscador() {
         "--ajuste-buscador-y",
         `${ajusteBuscadorY}px`
     );
-
 }
 
 
 /* ============================================= */
-/*       MOVIMIENTO DEL BUSCADOR                 */
+/*       MOVER EL BUSCADOR                       */
 /* ============================================= */
 
 function moverBuscador(direccionX, direccionY) {
 
-    ajusteBuscadorX += direccionX * 10;
-    ajusteBuscadorY += direccionY * 10;
+    const paso = 4;
+
+    ajusteBuscadorX += direccionX * paso;
+    ajusteBuscadorY += direccionY * paso;
 
     aplicarAjusteBuscador();
 }
@@ -1933,304 +2105,6 @@ function moverBuscador(direccionX, direccionY) {
 /* ============================================= */
 /*       INICIAR MOVIMIENTO                      */
 /* ============================================= */
-
-function iniciarMovimientoBuscador(direccionX, direccionY) {
-
-    detenerMovimientoBuscador();
-
-    moverBuscador(direccionX, direccionY);
-
-    intervaloBuscador = setInterval(function () {
-
-        moverBuscador(direccionX, direccionY);
-
-    }, 80);
-}
-
-
-/* ============================================= */
-/*       DETENER MOVIMIENTO                      */
-/* ============================================= */
-
-function detenerMovimientoBuscador() {
-
-    if (intervaloBuscador) {
-
-        clearInterval(intervaloBuscador);
-
-        intervaloBuscador = null;
-    }
-}
-
-
-/* ============================================= */
-/*       CONFIGURAR CADA FLECHA                  */
-/* ============================================= */
-
-function configurarFlechaBuscador(
-    boton,
-    direccionX,
-    direccionY
-) {
-
-    if (!boton) {
-        return;
-    }
-
-    boton.addEventListener("pointerdown", function (evento) {
-
-        evento.preventDefault();
-
-        iniciarMovimientoBuscador(
-            direccionX,
-            direccionY
-        );
-
-    });
-
-    boton.addEventListener(
-        "pointerup",
-        detenerMovimientoBuscador
-    );
-
-    boton.addEventListener(
-        "pointerleave",
-        detenerMovimientoBuscador
-    );
-
-    boton.addEventListener(
-        "pointercancel",
-        detenerMovimientoBuscador
-    );
-}
-
-
-/* ============================================= */
-/*       CONECTAR LAS CUATRO FLECHAS             */
-/* ============================================= */
-
-configurarFlechaBuscador(
-    flechaBuscadorArriba,
-    0,
-    -1
-);
-
-configurarFlechaBuscador(
-    flechaBuscadorIzquierda,
-    -1,
-    0
-);
-
-configurarFlechaBuscador(
-    flechaBuscadorDerecha,
-    1,
-    0
-);
-
-configurarFlechaBuscador(
-    flechaBuscadorAbajo,
-    0,
-    1
-);
-
-
-/* ============================================= */
-/*       DETENER AL SOLTAR EL BOTÓN              */
-/* ============================================= */
-
-document.addEventListener(
-    "pointerup",
-    detenerMovimientoBuscador
-);
-
-document.addEventListener(
-    "pointercancel",
-    detenerMovimientoBuscador
-);
-
-
-
-
-/* --------------------------------------------- */
-/* MOVER CARRITO                                 */
-/* --------------------------------------------- */
-
-function moverCarrito(
-    direccionX,
-    direccionY
-) {
-
-    ajusteCarritoX +=
-        direccionX * 10;
-
-    ajusteCarritoY +=
-        direccionY * 10;
-
-    aplicarAjusteCarrito();
-}
-
-
-
-
-/* --------------------------------------------- */
-/* INICIAR MOVIMIENTO                            */
-/* --------------------------------------------- */
-
-function iniciarMovimientoCarrito(
-    direccionX,
-    direccionY
-) {
-
-    detenerMovimientoCarrito();
-
-    moverCarrito(
-        direccionX,
-        direccionY
-    );
-
-    intervaloCarrito =
-        setInterval(
-            function () {
-
-                moverCarrito(
-                    direccionX,
-                    direccionY
-                );
-
-            },
-            80
-        );
-}
-
-
-/* --------------------------------------------- */
-/* DETENER MOVIMIENTO                            */
-/* --------------------------------------------- */
-
-function detenerMovimientoCarrito() {
-
-    if (intervaloCarrito) {
-
-        clearInterval(
-            intervaloCarrito
-        );
-
-        intervaloCarrito = null;
-    }
-}
-
-
-/* --------------------------------------------- */
-/* CONFIGURAR FLECHA                             */
-/* --------------------------------------------- */
-
-function configurarFlechaCarrito(
-    boton,
-    direccionX,
-    direccionY
-) {
-
-    if (!boton) {
-        return;
-    }
-
-
-    boton.addEventListener(
-        "pointerdown",
-        function (evento) {
-
-            evento.preventDefault();
-
-            iniciarMovimientoCarrito(
-                direccionX,
-                direccionY
-            );
-        }
-    );
-
-
-    boton.addEventListener(
-        "pointerup",
-        detenerMovimientoCarrito
-    );
-
-
-    boton.addEventListener(
-        "pointerleave",
-        detenerMovimientoCarrito
-    );
-
-
-    boton.addEventListener(
-        "pointercancel",
-        detenerMovimientoCarrito
-    );
-}
-
-
-/* --------------------------------------------- */
-/* CUATRO DIRECCIONES                            */
-/* --------------------------------------------- */
-
-configurarFlechaCarrito(
-    flechaCarritoIzquierda,
-    -1,
-    0
-);
-
-configurarFlechaCarrito(
-    flechaCarritoDerecha,
-    1,
-    0
-);
-
-configurarFlechaCarrito(
-    flechaCarritoArriba,
-    0,
-    -1
-);
-
-configurarFlechaCarrito(
-    flechaCarritoAbajo,
-    0,
-    1
-);
-
-
-/* --------------------------------------------- */
-/* SOLTAR EN CUALQUIER PARTE                    */
-/* --------------------------------------------- */
-
-document.addEventListener(
-    "pointerup",
-    detenerMovimientoCarrito
-);
-
-document.addEventListener(
-    "pointercancel",
-    detenerMovimientoCarrito
-);
-
-
-/* --------------------------------------------- */
-/* MOVER BUSCADOR                                */
-/* --------------------------------------------- */
-
-function moverBuscador(
-    direccionX,
-    direccionY
-) {
-
-    ajusteBuscadorX += direccionX * 10;
-    ajusteBuscadorY += direccionY * 10;
-
-    aplicarAjusteBuscador();
-}
-
-
-/* --------------------------------------------- */
-/* INICIAR MOVIMIENTO                            */
-/* --------------------------------------------- */
 
 function iniciarMovimientoBuscador(
     direccionX,
@@ -2244,27 +2118,24 @@ function iniciarMovimientoBuscador(
         direccionY
     );
 
-    intervaloBuscador = setInterval(
-        function () {
+    intervaloBuscador = setInterval(function () {
 
-            moverBuscador(
-                direccionX,
-                direccionY
-            );
+        moverBuscador(
+            direccionX,
+            direccionY
+        );
 
-        },
-        80
-    );
+    }, 80);
 }
 
 
-/* --------------------------------------------- */
-/* DETENER MOVIMIENTO                            */
-/* --------------------------------------------- */
+/* ============================================= */
+/*       DETENER MOVIMIENTO                      */
+/* ============================================= */
 
 function detenerMovimientoBuscador() {
 
-    if (intervaloBuscador) {
+    if (intervaloBuscador !== null) {
 
         clearInterval(intervaloBuscador);
 
@@ -2273,9 +2144,9 @@ function detenerMovimientoBuscador() {
 }
 
 
-/* --------------------------------------------- */
-/* CONFIGURAR FLECHA                             */
-/* --------------------------------------------- */
+/* ============================================= */
+/*       CONFIGURAR FLECHAS DEL BUSCADOR         */
+/* ============================================= */
 
 function configurarFlechaBuscador(
     boton,
@@ -2322,6 +2193,12 @@ function configurarFlechaBuscador(
 /* --------------------------------------------- */
 
 configurarFlechaBuscador(
+    flechaBuscadorArriba,
+    0,
+    -1
+);
+
+configurarFlechaBuscador(
     flechaBuscadorIzquierda,
     -1,
     0
@@ -2334,21 +2211,11 @@ configurarFlechaBuscador(
 );
 
 configurarFlechaBuscador(
-    flechaBuscadorArriba,
-    0,
-    -1
-);
-
-configurarFlechaBuscador(
     flechaBuscadorAbajo,
     0,
     1
 );
 
-
-/* --------------------------------------------- */
-/* SOLTAR EN CUALQUIER PARTE                    */
-/* --------------------------------------------- */
 
 document.addEventListener(
     "pointerup",
@@ -2361,149 +2228,294 @@ document.addEventListener(
 );
 
 
+/* ============================================= */
+/*       APLICAR CONFIGURACIÓN INICIAL           */
+/* ============================================= */
+
+aplicarTamanoBuscador();
+aplicarAjusteBuscador();
 
 
 
-        /* ================================================= */
-        /*          CAMBIO DE FUENTE                          */
-        /* ================================================= */
+/* ============================================= */
+/*              MOVIMIENTO DEL CARRITO           */
+/* ============================================= */
 
-        fuenteNombreComercial.addEventListener(
-            "change",
-            function () {
+function moverCarrito(direccionX, direccionY) {
 
-                actualizarVariableCSS(
-                    "--fuente-nombre-comercial",
-                    fuenteNombreComercial.value
-                );
-            }
-        );
+    ajusteCarritoX += direccionX * 10;
+    ajusteCarritoY += direccionY * 10;
 
+    const esMovilCarrito =
+        window.matchMedia("(max-width: 768px)").matches;
 
-        /* ================================================= */
-        /*          CAMBIO DE TAMAÑO                          */
-        /* ================================================= */
+    if (esMovilCarrito) {
 
-        tamanoNombreComercial.addEventListener(
-            "change",
-            function () {
+        ajusteCarritoXMovil = ajusteCarritoX;
+        ajusteCarritoYMovil = ajusteCarritoY;
 
-                actualizarVariableCSS(
-                    "--tamano-nombre-comercial",
-                    tamanoNombreComercial.value
-                );
-            }
-        );
+    } else {
+
+        ajusteCarritoXEscritorio = ajusteCarritoX;
+        ajusteCarritoYEscritorio = ajusteCarritoY;
+    }
+
+    aplicarAjusteCarrito();
+}
 
 
-        /* ================================================= */
-        /*         ACEPTAR CONFIGURACIÓN LOGOTIPO             */
-        /* ================================================= */
+/* --------------------------------------------- */
+/* INICIAR MOVIMIENTO DEL CARRITO                */
+/* --------------------------------------------- */
 
-        aceptarLogotipo.addEventListener(
-            "click",
-            async function () {
+function iniciarMovimientoCarrito(
+    direccionX,
+    direccionY
+) {
 
-                const datosLogo = {
+    detenerMovimientoCarrito();
 
-                    mostrar_logotipo:
-                        mostrarLogotipo.checked,
-
-                    ajuste_logotipo_x:
-                        ajusteLogotipo
-                };
-
-
-                const {
-    error
-} = await clienteSupabase
-    .from(
-        "configuracion_inicio"
-    )
-    .update(
-        datosLogo
-    )
-    .eq(
-        "cliente_id",
-        clienteId
+    moverCarrito(
+        direccionX,
+        direccionY
     );
 
+    intervaloCarrito = setInterval(function () {
 
-                if (error) {
-
-                    console.error(
-                        "Error al guardar configuración del logotipo:",
-                        error
-                    );
-
-                    return;
-                }
-
-
-                const imagenLogotipo =
-                    document.getElementById(
-                        "logotipo-franja"
-                    );
-
-
-                if (imagenLogotipo) {
-
-                    imagenLogotipo.classList.toggle(
-                        "oculto",
-                        !mostrarLogotipo.checked
-                    );
-                }
-
-
-                formularioLogotipo.classList.remove(
-                    "formulario-abierto"
-                );
-
-                formularioCabecera.classList.add(
-                    "formulario-abierto"
-                );
-            }
+        moverCarrito(
+            direccionX,
+            direccionY
         );
 
+    }, 80);
+}
 
-           /* ================================================= */
-          /*          ACEPTAR CONFIGURACIÓN DEL CARRITO        */
-         /* ================================================= */
 
-           aceptarCarrito.addEventListener(
-          "click",
-           async function () {
+/* --------------------------------------------- */
+/* DETENER MOVIMIENTO DEL CARRITO                */
+/* --------------------------------------------- */
 
-            const {
-    error
-} = await clienteSupabase
-    .from("configuracion_inicio")
-    .update({
+function detenerMovimientoCarrito() {
 
-        mostrar_carrito:
-            mostrarCarrito.checked,
+    if (intervaloCarrito !== null) {
 
-        tipo_carrito:
-            tipoCarritoSeleccionado,
+        clearInterval(intervaloCarrito);
 
-        ajuste_carrito_x:
-            ajusteCarritoX,
+        intervaloCarrito = null;
+    }
+}
 
-        ajuste_carrito_y:
-            ajusteCarritoY
 
-    })
-    .eq(
-        "cliente_id",
-        clienteId
+/* --------------------------------------------- */
+/* CONFIGURAR FLECHAS DEL CARRITO                */
+/* --------------------------------------------- */
+
+function configurarFlechaCarrito(
+    boton,
+    direccionX,
+    direccionY
+) {
+
+    if (!boton) {
+        return;
+    }
+
+    boton.addEventListener(
+        "pointerdown",
+        function (evento) {
+
+            evento.preventDefault();
+
+            iniciarMovimientoCarrito(
+                direccionX,
+                direccionY
+            );
+        }
     );
 
+    boton.addEventListener(
+        "pointerup",
+        detenerMovimientoCarrito
+    );
 
+    boton.addEventListener(
+        "pointerleave",
+        detenerMovimientoCarrito
+    );
+
+    boton.addEventListener(
+        "pointercancel",
+        detenerMovimientoCarrito
+    );
+}
+
+
+/* --------------------------------------------- */
+/* CUATRO DIRECCIONES DEL CARRITO                */
+/* --------------------------------------------- */
+
+configurarFlechaCarrito(
+    flechaCarritoIzquierda,
+    -1,
+    0
+);
+
+configurarFlechaCarrito(
+    flechaCarritoDerecha,
+    1,
+    0
+);
+
+configurarFlechaCarrito(
+    flechaCarritoArriba,
+    0,
+    -1
+);
+
+configurarFlechaCarrito(
+    flechaCarritoAbajo,
+    0,
+    1
+);
+
+
+document.addEventListener(
+    "pointerup",
+    detenerMovimientoCarrito
+);
+
+document.addEventListener(
+    "pointercancel",
+    detenerMovimientoCarrito
+);
+
+
+/* ================================================= */
+/*              CAMBIO DE FUENTE                     */
+/* ================================================= */
+
+fuenteNombreComercial.addEventListener(
+    "change",
+    function () {
+
+        actualizarVariableCSS(
+            "--fuente-nombre-comercial",
+            fuenteNombreComercial.value
+        );
+    }
+);
+
+
+/* ================================================= */
+/*              CAMBIO DE TAMAÑO                     */
+/* ================================================= */
+
+tamanoNombreComercial.addEventListener(
+    "change",
+    function () {
+
+        actualizarVariableCSS(
+            "--tamano-nombre-comercial",
+            tamanoNombreComercial.value
+        );
+    }
+);
+
+
+/* ================================================= */
+/*         ACEPTAR CONFIGURACIÓN DEL LOGOTIPO         */
+/* ================================================= */
+
+aceptarLogotipo.addEventListener(
+    "click",
+    async function () {
+
+        const archivo = archivoLogotipo.files[0];
+
+        const esMovilLogo =
+            window.matchMedia("(max-width: 768px)").matches;
+
+        const columnaLogotipo = esMovilLogo
+            ? "logotipo_url_movil"
+            : "logotipo_url_escritorio";
+
+        let logotipoUrl = esMovilLogo
+            ? configuracionGuardada?.logotipo_url_movil || null
+            : configuracionGuardada?.logotipo_url_escritorio || null;
+
+
+        /* SUBIR IMAGEN SI SE SELECCIONÓ UN ARCHIVO */
+
+        if (archivo) {
+
+            const nombreArchivo =
+                `logotipo_${Date.now()}_${archivo.name}`;
+
+            const { error: errorSubida } = await clienteSupabase
+                .storage
+                .from("imagenes")
+                .upload(
+                    `logotipos/${nombreArchivo}`,
+                    archivo
+                );
+
+            if (errorSubida) {
+
+                console.error(
+                    "Error al subir el logotipo:",
+                    errorSubida
+                );
+
+                return;
+            }
+
+            const { data } = clienteSupabase
+                .storage
+                .from("imagenes")
+                .getPublicUrl(
+                    `logotipos/${nombreArchivo}`
+                );
+
+            logotipoUrl = data.publicUrl;
+        }
+
+
+     
+/* PREPARAR DATOS */
+
+const datosLogo = {
+
+    [columnaLogotipo]: logotipoUrl,
+
+    mostrar_logotipo:
+        mostrarLogotipo.checked,
+
+    ajuste_logotipo_x:
+        ajusteLogotipoEscritorio,
+
+    ajuste_logotipo_x_movil:
+        ajusteLogotipoMovil,
+
+    ajuste_logotipo_y_escritorio:
+        ajusteLogotipoYEscritorio,
+
+    ajuste_logotipo_y_movil:
+        ajusteLogotipoYMovil
+};
+
+
+
+        /* GUARDAR EN SUPABASE */
+
+        const { error } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update(datosLogo)
+            .eq("cliente_id", clienteId);
 
         if (error) {
 
             console.error(
-                "Error al guardar configuración del carrito:",
+                "Error al guardar el logotipo:",
                 error
             );
 
@@ -2511,19 +2523,55 @@ document.addEventListener(
         }
 
 
-        botonCarrito.classList.toggle(
-            "oculto",
-            !mostrarCarrito.checked
-        );
+        /* ACTUALIZAR CONFIGURACIÓN EN MEMORIA */
+
+        if (configuracionGuardada) {
+
+            Object.assign(
+                configuracionGuardada,
+                datosLogo
+            );
+        }
 
 
-        aplicarTipoCarrito();
+        /* ACTUALIZAR LOGOTIPO EN LA FRANJA */
+
+        let imagen =
+            document.getElementById("logotipo-franja");
+
+        if (logotipoUrl) {
+
+            if (!imagen) {
+
+                imagen = document.createElement("img");
+
+                imagen.id = "logotipo-franja";
+
+                franjaSuperior.appendChild(imagen);
+            }
+
+            imagen.src = logotipoUrl;
+
+            aplicarAjusteLogotipo();
+
+            imagen.classList.toggle(
+                "oculto",
+                !mostrarLogotipo.checked
+            );
+
+        } else if (imagen) {
+
+            imagen.classList.add("oculto");
+        }
 
 
-        formularioCarrito.classList.remove(
+        /* CERRAR FORMULARIO */
+
+        archivoLogotipo.value = "";
+
+        formularioLogotipo.classList.remove(
             "formulario-abierto"
         );
-
 
         formularioCabecera.classList.add(
             "formulario-abierto"
@@ -2534,12 +2582,211 @@ document.addEventListener(
 
 
 /* ================================================= */
-/*          ACEPTAR CONFIGURACIÓN DEL BUSCADOR        */
+/*         ACEPTAR CONFIGURACIÓN DEL CARRITO          */
+/* ================================================= */
+
+aceptarCarrito.addEventListener(
+    "click",
+    async function () {
+
+        // Identificar el dispositivo al guardar.
+        const esMovilCarrito =
+            window.matchMedia("(max-width: 768px)").matches;
+
+        // Actualizar únicamente la posición del dispositivo actual.
+        if (esMovilCarrito) {
+
+            ajusteCarritoXMovil = ajusteCarritoX;
+            ajusteCarritoYMovil = ajusteCarritoY;
+
+        } else {
+
+            ajusteCarritoXEscritorio = ajusteCarritoX;
+            ajusteCarritoYEscritorio = ajusteCarritoY;
+        }
+
+        
+        // Guardar la configuración del dispositivo actual.
+        const datosCarrito = {
+
+            mostrar_carrito:
+                mostrarCarrito.checked,
+
+            tipo_carrito:
+                tipoCarritoSeleccionado,
+
+            tipo_carrito_escritorio:
+                esMovilCarrito
+                    ? (
+                        configuracionGuardada?.tipo_carrito_escritorio
+                        ?? configuracionGuardada?.tipo_carrito
+                        ?? "bolsita"
+                    )
+                    : tipoCarritoSeleccionado,
+
+            tipo_carrito_movil:
+                esMovilCarrito
+                    ? tipoCarritoSeleccionado
+                    : (
+                        configuracionGuardada?.tipo_carrito_movil
+                        ?? configuracionGuardada?.tipo_carrito
+                        ?? "bolsita"
+                    ),
+
+            ajuste_carrito_x_escritorio:
+                ajusteCarritoXEscritorio,
+
+            ajuste_carrito_y_escritorio:
+                ajusteCarritoYEscritorio,
+
+            ajuste_carrito_x_movil:
+                ajusteCarritoXMovil,
+
+            ajuste_carrito_y_movil:
+                ajusteCarritoYMovil,
+
+            // Mantener los campos generales por compatibilidad.
+            ajuste_carrito_x:
+                ajusteCarritoX,
+
+            ajuste_carrito_y:
+                ajusteCarritoY
+        };
+
+
+
+        const { error } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update(datosCarrito)
+            .eq("cliente_id", clienteId);
+
+        if (error) {
+
+            console.error(
+                "Error al guardar configuración del carrito:",
+                error
+            );
+
+            alert(
+                "No se pudo guardar la configuración del carrito."
+            );
+
+            return;
+        }
+
+        // Actualizar la configuración que está en memoria.
+        if (configuracionGuardada) {
+
+            Object.assign(
+                configuracionGuardada,
+                datosCarrito
+            );
+        }
+
+        botonCarrito.classList.toggle(
+            "oculto",
+            !mostrarCarrito.checked
+        );
+
+        aplicarTipoCarrito();
+
+        formularioCarrito.classList.remove(
+            "formulario-abierto"
+        );
+
+        formularioCabecera.classList.add(
+            "formulario-abierto"
+        );
+
+        console.log(
+            "Configuración del carrito guardada:",
+            datosCarrito
+        );
+    }
+);
+
+
+/* ================================================= */
+/*         ACEPTAR CONFIGURACIÓN DEL BUSCADOR         */
 /* ================================================= */
 
 aceptarBuscador.addEventListener(
     "click",
-    function () {
+    async function () {
+
+        /* IDENTIFICAR DISPOSITIVO */
+
+        const esMovilBuscador =
+            window.matchMedia("(max-width: 768px)").matches;
+
+
+        /* PREPARAR DATOS DEL DISPOSITIVO ACTUAL */
+
+        const datosBuscador = esMovilBuscador
+            ? {
+                ajuste_buscador_x_movil:
+                    ajusteBuscadorX,
+
+                ajuste_buscador_y_movil:
+                    ajusteBuscadorY,
+
+                ancho_buscador_movil:
+                    anchoBuscadorSeleccionado,
+
+                alto_buscador_movil:
+                    altoBuscadorSeleccionado
+            }
+            : {
+                ajuste_buscador_x_escritorio:
+                    ajusteBuscadorX,
+
+                ajuste_buscador_y_escritorio:
+                    ajusteBuscadorY,
+
+                ancho_buscador_escritorio:
+                    anchoBuscadorSeleccionado,
+
+                alto_buscador_escritorio:
+                    altoBuscadorSeleccionado
+            };
+
+
+        /* GUARDAR EN SUPABASE */
+
+        const { error: errorBuscador } =
+            await clienteSupabase
+                .from("configuracion_inicio")
+                .update(datosBuscador)
+                .eq("cliente_id", clienteId);
+
+
+        if (errorBuscador) {
+
+            console.error(
+                "Error al guardar configuración del buscador:",
+                errorBuscador
+            );
+
+            alert(
+                "No se pudo guardar la configuración del buscador."
+            );
+
+            return;
+        }
+
+
+        /* ACTUALIZAR CONFIGURACIÓN EN MEMORIA */
+
+        if (configuracionGuardada) {
+
+            Object.assign(
+                configuracionGuardada,
+                datosBuscador
+            );
+        }
+
+
+        /* CERRAR FORMULARIO */
 
         formularioBuscador.classList.remove(
             "formulario-abierto"
@@ -2549,30 +2796,30 @@ aceptarBuscador.addEventListener(
             "formulario-abierto"
         );
 
+
+        console.log(
+            "Configuración del buscador guardada:",
+            datosBuscador
+        );
     }
 );
 
 
 
- /* ================================================= */
-/*       ACEPTAR NOMBRE COMERCIAL                    */
+
+/* ================================================= */
+/*         ACEPTAR NOMBRE COMERCIAL                   */
 /* ================================================= */
 
 aceptarNombreComercial.addEventListener(
     "click",
     async function () {
 
-
-        
-
-        /* --------------------------------------------- */
-        /* CREAR / OBTENER NOMBRE EN LA FRANJA           */
-        /* --------------------------------------------- */
-
         let nombreEncabezado =
             document.getElementById(
                 "nombre-comercial-encabezado"
             );
+
 
         if (!nombreEncabezado) {
 
@@ -2588,19 +2835,15 @@ aceptarNombreComercial.addEventListener(
         }
 
 
-        /* --------------------------------------------- */
-        /* IDENTIFICAR DISPOSITIVO                       */
-        /* --------------------------------------------- */
+        /* IDENTIFICAR DISPOSITIVO */
 
-        const esMovil =
+        const esMovilNombre =
             window.innerWidth <= 768;
 
 
-        /* --------------------------------------------- */
-        /* GUARDAR NOMBRE SEGÚN DISPOSITIVO              */
-        /* --------------------------------------------- */
+        /* GUARDAR NOMBRE */
 
-        if (esMovil) {
+        if (esMovilNombre) {
 
             nombreComercialMovil =
                 nombreComercial.value;
@@ -2612,27 +2855,16 @@ aceptarNombreComercial.addEventListener(
         }
 
 
-        /* --------------------------------------------- */
-        /* ACTUALIZAR TEXTO                              */
-        /* --------------------------------------------- */
-
         nombreEncabezado.textContent =
             nombreComercial.value;
 
 
-        /* --------------------------------------------- */
-        /* ACTUALIZAR FUENTE                             */
-        /* --------------------------------------------- */
+        /* ACTUALIZAR FUENTE Y TAMAÑO */
 
         actualizarVariableCSS(
             "--fuente-nombre-comercial",
             fuenteNombreComercial.value
         );
-
-
-        /* --------------------------------------------- */
-        /* ACTUALIZAR TAMAÑO                             */
-        /* --------------------------------------------- */
 
         actualizarVariableCSS(
             "--tamano-nombre-comercial",
@@ -2640,16 +2872,12 @@ aceptarNombreComercial.addEventListener(
         );
 
 
-        /* --------------------------------------------- */
-        /* APLICAR POSICIÓN                              */
-        /* --------------------------------------------- */
+        /* APLICAR POSICIÓN */
 
         aplicarAjusteNombreComercial();
 
 
-        /* --------------------------------------------- */
-        /* MOSTRAR / OCULTAR                             */
-        /* --------------------------------------------- */
+        /* MOSTRAR U OCULTAR */
 
         nombreEncabezado.classList.toggle(
             "oculto",
@@ -2657,11 +2885,9 @@ aceptarNombreComercial.addEventListener(
         );
 
 
-        /* ================================================= */
-        /*       GUARDAR TAMAÑO Y POSICIÓN                    */
-        /* ================================================= */
+        /* GUARDAR AJUSTES SEGÚN DISPOSITIVO */
 
-        if (esMovil) {
+        if (esMovilNombre) {
 
             tamanoNombreComercialMovil =
                 tamanoNombreComercial.value;
@@ -2685,9 +2911,7 @@ aceptarNombreComercial.addEventListener(
         }
 
 
-        /* ================================================= */
-        /*       DATOS GENERALES                              */
-        /* ================================================= */
+        /* DATOS GENERALES */
 
         const datosNombreComercial = {
 
@@ -2699,83 +2923,59 @@ aceptarNombreComercial.addEventListener(
         };
 
 
-        /* ================================================= */
-        /*       GUARDAR NOMBRE SEGÚN DISPOSITIVO             */
-        /* ================================================= */
+        /* GUARDAR NOMBRE SEGÚN DISPOSITIVO */
 
-        if (esMovil) {
+        if (esMovilNombre) {
 
-            datosNombreComercial
-                .nombre_comercial_movil =
-                    nombreComercialMovil;
+            datosNombreComercial.nombre_comercial_movil =
+                nombreComercialMovil;
 
-        } else {
+            datosNombreComercial.tamano_nombre_comercial_movil =
+                tamanoNombreComercialMovil;
 
-            datosNombreComercial
-                .nombre_comercial_escritorio =
-                    nombreComercialEscritorio;
-        }
+            datosNombreComercial.ajuste_nombre_comercial_x_movil =
+                ajusteNombreComercialXMovil;
 
-
-        /* ================================================= */
-        /*       GUARDAR TAMAÑO Y POSICIÓN                    */
-        /* ================================================= */
-
-        if (esMovil) {
-
-            datosNombreComercial
-                .tamano_nombre_comercial_movil =
-                    tamanoNombreComercialMovil;
-
-            datosNombreComercial
-                .ajuste_nombre_comercial_x_movil =
-                    ajusteNombreComercialXMovil;
-
-            datosNombreComercial
-                .ajuste_nombre_comercial_y_movil =
-                    ajusteNombreComercialYMovil;
+            datosNombreComercial.ajuste_nombre_comercial_y_movil =
+                ajusteNombreComercialYMovil;
 
         } else {
 
-            datosNombreComercial
-                .tamano_nombre_comercial_escritorio =
-                    tamanoNombreComercialEscritorio;
+            datosNombreComercial.nombre_comercial_escritorio =
+                nombreComercialEscritorio;
 
-            datosNombreComercial
-                .ajuste_nombre_comercial_x_escritorio =
-                    ajusteNombreComercialXEscritorio;
+            datosNombreComercial.tamano_nombre_comercial_escritorio =
+                tamanoNombreComercialEscritorio;
 
-            datosNombreComercial
-                .ajuste_nombre_comercial_y_escritorio =
-                    ajusteNombreComercialYEscritorio;
+            datosNombreComercial.ajuste_nombre_comercial_x_escritorio =
+                ajusteNombreComercialXEscritorio;
+
+            datosNombreComercial.ajuste_nombre_comercial_y_escritorio =
+                ajusteNombreComercialYEscritorio;
         }
 
-if (window.innerWidth > 768) {
-    datosNombreComercial.aceptar_nombre_comercial_top_escritorio =
-        parseInt(
-            getComputedStyle(aceptarNombreComercial).top,
-            10
-        ) || 315;
-}
+
+        /* POSICIÓN DEL BOTÓN ACEPTAR EN ESCRITORIO */
+
+        if (window.innerWidth > 768) {
+
+            datosNombreComercial.aceptar_nombre_comercial_top_escritorio =
+                parseInt(
+                    getComputedStyle(
+                        aceptarNombreComercial
+                    ).top,
+                    10
+                ) || 315;
+        }
 
 
+        /* GUARDAR EN SUPABASE */
 
-
-        /* --------------------------------------------- */
-        /* GUARDAR EN SUPABASE                           */
-        /* --------------------------------------------- */
-
-        const {
-            error
-        } = await clienteSupabase
+        const { error } = await clienteSupabase
             .from("configuracion_inicio")
             .update(datosNombreComercial)
-           .eq("cliente_id", clienteId);
+            .eq("cliente_id", clienteId);
 
-
-        /* --------------------------------------------- */
-        /* ERROR                                         */
-        /* --------------------------------------------- */
 
         if (error) {
 
@@ -2788,9 +2988,14 @@ if (window.innerWidth > 768) {
         }
 
 
-        /* --------------------------------------------- */
-        /* CERRAR FORMULARIO                             */
-        /* --------------------------------------------- */
+        if (configuracionGuardada) {
+
+            Object.assign(
+                configuracionGuardada,
+                datosNombreComercial
+            );
+        }
+
 
         formularioNombreComercial.classList.remove(
             "formulario-abierto"
@@ -2801,372 +3006,438 @@ if (window.innerWidth > 768) {
         );
     }
 );
-      
-
-        /* ================================================= */
-        /*          ACEPTAR CONFIGURACIÓN CABECERA            */
-        /* ================================================= */
-
-        aceptarCabecera.addEventListener(
-            "click",
-            async function () {
 
 
-                const archivo =
-                    archivoLogotipo.files[0];
+/* ================================================= */
+/*          ACEPTAR CONFIGURACIÓN DE CABECERA         */
+/* ================================================= */
+
+aceptarCabecera.addEventListener(
+    "click",
+    async function () {
+
+        const archivo = archivoLogotipo.files[0];
+
+        let logotipoUrl =
+            configuracionGuardada?.logotipo_url || null;
 
 
-                let logotipoUrl =
-                    configuracionGuardada?.logotipo_url ||
-                    null;
+        /* SUBIR LOGOTIPO SI SE SELECCIONÓ */
 
+        if (archivo) {
 
-                /* ----------------------------------------- */
-                /* SUBIR LOGOTIPO                            */
-                /* ----------------------------------------- */
+            const nombreArchivo =
+                `logotipo_${Date.now()}_${archivo.name}`;
 
-                if (archivo) {
-
-                    const nombreArchivo =
-                        `logotipo_${Date.now()}_${archivo.name}`;
-
-
-                    const {
-                        error: errorSubida
-                    } = await clienteSupabase
-                        .storage
-                        .from("imagenes")
-                        .upload(
-                            `logotipos/${nombreArchivo}`,
-                            archivo,
-                            {
-                                upsert: false
-                            }
-                        );
-
-
-                    if (errorSubida) {
-
-                        console.error(
-                            "Error al subir logotipo:",
-                            errorSubida
-                        );
-
-                        return;
+            const { error: errorSubida } = await clienteSupabase
+                .storage
+                .from("imagenes")
+                .upload(
+                    `logotipos/${nombreArchivo}`,
+                    archivo,
+                    {
+                        upsert: false
                     }
-
-
-                    const {
-                        data: urlLogotipo
-                    } =
-                        clienteSupabase
-                            .storage
-                            .from("imagenes")
-                            .getPublicUrl(
-                                `logotipos/${nombreArchivo}`
-                            );
-
-
-                    logotipoUrl =
-                        urlLogotipo.publicUrl;
-
-
-                    let imagenFranja =
-                        document.getElementById(
-                            "logotipo-franja"
-                        );
-
-
-                    if (!imagenFranja) {
-
-                        imagenFranja =
-                            document.createElement(
-                                "img"
-                            );
-
-                        imagenFranja.id =
-                            "logotipo-franja";
-
-                        franjaSuperior.appendChild(
-                            imagenFranja
-                        );
-                    }
-
-
-                    imagenFranja.src =
-                        logotipoUrl;
-
-
-                    imagenFranja.classList.toggle(
-                        "oculto",
-                        !mostrarLogotipo.checked
-                    );
-                }
-
-
-                /* ----------------------------------------- */
-                /* VISIBILIDAD                               */
-                /* ----------------------------------------- */
-
-                botonCarrito.classList.toggle(
-                    "oculto",
-                    !mostrarCarrito.checked
                 );
 
+            if (errorSubida) {
 
-                buscador.classList.toggle(
-                    "oculto",
-                    !mostrarBuscador.checked
+                console.error(
+                    "Error al subir logotipo:",
+                    errorSubida
                 );
 
-
-                /* ----------------------------------------- */
-                /* GUARDAR EN SUPABASE                       */
-                /* ----------------------------------------- */
-
-                const {
-                    error: errorGuardado
-                } = await clienteSupabase
-                    .from(
-                        "configuracion_inicio"
-                    )
-                   
-                   .update({
-
-    logotipo_url:
-        logotipoUrl,
-
-    mostrar_carrito:
-        mostrarCarrito.checked,
-
-    mostrar_nombre_comercial:
-        mostrarNombreComercial.checked,
-
-    mostrar_buscador:
-        mostrarBuscador.checked,
-
-    tipo_carrito:
-        tipoCarritoSeleccionado,
-
-    ajuste_carrito_x:
-        ajusteCarritoX,
-
-    ajuste_carrito_y:
-        ajusteCarritoY
-})
-
-     .eq(
-    "cliente_id",
-    clienteId
-);            
-
-
-                if (errorGuardado) {
-
-                    console.error(
-                        "Error al guardar encabezado:",
-                        errorGuardado
-                    );
-
-                    return;
-                }
-
-
-                formularioCabecera.classList.remove(
-                    "formulario-abierto"
-                );
+                return;
             }
+
+            const { data: urlLogotipo } = clienteSupabase
+                .storage
+                .from("imagenes")
+                .getPublicUrl(
+                    `logotipos/${nombreArchivo}`
+                );
+
+            logotipoUrl = urlLogotipo.publicUrl;
+
+
+            let imagenFranja =
+                document.getElementById("logotipo-franja");
+
+            if (!imagenFranja) {
+
+                imagenFranja =
+                    document.createElement("img");
+
+                imagenFranja.id =
+                    "logotipo-franja";
+
+                franjaSuperior.appendChild(imagenFranja);
+            }
+
+            imagenFranja.src = logotipoUrl;
+
+            imagenFranja.classList.toggle(
+                "oculto",
+                !mostrarLogotipo.checked
+            );
+        }
+
+
+        /* ACTUALIZAR VISIBILIDAD */
+
+        botonCarrito.classList.toggle(
+            "oculto",
+            !mostrarCarrito.checked
+        );
+
+        buscador.classList.toggle(
+            "oculto",
+            !mostrarBuscador.checked
         );
 
 
-        /* ================================================= */
-        /*         ACEPTAR CONFIGURACIÓN DE INICIO            */
-        /* ================================================= */
+         /* GUARDAR CONFIGURACIÓN */
 
-        aceptarInicio.addEventListener(
-            "click",
-            async function () {
+        const { error: errorGuardado } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update({
 
+                logotipo_url:
+                    logotipoUrl,
 
-                const archivo =
-                    archivoLogotipo.files[0];
+                mostrar_carrito:
+                    mostrarCarrito.checked,
 
+                mostrar_nombre_comercial:
+                    mostrarNombreComercial.checked,
 
-                let logotipoUrl =
-                    configuracionGuardada?.logotipo_url ||
-                    null;
+                mostrar_buscador:
+                    mostrarBuscador.checked,
 
+                tipo_carrito:
+                    tipoCarritoSeleccionado
 
-                /* ----------------------------------------- */
-                /* SUBIR LOGOTIPO                            */
-                /* ----------------------------------------- */
-
-                if (archivo) {
-
-                    const nombreArchivo =
-                        `logotipo_${Date.now()}_${archivo.name}`;
+            })
+            .eq("cliente_id", clienteId);
 
 
-                    const {
-                        error: errorSubida
-                    } = await clienteSupabase
-                        .storage
-                        .from("imagenes")
-                        .upload(
-                            `logotipos/${nombreArchivo}`,
-                            archivo,
-                            {
-                                upsert: false
-                            }
-                        );
+        if (errorGuardado) {
+
+            console.error(
+                "Error al guardar encabezado:",
+                errorGuardado
+            );
+
+            return;
+        }
 
 
-                    if (errorSubida) {
-
-                        console.error(
-                            "Error al subir logotipo:",
-                            errorSubida
-                        );
-
-                        return;
-                    }
-
-
-                    const {
-                        data: urlLogotipo
-                    } =
-                        clienteSupabase
-                            .storage
-                            .from("imagenes")
-                            .getPublicUrl(
-                                `logotipos/${nombreArchivo}`
-                            );
-
-
-                    logotipoUrl =
-                        urlLogotipo.publicUrl;
-
-
-                    let imagenFranja =
-                        document.getElementById(
-                            "logotipo-franja"
-                        );
-
-
-                    if (!imagenFranja) {
-
-                        imagenFranja =
-                            document.createElement(
-                                "img"
-                            );
-
-                        imagenFranja.id =
-                            "logotipo-franja";
-
-                        franjaSuperior.appendChild(
-                            imagenFranja
-                        );
-                    }
-
-
-                    imagenFranja.src =
-                        logotipoUrl;
-                }
-
-
-                /* ----------------------------------------- */
-                /* ACTUALIZAR VARIABLES CSS                  */
-                /* ----------------------------------------- */
-
-                actualizarVariableCSS(
-                    "--color-franjas",
-                    colorFranjas.value
-                );
-
-                actualizarVariableCSS(
-                    "--color-boton-menu",
-                    colorBotonMenu.value
-                );
-
-                actualizarVariableCSS(
-                    "--color-texto-menu",
-                    colorTextoMenu.value
-                );
-
-                actualizarVariableCSS(
-                    "--color-panel-menu",
-                    colorPanelMenu.value
-                );
-
-
-                /* ----------------------------------------- */
-                /* GUARDAR CONFIGURACIÓN                     */
-                /* ----------------------------------------- */
-
-                const configuracion = {
-
-                    
-                      cliente_id: clienteId,
-
-                    color_franjas:
-                        colorFranjas.value,
-
-                    color_boton_menu:
-                        colorBotonMenu.value,
-
-                    color_texto_menu:
-                        colorTextoMenu.value,
-
-                    color_panel_menu:
-                        colorPanelMenu.value,
-
-                    logotipo_url:
-                        logotipoUrl
-                };
-
-
-             const {
-    error
-} = await clienteSupabase
-    .from("configuracion_inicio")
-    .update(configuracion)
-    .eq(
-        "cliente_id",
-        clienteId
-    );
-
-
-                if (error) {
-
-                    console.error(
-                        "Error al guardar configuración:",
-                        error
-                    );
-
-                    return;
-                }
-
-
-                formularioInicio.classList.remove(
-                    "formulario-abierto"
-                );
-            }
+        formularioCabecera.classList.remove(
+            "formulario-abierto"
         );
-
-
-        /* ================================================= */
-        /*                 BOTÓN DE BÚSQUEDA                  */
-        /* ================================================= */
-
-        botonBusqueda.addEventListener(
-            "click",
-            function () {
-
-                buscador.classList.toggle(
-                    "expandido"
-                );
-            }
-        );
-
     }
 );
+
+
+      
+/* ================================================= */
+/*          ACEPTAR CONFIGURACIÓN DE INICIO           */
+/* ================================================= */
+
+aceptarInicio.addEventListener(
+    "click",
+    async function () {
+
+        const archivo = archivoLogotipo.files[0];
+
+        let logotipoUrl =
+            configuracionGuardada?.logotipo_url || null;
+
+
+        /* SUBIR LOGOTIPO SI SE SELECCIONÓ */
+
+        if (archivo) {
+
+            const nombreArchivo =
+                `logotipo_${Date.now()}_${archivo.name}`;
+
+            const { error: errorSubida } = await clienteSupabase
+                .storage
+                .from("imagenes")
+                .upload(
+                    `logotipos/${nombreArchivo}`,
+                    archivo,
+                    {
+                        upsert: false
+                    }
+                );
+
+            if (errorSubida) {
+
+                console.error(
+                    "Error al subir logotipo:",
+                    errorSubida
+                );
+
+                return;
+            }
+
+            const { data: urlLogotipo } = clienteSupabase
+                .storage
+                .from("imagenes")
+                .getPublicUrl(
+                    `logotipos/${nombreArchivo}`
+                );
+
+            logotipoUrl = urlLogotipo.publicUrl;
+
+
+            let imagenFranja =
+                document.getElementById("logotipo-franja");
+
+            if (!imagenFranja) {
+
+                imagenFranja =
+                    document.createElement("img");
+
+                imagenFranja.id =
+                    "logotipo-franja";
+
+                franjaSuperior.appendChild(imagenFranja);
+            }
+
+            imagenFranja.src = logotipoUrl;
+        }
+
+
+     
+        /* PREPARAR CONFIGURACIÓN */
+
+       const configuracion = {
+    cliente_id: clienteId,
+
+    color_franjas_escritorio: esMovil
+        ? (configuracionGuardada?.color_franjas_escritorio || "#ffffff")
+        : colorFranjas.value,
+
+    color_franjas_movil: esMovil
+        ? colorFranjas.value
+        : (configuracionGuardada?.color_franjas_movil || "#ffffff"),
+
+    color_boton_menu_escritorio: esMovil
+        ? (configuracionGuardada?.color_boton_menu_escritorio || "#159c96")
+        : colorBotonMenu.value,
+
+    color_boton_menu_movil: esMovil
+        ? colorBotonMenu.value
+        : (configuracionGuardada?.color_boton_menu_movil || "#159c96"),
+
+    color_texto_menu_escritorio: esMovil
+        ? (configuracionGuardada?.color_texto_menu_escritorio || "#f2f2f2")
+        : colorTextoMenu.value,
+
+    color_texto_menu_movil: esMovil
+        ? colorTextoMenu.value
+        : (configuracionGuardada?.color_texto_menu_movil || "#f2f2f2"),
+
+    color_panel_menu_escritorio: esMovil
+        ? (configuracionGuardada?.color_panel_menu_escritorio || "#D8E2EE")
+        : colorPanelMenu.value,
+
+    color_panel_menu_movil: esMovil
+        ? colorPanelMenu.value
+        : (configuracionGuardada?.color_panel_menu_movil || "#D8E2EE"),
+
+    logotipo_url: logotipoUrl
+};
+
+
+        /* GUARDAR EN SUPABASE */
+
+        const { error } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update(configuracion)
+            .eq("cliente_id", clienteId);
+
+
+        if (error) {
+
+            console.error(
+                "Error al guardar configuración:",
+                error
+                
+            );
+
+            return;
+        }
+
+        if (configuracionGuardada) {
+
+            Object.assign(
+                configuracionGuardada,
+                configuracion
+            );
+        }
+
+  
+
+/* APLICAR COLORES DEL DISPOSITIVO ACTUAL */
+
+actualizarVariableCSS(
+    "--color-franjas",
+    colorFranjas.value
+);
+
+actualizarVariableCSS(
+    "--color-boton-menu",
+    colorBotonMenu.value
+);
+
+actualizarVariableCSS(
+    "--color-texto-menu",
+    colorTextoMenu.value
+);
+
+actualizarVariableCSS(
+    "--color-panel-menu",
+    colorPanelMenu.value
+);
+
+/* CERRAR CONFIGURACIÓN Y REGRESAR AL MENÚ */
+
+formularioInicio.classList.remove(
+    "formulario-abierto"
+);
+
+panelMenu.classList.remove(
+    "menu-abierto"
+);
+
+        
+    }
+);
+
+
+/* ================================================= */
+/*                 BOTÓN DE BÚSQUEDA                  */
+/* ================================================= */
+
+if (botonBusqueda && buscador) {
+
+    botonBusqueda.addEventListener(
+        "click",
+        function () {
+
+            buscador.classList.toggle("expandido");
+        }
+    );
+}
+
+
+
+
+/* ================================================= */
+/*          FIN DEL BLOQUE PRINCIPAL                  */
+/* ================================================= */
+
+
+/* ================================================= */
+/*          MOSTRAR U OCULTAR CONTRASEÑA              */
+/* ================================================= */
+
+const campoPassword =
+    document.getElementById("login-password");
+
+const botonMostrarPassword =
+    document.getElementById("mostrar-password");
+
+
+if (campoPassword && botonMostrarPassword) {
+
+    /* OJO ABIERTO: CONTRASEÑA VISIBLE */
+
+    const ojoAbierto = `
+        <svg viewBox="0 0 24 24"
+             width="23"
+             height="23"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>`;
+
+
+    /* OJO CERRADO: CONTRASEÑA OCULTA */
+
+    const ojoCerrado = `
+        <svg viewBox="0 0 24 24"
+             width="23"
+             height="23"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M4 4 20 20"/>
+        </svg>`;
+
+
+    /* ACTUALIZAR ICONO Y DESCRIPCIÓN */
+
+    function actualizarIconoPassword() {
+
+        const mostrar =
+            campoPassword.type === "text";
+
+        botonMostrarPassword.innerHTML =
+            mostrar ? ojoAbierto : ojoCerrado;
+
+        botonMostrarPassword.setAttribute(
+            "aria-label",
+            mostrar
+                ? "Ocultar contraseña"
+                : "Mostrar contraseña"
+        );
+
+        botonMostrarPassword.title =
+            mostrar
+                ? "Ocultar contraseña"
+                : "Mostrar contraseña";
+    }
+
+
+    /* INICIAR CON LA CONTRASEÑA OCULTA */
+
+    actualizarIconoPassword();
+
+
+    /* CAMBIAR VISIBILIDAD AL PULSAR EL OJO */
+
+    botonMostrarPassword.addEventListener(
+        "click",
+        function () {
+
+            campoPassword.type =
+                campoPassword.type === "password"
+                    ? "text"
+                    : "password";
+
+          
+          
+          
+          
+                    actualizarIconoPassword();
+
+
+                    
+        }
+    );
+}
+}); 
