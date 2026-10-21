@@ -151,8 +151,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         error
                     );
 
-                    mensajeLogin.textContent =
-                        "Correo o contraseña incorrectos.";
+                   mensajeLogin.textContent =
+                     "Error de acceso: " + error.message;
 
                     return;
                 }
