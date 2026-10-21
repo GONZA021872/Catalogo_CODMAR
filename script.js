@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     );
 
                    mensajeLogin.textContent =
-                     "Error de acceso: " + error.message;
+                       "Error de acceso: " + error.message;
 
                     return;
                 }
