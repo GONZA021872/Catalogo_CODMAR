@@ -95,7 +95,66 @@
         INICIAR SESIÓN
     </button>
 
- type="password"
+    
+<!-- RECUPERACIÓN DE CONTRASEÑA -->
+<button
+    type="button"
+    id="boton-mostrar-recuperacion">
+    ¿OLVIDASTE TU CONTRASEÑA?
+</button>
+
+<div id="formulario-recuperacion" hidden>
+
+    <h2>Recuperar cuenta</h2>
+
+    <p>
+        Introduce tu correo electrónico para recibir
+        el enlace de recuperación.
+    </p>
+
+    <button
+        type="button"
+        id="boton-enviar-recuperacion">
+        ENVIAR ENLACE DE RECUPERACIÓN
+    </button>
+
+    <button
+        type="button"
+        id="boton-cancelar-recuperacion">
+        VOLVER AL ACCESO
+    </button>
+
+    <div
+        id="mensaje-recuperacion"
+        role="status"
+        aria-live="polite">
+    </div>
+
+</div>
+
+<!-- FORMULARIO PARA ESTABLECER LA CONTRASEÑA NUEVA -->
+<div id="formulario-nueva-password" hidden>
+
+    <h2>Crear nueva contraseña</h2>
+
+    <label for="nueva-password">
+        Nueva contraseña
+    </label>
+
+    <input
+        type="password"
+        id="nueva-password"
+        autocomplete="new-password"
+        placeholder="Escribe la nueva contraseña"
+        minlength="6"
+        required>
+
+    <label for="confirmar-nueva-password">
+        Confirmar contraseña
+    </label>
+
+    <input
+        type="password"
         id="confirmar-nueva-password"
         autocomplete="new-password"
         placeholder="Repite la nueva contraseña"
