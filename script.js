@@ -35,6 +35,37 @@ document.addEventListener("DOMContentLoaded", async function () {
     pantallaLogin.style.display = "none";
     paginaInicio.style.display = "none";
 
+  let modoRecuperacion = false;
+
+clienteSupabase.auth.onAuthStateChange(function (evento) {
+    if (evento === "PASSWORD_RECOVERY") {
+        modoRecuperacion = true;
+
+        const formularioNuevaPassword =
+            document.getElementById("formulario-nueva-password");
+
+        const formularioRecuperacion =
+            document.getElementById("formulario-recuperacion");
+
+        if (formularioNuevaPassword) {
+            formularioNuevaPassword.hidden = false;
+        }
+
+        if (formularioRecuperacion) {
+            formularioRecuperacion.hidden = true;
+        }
+
+        pantallaLogin.style.setProperty(
+            "display", "flex", "important"
+        );
+
+        paginaInicio.style.setProperty(
+            "display", "none", "important"
+        );
+    }
+});
+  
+  
     const {
         data: { session },
         error: errorSesion
@@ -47,7 +78,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         );
     }
 
-    if (session) {
+    if (session && !modoRecuperacion) {
         console.log(
             "Usuario autenticado:",
             session.user.id
@@ -179,6 +210,158 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
     }
 
+
+/* ================================================= */
+/*          RECUPERACIÓN DE CONTRASEÑA               */
+/* ================================================= */
+
+const botonMostrarRecuperacion =
+    document.getElementById("boton-mostrar-recuperacion");
+
+const formularioRecuperacion =
+    document.getElementById("formulario-recuperacion");
+
+const botonEnviarRecuperacion =
+    document.getElementById("boton-enviar-recuperacion");
+
+const botonCancelarRecuperacion =
+    document.getElementById("boton-cancelar-recuperacion");
+
+const mensajeRecuperacion =
+    document.getElementById("mensaje-recuperacion");
+
+const formularioNuevaPassword =
+    document.getElementById("formulario-nueva-password");
+
+const nuevaPassword =
+    document.getElementById("nueva-password");
+
+const confirmarNuevaPassword =
+    document.getElementById("confirmar-nueva-password");
+
+const botonGuardarNuevaPassword =
+    document.getElementById("boton-guardar-nueva-password");
+
+const mensajeNuevaPassword =
+    document.getElementById("mensaje-nueva-password");
+
+
+if (botonMostrarRecuperacion && formularioRecuperacion) {
+    botonMostrarRecuperacion.addEventListener("click", function () {
+        formularioRecuperacion.hidden = false;
+        formularioNuevaPassword.hidden = true;
+        mensajeRecuperacion.textContent = "";
+        mensajeLogin.textContent = "";
+    });
+}
+
+
+if (botonCancelarRecuperacion && formularioRecuperacion) {
+    botonCancelarRecuperacion.addEventListener("click", function () {
+        formularioRecuperacion.hidden = true;
+        mensajeRecuperacion.textContent = "";
+    });
+}
+
+
+if (botonEnviarRecuperacion) {
+    botonEnviarRecuperacion.addEventListener("click", async function () {
+        const email = loginEmail.value.trim();
+
+        mensajeRecuperacion.textContent = "";
+
+        if (!email || !loginEmail.checkValidity()) {
+            mensajeRecuperacion.textContent =
+                "Escribe primero un correo electrónico válido en el campo de acceso.";
+            return;
+        }
+
+        botonEnviarRecuperacion.disabled = true;
+
+        try {
+            const { error } =
+                await clienteSupabase.auth.resetPasswordForEmail(email, {
+                    redirectTo:
+                        "https://gonza021872.github.io/Catalogo_CODMAR/"
+                });
+
+            if (error) {
+                console.error("Error al solicitar recuperación:", error);
+                mensajeRecuperacion.textContent =
+                    "No se pudo enviar el correo: " + error.message;
+                return;
+            }
+
+            mensajeRecuperacion.textContent =
+                "Si la cuenta existe, recibirás un correo con las instrucciones de recuperación.";
+        } catch (error) {
+            console.error("Error inesperado en recuperación:", error);
+            mensajeRecuperacion.textContent =
+                "Ocurrió un error al solicitar la recuperación.";
+        } finally {
+            botonEnviarRecuperacion.disabled = false;
+        }
+    });
+}
+
+
+if (botonGuardarNuevaPassword) {
+    botonGuardarNuevaPassword.addEventListener("click", async function () {
+        mensajeNuevaPassword.textContent = "";
+
+        if (nuevaPassword.value.length < 6) {
+            mensajeNuevaPassword.textContent =
+                "La contraseña debe tener al menos 6 caracteres.";
+            return;
+        }
+
+        if (nuevaPassword.value !== confirmarNuevaPassword.value) {
+            mensajeNuevaPassword.textContent =
+                "Las contraseñas no coinciden.";
+            return;
+        }
+
+        botonGuardarNuevaPassword.disabled = true;
+
+        try {
+            const { error } =
+                await clienteSupabase.auth.updateUser({
+                    password: nuevaPassword.value
+                });
+
+            if (error) {
+                console.error("Error al cambiar contraseña:", error);
+                mensajeNuevaPassword.textContent =
+                    "No se pudo cambiar la contraseña: " + error.message;
+                return;
+            }
+
+            mensajeNuevaPassword.textContent =
+                "Contraseña actualizada. Ya puedes iniciar sesión.";
+
+            nuevaPassword.value = "";
+            confirmarNuevaPassword.value = "";
+
+            formularioNuevaPassword.hidden = true;
+            formularioRecuperacion.hidden = true;
+
+            await clienteSupabase.auth.signOut();
+
+            pantallaLogin.style.setProperty("display", "flex", "important");
+            paginaInicio.style.setProperty("display", "none", "important");
+
+        } catch (error) {
+            console.error("Error inesperado al cambiar contraseña:", error);
+            mensajeNuevaPassword.textContent =
+                "Ocurrió un error al cambiar la contraseña.";
+        } finally {
+            botonGuardarNuevaPassword.disabled = false;
+        }
+    });
+}
+
+
+    
 
 /* ================================================= */
 /*          REGISTRO DE NUEVO NEGOCIO                */
