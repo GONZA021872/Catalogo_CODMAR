@@ -31,6 +31,75 @@ document.addEventListener("DOMContentLoaded", async function () {
     const paginaInicio =
         document.getElementById("pagina-inicio");
 
+
+    /* ================================================= */
+/*        MOSTRAR U OCULTAR CONTRASEÑA               */
+/* ================================================= */
+
+const campoPassword = document.getElementById("login-password");
+const botonMostrarPassword = document.getElementById("mostrar-password");
+
+if (campoPassword && botonMostrarPassword) {
+
+    const iconoOjoCerrado = `
+        <svg viewBox="0 0 24 24"
+             width="23" height="23"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M4 4 20 20"/>
+        </svg>`;
+
+    const iconoOjoAbierto = `
+        <svg viewBox="0 0 24 24"
+             width="23" height="23"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>`;
+
+    function actualizarOjo() {
+        const visible = campoPassword.type === "text";
+
+        botonMostrarPassword.innerHTML =
+            visible ? iconoOjoAbierto : iconoOjoCerrado;
+
+        botonMostrarPassword.setAttribute(
+            "aria-label",
+            visible ? "Ocultar contraseña" : "Mostrar contraseña"
+        );
+
+        botonMostrarPassword.title =
+            visible ? "Ocultar contraseña" : "Mostrar contraseña";
+    }
+
+    // Estado inicial
+    campoPassword.type = "password";
+     actualizarOjo();
+
+    // Mostrar u ocultar contraseña
+    botonMostrarPassword.onclick = function (evento) {
+        evento.preventDefault();
+
+        campoPassword.type =
+            campoPassword.type === "password" ? "text" : "password";
+
+        actualizarOjo();
+    };
+}
+
+
+
     // Ocultar ambas pantallas mientras se comprueba la sesión.
     pantallaLogin.style.display = "none";
     paginaInicio.style.display = "none";
@@ -58,6 +127,9 @@ clienteSupabase.auth.onAuthStateChange(function (evento) {
         pantallaLogin.style.setProperty(
             "display", "flex", "important"
         );
+
+       campoPassword.type = "password";
+    actualizarOjo();
 
         paginaInicio.style.setProperty(
             "display", "none", "important"
@@ -137,8 +209,11 @@ clienteSupabase.auth.onAuthStateChange(function (evento) {
 
             pantallaLogin.style.setProperty(
                 "display", "flex", "important"
-            );
 
+               );
+
+              campoPassword.type = "password";
+              actualizarOjo();
             console.log("Sesión cerrada correctamente.");
         });
     }
@@ -3524,103 +3599,4 @@ if (botonBusqueda && buscador) {
 /* ================================================= */
 
 
-/* ================================================= */
-/*          MOSTRAR U OCULTAR CONTRASEÑA              */
-/* ================================================= */
-
-const campoPassword =
-    document.getElementById("login-password");
-
-const botonMostrarPassword =
-    document.getElementById("mostrar-password");
-
-
-if (campoPassword && botonMostrarPassword) {
-
-    /* OJO ABIERTO: CONTRASEÑA VISIBLE */
-
-    const ojoAbierto = `
-        <svg viewBox="0 0 24 24"
-             width="23"
-             height="23"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.8"
-             stroke-linecap="round"
-             stroke-linejoin="round"
-             aria-hidden="true">
-            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
-            <circle cx="12" cy="12" r="3"/>
-        </svg>`;
-
-
-    /* OJO CERRADO: CONTRASEÑA OCULTA */
-
-    const ojoCerrado = `
-        <svg viewBox="0 0 24 24"
-             width="23"
-             height="23"
-             fill="none"
-             stroke="currentColor"
-             stroke-width="1.8"
-             stroke-linecap="round"
-             stroke-linejoin="round"
-             aria-hidden="true">
-            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/>
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M4 4 20 20"/>
-        </svg>`;
-
-
-    /* ACTUALIZAR ICONO Y DESCRIPCIÓN */
-
-    function actualizarIconoPassword() {
-
-        const mostrar =
-            campoPassword.type === "text";
-
-        botonMostrarPassword.innerHTML =
-            mostrar ? ojoAbierto : ojoCerrado;
-
-        botonMostrarPassword.setAttribute(
-            "aria-label",
-            mostrar
-                ? "Ocultar contraseña"
-                : "Mostrar contraseña"
-        );
-
-        botonMostrarPassword.title =
-            mostrar
-                ? "Ocultar contraseña"
-                : "Mostrar contraseña";
-    }
-
-
-    /* INICIAR CON LA CONTRASEÑA OCULTA */
-
-    actualizarIconoPassword();
-
-
-    /* CAMBIAR VISIBILIDAD AL PULSAR EL OJO */
-
-    botonMostrarPassword.addEventListener(
-        "click",
-        function () {
-
-            campoPassword.type =
-                campoPassword.type === "password"
-                    ? "text"
-                    : "password";
-
-          
-          
-          
-          
-                    actualizarIconoPassword();
-
-
-                    
-        }
-    );
-}
 }); 
