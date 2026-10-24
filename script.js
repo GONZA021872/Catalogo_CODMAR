@@ -99,84 +99,98 @@ if (campoPassword && botonMostrarPassword) {
 }
 
 
+ // Ocultar las pantallas mientras se comprueba la sesión.
+    pantallaLogin.style.setProperty("display", "none", "important");
+    paginaInicio.style.setProperty("display", "none", "important");
 
-    // Ocultar ambas pantallas mientras se comprueba la sesión.
-    pantallaLogin.style.display = "none";
-    paginaInicio.style.display = "none";
+    let modoRecuperacion = false;
 
-  let modoRecuperacion = false;
-
-clienteSupabase.auth.onAuthStateChange(function (evento) {
-    if (evento === "PASSWORD_RECOVERY") {
-        modoRecuperacion = true;
-
-        const formularioNuevaPassword =
-            document.getElementById("formulario-nueva-password");
-
-        const formularioRecuperacion =
-            document.getElementById("formulario-recuperacion");
-
-        if (formularioNuevaPassword) {
-            formularioNuevaPassword.hidden = false;
-        }
-
-        if (formularioRecuperacion) {
-            formularioRecuperacion.hidden = true;
-        }
-
-        pantallaLogin.style.setProperty(
-            "display", "flex", "important"
-        );
-
-       campoPassword.type = "password";
-    actualizarOjo();
-
-        paginaInicio.style.setProperty(
-            "display", "none", "important"
-        );
-    }
-});
-  
-  
-    const {
-        data: { session },
-        error: errorSesion
-    } = await clienteSupabase.auth.getSession();
+   
+    // Detectar la recuperación antes de decidir qué pantalla mostrar.
+    const { data: { session }, error: errorSesion } =
+        await clienteSupabase.auth.getSession();
 
     if (errorSesion) {
-        console.error(
-            "Error al obtener la sesión:",
-            errorSesion
+        console.error("Error al obtener la sesión:", errorSesion);
+    }
+
+    // Comprobar si la URL contiene información del enlace de recuperación.
+    const hashActual = window.location.hash;
+    const parametrosActuales = new URLSearchParams(
+        window.location.search
+    );
+
+    const esRecuperacion =
+        hashActual.includes("type=recovery") ||
+        parametrosActuales.get("type") === "recovery";
+
+    if (esRecuperacion) {
+        modoRecuperacion = true;
+    }
+
+    // Escuchar el evento de recuperación de Supabase.
+    clienteSupabase.auth.onAuthStateChange(function (evento) {
+        if (evento === "PASSWORD_RECOVERY") {
+            modoRecuperacion = true;
+            mostrarFormularioNuevaPassword();
+        }
+    });
+
+    function mostrarFormularioNuevaPassword() {
+    const pantallaRecuperacion =
+        document.getElementById("pantalla-recuperacion");
+
+    const formularioRecuperacion =
+        document.getElementById("formulario-recuperacion");
+
+    const formularioNuevaPassword =
+        document.getElementById("formulario-nueva-password");
+
+    const pantallaRegistro =
+        document.getElementById("pantalla-registro");
+
+    pantallaLogin.style.setProperty("display", "none", "important");
+
+    if (pantallaRegistro) {
+        pantallaRegistro.style.setProperty("display", "none", "important");
+    }
+
+    paginaInicio.style.setProperty("display", "none", "important");
+
+    if (pantallaRecuperacion) {
+        pantallaRecuperacion.hidden = false;
+        pantallaRecuperacion.style.setProperty(
+            "display", "flex", "important"
         );
     }
 
-    if (session && !modoRecuperacion) {
-        console.log(
-            "Usuario autenticado:",
-            session.user.id
-        );
+    if (formularioRecuperacion) {
+        formularioRecuperacion.hidden = true;
+    }
 
-        pantallaLogin.style.setProperty(
-            "display", "none", "important"
-        );
+    if (formularioNuevaPassword) {
+        formularioNuevaPassword.hidden = false;
+    }
+}
 
-        paginaInicio.style.setProperty(
-            "display", "block", "important"
-        );
+    if (modoRecuperacion) {
+        mostrarFormularioNuevaPassword();
+    } else if (session) {
+        console.log("Usuario autenticado:", session.user.id);
 
+        pantallaLogin.style.setProperty("display", "none", "important");
+        paginaInicio.style.setProperty("display", "block", "important");
     } else {
         console.log("No hay usuario autenticado.");
 
-        paginaInicio.style.setProperty(
-            "display", "none", "important"
-        );
-
-        pantallaLogin.style.setProperty(
-            "display", "flex", "important"
-        );
+        paginaInicio.style.setProperty("display", "none", "important");
+        pantallaLogin.style.setProperty("display", "flex", "important");
     }
-
-
+   
+          
+         
+    
+  
     /* ================================================= */
     /*                  BOTÓN SALIR                      */
     /* ================================================= */
@@ -293,8 +307,14 @@ clienteSupabase.auth.onAuthStateChange(function (evento) {
 const botonMostrarRecuperacion =
     document.getElementById("boton-mostrar-recuperacion");
 
+const pantallaRecuperacion =
+    document.getElementById("pantalla-recuperacion");
+
 const formularioRecuperacion =
     document.getElementById("formulario-recuperacion");
+
+const correoRecuperacion =
+    document.getElementById("correo-recuperacion");
 
 const botonEnviarRecuperacion =
     document.getElementById("boton-enviar-recuperacion");
@@ -321,33 +341,58 @@ const mensajeNuevaPassword =
     document.getElementById("mensaje-nueva-password");
 
 
-if (botonMostrarRecuperacion && formularioRecuperacion) {
+/* ABRIR VENTANA DE RECUPERACIÓN */
+
+if (botonMostrarRecuperacion && pantallaRecuperacion) {
     botonMostrarRecuperacion.addEventListener("click", function () {
-        formularioRecuperacion.hidden = false;
-        formularioNuevaPassword.hidden = true;
+
+        pantallaLogin.style.setProperty("display", "none", "important");
+
+        pantallaRecuperacion.hidden = false;
+        pantallaRecuperacion.style.setProperty("display", "flex", "important");
+
+        if (formularioRecuperacion) {
+            formularioRecuperacion.reset();
+        }
+
+        if (formularioNuevaPassword) {
+            formularioNuevaPassword.hidden = true;
+        }
+
         mensajeRecuperacion.textContent = "";
         mensajeLogin.textContent = "";
     });
 }
 
 
-if (botonCancelarRecuperacion && formularioRecuperacion) {
+/* VOLVER AL ACCESO */
+
+if (botonCancelarRecuperacion && pantallaRecuperacion) {
     botonCancelarRecuperacion.addEventListener("click", function () {
-        formularioRecuperacion.hidden = true;
+
+        pantallaRecuperacion.style.setProperty("display", "none", "important");
+        pantallaRecuperacion.hidden = true;
+
+        pantallaLogin.style.setProperty("display", "flex", "important");
+
         mensajeRecuperacion.textContent = "";
     });
 }
 
 
-if (botonEnviarRecuperacion) {
+/* ENVIAR ENLACE DE RECUPERACIÓN */
+
+if (botonEnviarRecuperacion && correoRecuperacion) {
     botonEnviarRecuperacion.addEventListener("click", async function () {
-        const email = loginEmail.value.trim();
+
+        const email = correoRecuperacion.value.trim();
 
         mensajeRecuperacion.textContent = "";
 
-        if (!email || !loginEmail.checkValidity()) {
+        if (!email || !correoRecuperacion.checkValidity()) {
             mensajeRecuperacion.textContent =
-                "Escribe primero un correo electrónico válido en el campo de acceso.";
+                "Escribe un correo electrónico válido.";
+            correoRecuperacion.focus();
             return;
         }
 
@@ -362,6 +407,7 @@ if (botonEnviarRecuperacion) {
 
             if (error) {
                 console.error("Error al solicitar recuperación:", error);
+
                 mensajeRecuperacion.textContent =
                     "No se pudo enviar el correo: " + error.message;
                 return;
@@ -369,15 +415,19 @@ if (botonEnviarRecuperacion) {
 
             mensajeRecuperacion.textContent =
                 "Si la cuenta existe, recibirás un correo con las instrucciones de recuperación.";
+
         } catch (error) {
             console.error("Error inesperado en recuperación:", error);
+
             mensajeRecuperacion.textContent =
                 "Ocurrió un error al solicitar la recuperación.";
+
         } finally {
             botonEnviarRecuperacion.disabled = false;
         }
     });
 }
+
 
 
 if (botonGuardarNuevaPassword) {
@@ -417,8 +467,9 @@ if (botonGuardarNuevaPassword) {
             nuevaPassword.value = "";
             confirmarNuevaPassword.value = "";
 
-            formularioNuevaPassword.hidden = true;
-            formularioRecuperacion.hidden = true;
+           formularioNuevaPassword.hidden = true;
+           pantallaRecuperacion.style.setProperty("display", "none", "important");
+           pantallaRecuperacion.hidden = true;
 
             await clienteSupabase.auth.signOut();
 
@@ -463,21 +514,43 @@ const registroEmail =
 const registroPassword =
     document.getElementById("registro-password");
 
+    const registroConfirmarPassword =
+    document.getElementById("registro-confirmar-password");
+
 const mensajeRegistro =
     document.getElementById("mensaje-registro");
 
 
-if (botonMostrarRegistro && formularioRegistro) {
+
+/* ========================================= */
+/*   NAVEGACIÓN ENTRE ACCESO Y REGISTRO      */
+/* ========================================= */
+
+const pantallaRegistro =
+    document.getElementById("pantalla-registro");
+
+if (
+    botonMostrarRegistro &&
+    pantallaLogin &&
+    pantallaRegistro &&
+    mensajeRegistro
+) {
     botonMostrarRegistro.addEventListener("click", function () {
-        formularioRegistro.hidden = false;
+        pantallaLogin.style.display = "none";
+        pantallaRegistro.style.display = "flex";
         mensajeRegistro.textContent = "";
     });
 }
 
-
-if (botonCancelarRegistro && formularioRegistro) {
+if (
+    botonCancelarRegistro &&
+    pantallaLogin &&
+    pantallaRegistro &&
+    mensajeRegistro
+) {
     botonCancelarRegistro.addEventListener("click", function () {
-        formularioRegistro.hidden = true;
+        pantallaRegistro.style.display = "none";
+        pantallaLogin.style.display = "flex";
         mensajeRegistro.textContent = "";
     });
 }
@@ -488,8 +561,11 @@ if (
     registroNombreComercial &&
     registroEmail &&
     registroPassword &&
+    registroConfirmarPassword &&
     mensajeRegistro
 ) {
+
+
     botonRegistrarNegocio.addEventListener(
         "click",
         async function () {
@@ -503,6 +579,9 @@ if (
             const passwordNuevo =
                 registroPassword.value;
 
+                const confirmarPassword =
+                registroConfirmarPassword.value;
+
             mensajeRegistro.textContent = "";
 
             if (!nombreNegocio || !emailNuevo || !passwordNuevo) {
@@ -510,6 +589,13 @@ if (
                     "Completa todos los campos.";
                 return;
             }
+            if (passwordNuevo !== confirmarPassword) {
+              mensajeRegistro.textContent =
+           "Las contraseñas no coinciden.";
+             return;
+            }
+            
+
 
             if (!registroEmail.checkValidity()) {
                 mensajeRegistro.textContent =
@@ -537,6 +623,8 @@ if (
                         }
                     });
 
+
+                    
                 if (error) {
                     console.error(
                         "Error al registrar negocio:",
