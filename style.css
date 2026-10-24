@@ -1341,6 +1341,619 @@ transform: translateY(-25px);
 
 
 
+/* ========================================= */
+/*   AJUSTE VISUAL DE ACCESO Y REGISTRO      */
+/* ========================================= */
+
+#pantalla-login .login-contenedor {
+    width: 100%;
+    max-width: 430px;
+    margin: auto;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+#pantalla-login .login-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 28px;
+}
+
+#pantalla-login .login-formulario label {
+    display: block;
+    margin: 0 0 7px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#pantalla-login .login-formulario input[type="email"],
+#pantalla-login .login-formulario input[type="password"],
+#pantalla-login .login-formulario input[type="text"] {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    margin: 0 0 18px;
+    padding: 0 13px;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #172235;
+    font: inherit;
+    font-size: 14px;
+}
+
+#pantalla-login .login-formulario input:focus {
+    outline: none;
+    border-color: #315783;
+    box-shadow: 0 0 0 3px rgba(49, 87, 131, 0.12);
+}
+
+#pantalla-login #boton-login,
+#pantalla-login #boton-registrar-negocio,
+#pantalla-login #boton-guardar-nueva-password,
+#pantalla-login #boton-enviar-recuperacion {
+    width: 100%;
+    min-height: 46px;
+    margin: 8px 0 12px;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 7px;
+    background: #172b49;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+}
+
+#pantalla-login #boton-login:hover,
+#pantalla-login #boton-registrar-negocio:hover,
+#pantalla-login #boton-guardar-nueva-password:hover,
+#pantalla-login #boton-enviar-recuperacion:hover {
+    background: #25466f;
+}
+
+#pantalla-login #boton-mostrar-registro,
+#pantalla-login #boton-mostrar-recuperacion,
+#pantalla-login #boton-cancelar-registro,
+#pantalla-login #boton-cancelar-recuperacion {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #172b49;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#pantalla-login #boton-mostrar-registro:hover,
+#pantalla-login #boton-mostrar-recuperacion:hover,
+#pantalla-login #boton-cancelar-registro:hover,
+#pantalla-login #boton-cancelar-recuperacion:hover {
+    background: #f1f5f9;
+}
+
+#pantalla-login #formulario-registro,
+#pantalla-login #formulario-recuperacion,
+#pantalla-login #formulario-nueva-password {
+    width: 100%;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+#pantalla-login #formulario-registro h2,
+#pantalla-login #formulario-recuperacion h2,
+#pantalla-login #formulario-nueva-password h2 {
+    margin: 0 0 18px;
+    color: #172235;
+    font-size: 21px;
+}
+
+#pantalla-login #mensaje-registro,
+#pantalla-login #mensaje-recuperacion,
+#pantalla-login #mensaje-nueva-password {
+    margin-top: 10px;
+    color: #b42318;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#pantalla-login [hidden] {
+    display: none !important;
+}
+
+#pantalla-login #boton-mostrar-password {
+    z-index: 2;
+}
+
+
+/* ========================================= */
+/* BOTÓN REGISTRAR MI NEGOCIO                */
+/* ========================================= */
+
+#pantalla-login #boton-mostrar-registro {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 12px;
+    padding: 13px 16px;
+    border: 1px solid #1d4ed8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #1d4ed8;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#pantalla-login #boton-mostrar-registro:hover {
+    background: #eff6ff;
+}
+
+/* Evitar que el acceso rebase la pantalla */
+
+#pantalla-login {
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+
+#pantalla-login .login-contenedor {
+    width: 100%;
+    max-width: 430px;
+    box-sizing: border-box;
+    margin: auto;
+}
+
+
+#pantalla-login .login-formulario {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 12px 26px;
+}
+
+
+  
+/* Reducir el alto de la ventana de acceso */
+
+#pantalla-login .login-encabezado {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#pantalla-login .login-formulario {
+    padding: 10px 22px;
+
+}
+
+#pantalla-login .login-encabezado h1 {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
+#pantalla-login .login-encabezado p {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+
+
+/* ========================================= */
+/* PANTALLA INDEPENDIENTE DE REGISTRO        */
+/* ========================================= */
+
+#pantalla-registro {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    background: #101827;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ventana blanca: mismo ancho que iniciar sesión */
+
+#pantalla-registro .login-contenedor {
+    width: 100%;
+    max-width: 430px;
+    margin: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+/* Encabezado */
+
+#pantalla-registro .login-encabezado {
+    padding: 10px 20px;
+    text-align: center;
+    background: #172235;
+    color: #ffffff;
+}
+
+#pantalla-registro .login-encabezado .login-icono {
+    margin-bottom: 8px;
+}
+
+#pantalla-registro .login-encabezado .login-icono svg {
+    width: 30px;
+    height: 30px;
+}
+
+#pantalla-registro .login-encabezado h1 {
+    margin: 8px 0 6px;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+#pantalla-registro .login-encabezado p {
+    margin: 0;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/* Formulario */
+
+#pantalla-registro .login-formulario {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 22px;
+    box-sizing: border-box;
+    color: #172235;
+}
+
+#pantalla-registro #formulario-registro {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#pantalla-registro #formulario-registro h2 {
+    margin: 0 0 16px;
+    text-align: center;
+    font-size: 21px;
+    color: #172235;
+}
+
+#pantalla-registro #formulario-registro label {
+    display: block;
+    margin: 0 0 5px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#pantalla-registro #formulario-registro input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    box-sizing: border-box;
+    margin: 0 0 12px;
+    padding: 0 13px;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #172235;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#pantalla-registro #formulario-registro input:focus {
+    outline: none;
+    border-color: #315783;
+    box-shadow: 0 0 0 3px rgba(49, 87, 131, 0.12);
+}
+
+/* Botones */
+
+#pantalla-registro #boton-registrar-negocio,
+#pantalla-registro #boton-cancelar-registro {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    padding: 10px 14px;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+}
+
+#pantalla-registro #boton-registrar-negocio {
+    margin: 8px 0 12px;
+    border: none;
+    background: #172b49;
+    color: #ffffff;
+}
+
+#pantalla-registro #boton-registrar-negocio:hover {
+    background: #25466f;
+}
+
+#pantalla-registro #boton-cancelar-registro {
+    margin-top: 8px;
+    border: 1px solid #d5dce5;
+    background: #ffffff;
+    color: #172b49;
+}
+
+#pantalla-registro #boton-cancelar-registro:hover {
+    background: #f1f5f9;
+}
+
+/* Mensajes */
+
+#pantalla-registro #mensaje-registro {
+    margin-top: 10px;
+    color: #b42318;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+
+
+
+/* ========================================= */
+/* VENTANA INDEPENDIENTE DE RECUPERACIÓN     */
+/* ========================================= */
+
+#pantalla-recuperacion {
+    position: fixed;
+    inset: 0;
+    z-index: 100001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    background: #101827;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Tarjeta blanca, igual que las demás ventanas */
+
+#pantalla-recuperacion .login-contenedor {
+    width: 100%;
+    max-width: 430px;
+    margin: auto;
+    box-sizing: border-box;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+}
+
+/* Encabezado */
+
+#pantalla-recuperacion .login-encabezado {
+    padding: 10px 20px;
+    text-align: center;
+    background: #172235;
+    color: #ffffff;
+}
+
+#pantalla-recuperacion .login-encabezado .login-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    margin: 0 auto 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    color: #ffffff;
+}
+
+#pantalla-recuperacion .login-encabezado h1 {
+    margin: 8px 0 6px;
+    font-size: 25px;
+    font-weight: 700;
+}
+
+#pantalla-recuperacion .login-encabezado p {
+    margin: 0;
+    color: #c2cbd8;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+/* Área de los formularios */
+
+#pantalla-recuperacion .login-formulario {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 18px 22px;
+    color: #172235;
+}
+
+#pantalla-recuperacion #formulario-recuperacion,
+#pantalla-recuperacion #formulario-nueva-password {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+#pantalla-recuperacion #formulario-recuperacion h2,
+#pantalla-recuperacion #formulario-nueva-password h2 {
+    margin: 0 0 10px;
+    color: #172235;
+    font-size: 21px;
+}
+
+#pantalla-recuperacion .login-descripcion {
+    margin: 0 0 18px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Etiquetas y campos */
+
+#pantalla-recuperacion label {
+    display: block;
+    margin: 0 0 7px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#pantalla-recuperacion input[type="email"],
+#pantalla-recuperacion input[type="password"],
+#pantalla-recuperacion input[type="text"] {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    box-sizing: border-box;
+    margin: 0 0 14px;
+    padding: 0 13px;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    outline: none;
+    background: #ffffff;
+    color: #172235;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#pantalla-recuperacion input:focus {
+    border-color: #315783;
+    box-shadow: 0 0 0 3px rgba(49, 87, 131, 0.12);
+}
+
+/* Botones */
+
+#pantalla-recuperacion #boton-enviar-recuperacion,
+#pantalla-recuperacion #boton-guardar-nueva-password {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    box-sizing: border-box;
+    margin: 8px 0 10px;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 7px;
+    background: #172b49;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#pantalla-recuperacion #boton-enviar-recuperacion:hover,
+#pantalla-recuperacion #boton-guardar-nueva-password:hover {
+    background: #25466f;
+}
+
+#pantalla-recuperacion #boton-cancelar-recuperacion {
+    display: block;
+    width: 100%;
+    min-height: 42px;
+    box-sizing: border-box;
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid #d5dce5;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #172b49;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#pantalla-recuperacion #boton-cancelar-recuperacion:hover {
+    background: #f1f5f9;
+}
+
+/* Mensajes y elementos ocultos */
+
+#pantalla-recuperacion #mensaje-recuperacion,
+#pantalla-recuperacion #mensaje-nueva-password {
+    margin-top: 10px;
+    color: #b42318;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+#pantalla-recuperacion [hidden] {
+    display: none !important;
+}
+
+/* Adaptación a teléfonos */
+
+@media (max-width: 480px) {
+    #pantalla-recuperacion {
+        padding: 12px;
+    }
+
+    #pantalla-recuperacion .login-formulario {
+        padding: 16px 18px;
+    }
+}
+
+/* Pantallas pequeñas */
+
+@media (max-width: 400px) {
+    #pantalla-registro {
+        padding: 10px;
+    }
+
+    #pantalla-registro .login-formulario {
+        padding: 10px 18px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    #pantalla-login {
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    #pantalla-login .login-contenedor {
+        max-width: 430px;
+        margin: auto;
+    }
+
+    #pantalla-login .login-encabezado {
+        padding: 22px 16px;
+    }
+
+    #pantalla-login .login-formulario {
+        padding: 22px 20px;
+    }
+}
+
+
+
+
+
 
 @media (max-width: 480px) {
     #pantalla-login {
