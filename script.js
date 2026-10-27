@@ -1753,6 +1753,614 @@ if (opcionesMenu[1]) {
 
 
 /* ================================================= */
+/*             OPCIÓN CATEGORÍAS                     */
+/* ================================================= */
+
+const botonCategorias =
+    document.getElementById("boton-categorias");
+
+const formularioCategorias =
+    document.getElementById("formulario-categorias");
+
+const cerrarCategorias =
+    document.getElementById("cerrar-categorias");
+
+const nombreCategoria =
+    document.getElementById("nombre-categoria");
+
+const aceptarCategoria =
+    document.getElementById("aceptar-categoria");
+
+const editarCategoria =
+    document.getElementById("editar-categoria");
+
+const mensajeCategorias =
+    document.getElementById("mensaje-categorias");
+
+const tituloAccionCategoria =
+    document.getElementById("titulo-accion-categoria");
+
+const listaCategoriasGestion =
+    document.getElementById("lista-categorias-gestion");
+
+const botonConfiguracion =
+    document.getElementById("boton-configuracion");
+
+const listaCategorias =
+    document.getElementById("panel-menu");
+
+let categorias = [];
+let indiceCategoriaEditando = null;
+
+
+/* ============================================= */
+/* CARGAR CATEGORÍAS GUARDADAS                    */
+/* ============================================= */
+
+try {
+    const categoriasGuardadas =
+        localStorage.getItem("codmar_categorias");
+
+    categorias = categoriasGuardadas
+        ? JSON.parse(categoriasGuardadas)
+        : [];
+
+    if (!Array.isArray(categorias)) {
+        categorias = [];
+    }
+
+    categorias = categorias.filter(function (categoria) {
+        return typeof categoria === "string";
+    });
+
+} catch (error) {
+    categorias = [];
+}
+
+
+/* ============================================= */
+/* GUARDAR CATEGORÍAS                             */
+/* ============================================= */
+
+function guardarCategorias() {
+
+    try {
+        localStorage.setItem(
+            "codmar_categorias",
+            JSON.stringify(categorias)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        mensajeCategorias.textContent =
+            "No se pudieron guardar los cambios.";
+
+        return false;
+    }
+}
+
+
+/* ============================================= */
+/* MOSTRAR CATEGORÍAS EN EL MENÚ                  */
+/* ============================================= */
+
+function mostrarCategorias() {
+
+    if (!listaCategorias || !botonConfiguracion) {
+        return;
+    }
+
+    listaCategorias
+        .querySelectorAll(".opcion-categoria")
+        .forEach(function (elemento) {
+            elemento.remove();
+        });
+
+    categorias.forEach(function (categoria) {
+
+        const opcion = document.createElement("div");
+
+        opcion.className =
+            "opcion-menu opcion-categoria";
+
+        opcion.textContent = categoria;
+
+        listaCategorias.insertBefore(
+            opcion,
+            botonConfiguracion
+        );
+    });
+}
+
+
+/* ============================================= */
+/* PREPARAR UNA CATEGORÍA NUEVA                   */
+/* ============================================= */
+
+function prepararNuevaCategoria() {
+
+    indiceCategoriaEditando = null;
+
+    nombreCategoria.value = "";
+
+    tituloAccionCategoria.textContent =
+        "Escribe el nombre de la nueva categoría:";
+
+    aceptarCategoria.textContent = "ACEPTAR";
+
+    mensajeCategorias.textContent = "";
+}
+
+/* ============================================= */
+/* MOSTRAR LISTA PARA EDITAR                      */
+/* ============================================= */
+
+function mostrarCategoriasParaAdministrar() {
+    listaCategoriasGestion.innerHTML = "";
+}
+
+
+/* ============================================= */
+/* EVENTOS DE CONFIGURACIÓN DE CATEGORÍAS         */
+/* ============================================= */
+
+if (
+    botonCategorias &&
+    formularioCategorias &&
+    nombreCategoria &&
+    aceptarCategoria &&
+    editarCategoria &&
+    cerrarCategorias &&
+    mensajeCategorias &&
+    tituloAccionCategoria &&
+    listaCategoriasGestion
+) {
+
+    /* ABRIR VENTANA */
+
+    botonCategorias.addEventListener(
+        "click",
+        function () {
+
+            panelMenu.classList.remove("menu-abierto");
+
+            prepararNuevaCategoria();
+
+            mostrarCategoriasParaAdministrar();
+
+            setTimeout(function () {
+
+                formularioCategorias.classList.add(
+                    "formulario-abierto"
+                );
+
+                nombreCategoria.focus();
+
+            }, 250);
+        }
+    );
+
+
+    /* ACEPTAR O GUARDAR CATEGORÍA */
+
+    aceptarCategoria.addEventListener(
+        "click",
+        function () {
+
+            const nombre =
+                nombreCategoria.value.trim();
+
+            if (!nombre) {
+
+                mensajeCategorias.textContent =
+                    "Escribe el nombre de la categoría.";
+
+                nombreCategoria.focus();
+                return;
+            }
+
+            const repetida = categorias.some(
+                function (categoria, indice) {
+
+                    if (indice === indiceCategoriaEditando) {
+                        return false;
+                    }
+
+                    return categoria.toLowerCase() ===
+                        nombre.toLowerCase();
+                }
+            );
+
+            if (repetida) {
+
+                mensajeCategorias.textContent =
+                    "Ya existe una categoría con ese nombre.";
+
+                nombreCategoria.focus();
+                return;
+            }
+
+            const categoriasAnteriores = [...categorias];
+
+            if (indiceCategoriaEditando === null) {
+
+                categorias.push(nombre);
+
+            } else {
+
+                categorias[indiceCategoriaEditando] = nombre;
+            }
+
+            if (!guardarCategorias()) {
+
+                categorias = categoriasAnteriores;
+                return;
+            }
+
+            mostrarCategorias();
+
+            mostrarCategoriasParaAdministrar();
+
+            prepararNuevaCategoria();
+
+            mensajeCategorias.textContent =
+                "Categoría guardada correctamente.";
+        }
+    );
+
+
+/* BOTÓN EDITAR */
+
+editarCategoria.addEventListener(
+    "click",
+    function () {
+
+        const ventanaAnterior =
+            document.getElementById("ventana-seleccionar-categoria");
+
+        if (ventanaAnterior) {
+            ventanaAnterior.remove();
+        }
+
+        const ventana = document.createElement("div");
+
+        ventana.id = "ventana-seleccionar-categoria";
+        ventana.className = "formulario-inicio formulario-abierto";
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = "¿QUÉ CATEGORÍA QUIERES EDITAR?";
+
+        const campoCategoria = document.createElement("input");
+
+        campoCategoria.type = "text";
+        campoCategoria.id = "campo-categoria-editar";
+        campoCategoria.placeholder = "Nombre de la categoría";
+        campoCategoria.maxLength = 60;
+        campoCategoria.autocomplete = "off";
+
+        const contenedorBotones = document.createElement("div");
+
+        contenedorBotones.style.display = "flex";
+        contenedorBotones.style.flexDirection = "column";
+        contenedorBotones.style.gap = "10px";
+        contenedorBotones.style.marginTop = "15px";
+
+        const botonEditar = document.createElement("button");
+        botonEditar.type = "button";
+        botonEditar.textContent = "EDITAR";
+
+        const botonBorrar = document.createElement("button");
+        botonBorrar.type = "button";
+        botonBorrar.textContent = "BORRAR";
+
+        const botonAceptar = document.createElement("button");
+        botonAceptar.type = "button";
+        botonAceptar.textContent = "ACEPTAR";
+
+      /* MOSTRAR BOTONES Y VENTANA */
+
+contenedorBotones.appendChild(botonEditar);
+contenedorBotones.appendChild(botonBorrar);
+contenedorBotones.appendChild(botonAceptar);
+contenedorBotones.appendChild(botonCerrar);
+
+botonCerrar.addEventListener("click", function () {
+    ventana.remove();
+    formularioCategorias.classList.add("formulario-abierto");
+});
+
+ventana.appendChild(titulo);
+ventana.appendChild(campoCategoria);
+ventana.appendChild(contenedorBotones);
+ventana.appendChild(mensaje);
+
+document.body.appendChild(ventana);
+
+campoCategoria.focus();
+
+});
+
+
+/* BOTÓN EDITAR */
+
+editarCategoria.addEventListener("click", function () {
+
+    const ventanaAnterior = document.getElementById(
+        "ventana-seleccionar-categoria"
+    );
+
+    if (ventanaAnterior) {
+        ventanaAnterior.remove();
+    }
+
+    let indiceSeleccionado = null;
+
+    const ventana = document.createElement("div");
+
+    ventana.id = "ventana-seleccionar-categoria";
+    ventana.className = "formulario-inicio formulario-abierto";
+
+    const titulo = document.createElement("h2");
+    titulo.textContent = "¿QUÉ CATEGORÍA QUIERES EDITAR?";
+    titulo.style.marginBottom = "25px";
+
+    const campoCategoria = document.createElement("input");
+
+    campoCategoria.type = "text";
+    campoCategoria.id = "campo-categoria-editar";
+    campoCategoria.placeholder = "Nombre de la categoría";
+    campoCategoria.maxLength = 60;
+    campoCategoria.autocomplete = "off";
+
+    Object.assign(campoCategoria.style, {
+        display: "block",
+        width: "100%",
+        boxSizing: "border-box",
+        margin: "0 0 25px 0",
+        padding: "12px",
+        fontSize: "16px"
+    });
+
+    const mensaje = document.createElement("p");
+    mensaje.setAttribute("aria-live", "polite");
+
+    const contenedorBotones = document.createElement("div");
+    contenedorBotones.className = "botones-categorias";
+
+    Object.assign(contenedorBotones.style, {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexWrap: "wrap",
+        gap: "12px",
+        marginTop: "10px"
+    });
+
+     function crearBoton(texto) {
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.textContent = texto;
+    return boton;
+}
+
+const botonEditar = crearBoton("EDITAR");
+const botonBorrar = crearBoton("BORRAR");
+const botonAceptar = crearBoton("ACEPTAR");
+const botonCerrar = crearBoton("CERRAR");
+
+botonCerrar.addEventListener("click", function () {
+    ventana.remove();
+    formularioCategorias.classList.add("formulario-abierto");
+});
+
+
+function buscarCategoria(nombre) {
+
+
+        const nombreBuscado = nombre.trim().toLocaleLowerCase();
+
+        return categorias.findIndex(function (categoria) {
+            return categoria.toLocaleLowerCase() === nombreBuscado;
+        });
+    }
+
+    function guardarYActualizar() {
+        if (!guardarCategorias()) {
+            return false;
+        }
+
+        mostrarCategorias();
+        mostrarCategoriasParaAdministrar();
+
+        return true;
+    }
+
+    /* EDITAR: SELECCIONAR LA CATEGORÍA EXISTENTE */
+
+    botonEditar.addEventListener("click", function () {
+
+        const nombre = campoCategoria.value.trim();
+
+        if (!nombre) {
+            mensaje.textContent = "Escribe el nombre de la categoría.";
+            campoCategoria.focus();
+            return;
+        }
+
+        const indice = buscarCategoria(nombre);
+
+        if (indice === -1) {
+            mensaje.textContent = "No se encontró esa categoría.";
+            return;
+        }
+
+        indiceSeleccionado = indice;
+        campoCategoria.value = categorias[indice];
+
+        mensaje.textContent =
+            "Categoría seleccionada. Cambia el nombre y pulsa ACEPTAR.";
+
+        campoCategoria.focus();
+        campoCategoria.select();
+    });
+
+    
+/* BORRAR: ELIMINAR LA CATEGORÍA DEL MENÚ */
+
+botonBorrar.addEventListener("click", function () {
+
+    const nombre = campoCategoria.value.trim();
+
+    if (!nombre) {
+        mensaje.textContent = "Escribe el nombre de la categoría que quieres borrar.";
+        campoCategoria.focus();
+        return;
+    }
+
+    const indice = buscarCategoria(nombre);
+
+    if (indice === -1) {
+        mensaje.textContent = "No se encontró esa categoría.";
+        return;
+    }
+
+    const categoriaEliminada = categorias[indice];
+
+    categorias.splice(indice, 1);
+
+    if (!guardarYActualizar()) {
+        categorias.splice(indice, 0, categoriaEliminada);
+        return;
+    }
+
+    indiceSeleccionado = null;
+    campoCategoria.value = "";
+
+    ventana.remove();
+
+    formularioCategorias.classList.add("formulario-abierto");
+
+});
+
+
+
+    /* ACEPTAR: GUARDAR EL NOMBRE NUEVO */
+
+    botonAceptar.addEventListener("click", function () {
+
+        const nombreNuevo = campoCategoria.value.trim();
+
+        if (!nombreNuevo) {
+            mensaje.textContent = "Escribe el nombre de la categoría.";
+            campoCategoria.focus();
+            return;
+        }
+
+        let indice = indiceSeleccionado;
+
+        if (indice === null) {
+            indice = buscarCategoria(nombreNuevo);
+        }
+
+        if (indice === -1 || indice === null) {
+            mensaje.textContent =
+                "No se encontró la categoría. Pulsa EDITAR primero para seleccionar una existente.";
+            return;
+        }
+
+        const repetida = categorias.some(function (categoria, i) {
+            return i !== indice &&
+                categoria.toLocaleLowerCase() === nombreNuevo.toLocaleLowerCase();
+        });
+
+        if (repetida) {
+            mensaje.textContent =
+                "Ya existe otra categoría con ese nombre.";
+            return;
+        }
+
+        const nombreAnterior = categorias[indice];
+
+        categorias[indice] = nombreNuevo;
+
+        if (!guardarYActualizar()) {
+            categorias[indice] = nombreAnterior;
+            return;
+        }
+
+        indiceSeleccionado = null;
+        campoCategoria.value = nombreNuevo;
+
+        mensaje.textContent =
+            "Categoría guardada y menú actualizado correctamente.";
+   
+
+        ventana.remove();
+
+      formularioCategorias.classList.add("formulario-abierto");
+
+ });
+
+
+    contenedorBotones.appendChild(botonEditar);
+    contenedorBotones.appendChild(botonBorrar);
+    contenedorBotones.appendChild(botonAceptar);
+
+    ventana.appendChild(titulo);
+    ventana.appendChild(campoCategoria);
+    ventana.appendChild(contenedorBotones);
+    ventana.appendChild(mensaje);
+
+    document.body.appendChild(ventana);
+
+    campoCategoria.focus();
+});
+
+
+    /* CERRAR VENTANA */
+
+    cerrarCategorias.addEventListener(
+        "click",
+        function () {
+
+            formularioCategorias.classList.remove(
+                "formulario-abierto"
+            );
+
+            prepararNuevaCategoria();
+        }
+    );
+
+
+    /* GUARDAR CON ENTER */
+
+    nombreCategoria.addEventListener(
+        "keydown",
+        function (evento) {
+
+            if (evento.key === "Enter") {
+
+                evento.preventDefault();
+
+                aceptarCategoria.click();
+            }
+        }
+    );
+}
+
+
+/* ============================================= */
+/* CARGAR CATEGORÍAS AL INICIAR                   */
+/* ============================================= */
+
+mostrarCategorias();
+
+
+
+
+/* ================================================= */
 /*          CONFIGURAR NOMBRE COMERCIAL               */
 /* ================================================= */
 
