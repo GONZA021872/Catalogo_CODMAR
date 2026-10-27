@@ -1905,6 +1905,139 @@ transform: translateY(-25px);
     display: none !important;
 }
 
+
+
+/* ========================================= */
+/*      CONFIGURACIÓN DE CATEGORÍAS          */
+/* ========================================= */
+
+#formulario-categorias {
+    text-align: center;
+}
+
+#formulario-categorias h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+#formulario-categorias p {
+    margin-bottom: 30px;
+}
+
+#cerrar-categorias {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 18px;
+    cursor: pointer;
+}
+
+
+#formulario-categorias #nombre-categoria {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 15px 0;
+    padding: 11px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+#formulario-categorias #mensaje-categorias {
+    min-height: 20px;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+
+#formulario-categorias .botones-categorias {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+#formulario-categorias .botones-categorias button {
+    position: static;
+    transform: none;
+    flex: 0 0 auto;
+    min-width: 100px;
+    padding: 10px 16px;
+    cursor: pointer;
+}
+
+
+/* ========================================= */
+/*    ADMINISTRACIÓN DE CATEGORÍAS           */
+/* ========================================= */
+
+#formulario-categorias {
+    box-sizing: border-box;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+#formulario-categorias .botones-categorias {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 18px;
+}
+
+#formulario-categorias .botones-categorias button {
+    position: static;
+    transform: none;
+    min-width: 90px;
+    padding: 9px 12px;
+    cursor: pointer;
+}
+
+#formulario-categorias #nombre-categoria {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 11px;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+#formulario-categorias #lista-categorias-gestion {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+#formulario-categorias .fila-categoria {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+}
+
+#formulario-categorias .seleccionar-categoria {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+#formulario-categorias .nombre-categoria-lista {
+    overflow-wrap: anywhere;
+}
+
+
+
+
 /* Adaptación a teléfonos */
 
 @media (max-width: 480px) {
