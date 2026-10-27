@@ -431,6 +431,7 @@
         </div>
 
         
+
 <!-- MENÚ DESPLEGABLE -->
 
 <div class="panel-menu" id="panel-menu">
@@ -443,9 +444,12 @@
         Encabezado
     </div>
 
-    <div class="opcion-menu">
-        Configuración
+    <div class="opcion-menu" id="boton-categorias">
+        Categorías
     </div>
+
+    <div class="opcion-menu" id="boton-configuracion">Configuración</div>
+
 
     <div class="opcion-menu" id="boton-salir">
         Salir
@@ -453,7 +457,51 @@
 
 </div>
 
-       
+
+<!-- ========================================= -->
+<!--       CONFIGURACIÓN DE CATEGORÍAS         -->
+<!-- ========================================= -->
+
+<div class="formulario-inicio" id="formulario-categorias">
+
+    <h2>CONFIGURACIÓN DE CATEGORÍAS</h2>
+
+    <p id="titulo-accion-categoria">
+        Escribe el nombre de la categoría:
+    </p>
+
+    <input
+        type="text"
+        id="nombre-categoria"
+        placeholder="Ej. Medicamentos"
+        maxlength="60"
+        autocomplete="off"
+    >
+
+    <div class="botones-categorias">
+
+        <button id="aceptar-categoria" type="button">
+            ACEPTAR
+        </button>
+
+        <button id="editar-categoria" type="button">
+            EDITAR
+        </button>
+
+        <button id="cerrar-categorias" type="button">
+            CERRAR
+        </button>
+
+    </div>
+
+    <p id="mensaje-categorias" aria-live="polite"></p>
+
+    <div id="lista-categorias-gestion"></div>
+
+</div>
+
+
+
 
         <!-- ========================================= -->
         <!--          CONFIGURACIÓN DE INICIO          -->
