@@ -416,6 +416,7 @@ transform: translate(
 }
 
 
+
 /* ============================= */
 /*       BOTONES ACEPTAR         */
 /* ============================= */
@@ -2035,6 +2036,821 @@ transform: translateY(-25px);
     overflow-wrap: anywhere;
 }
 
+   
+
+/* ============================================= */
+/* VENTANA: REGISTRAR MEDICAMENTO                */
+/* Diseño blanco y negro de CODMAR               */
+/* ============================================= */
+
+#ventana-captura-medicamento {
+    box-sizing: border-box;
+    width: min(460px, calc(100vw - 30px));
+    max-height: calc(100vh - 30px);
+    overflow-y: auto;
+    padding: 28px;
+    background: #fff;
+    color: #111;
+    border: 1px solid #222;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22);
+    font-family: inherit;
+}
+
+#ventana-captura-medicamento h2 {
+    margin: 0 0 24px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #222;
+    color: #111;
+    text-align: center;
+    font-size: 21px;
+    font-weight: 700;
+}
+
+#ventana-captura-medicamento input[type="text"] {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 18px;
+    padding: 11px 13px;
+    border: 1px solid #888;
+    border-radius: 5px;
+    background: #fff;
+    color: #111;
+    font: inherit;
+}
+
+#ventana-captura-medicamento input[type="file"] {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px dashed #555;
+    border-radius: 5px;
+    background: #f7f7f7;
+    color: #111;
+    font: inherit;
+}
+
+#ventana-captura-medicamento input:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 2px;
+}
+
+#ventana-captura-medicamento img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    max-height: 240px;
+    margin: 15px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #fff;
+}
+
+#ventana-captura-medicamento p {
+    color: #222;
+    font-size: 14px;
+    text-align: center;
+}
+
+#ventana-captura-medicamento > div {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+#ventana-captura-medicamento button {
+    box-sizing: border-box;
+    min-width: 120px;
+    min-height: 42px;
+    padding: 10px 18px;
+    border: 1px solid #111;
+    border-radius: 5px;
+    background: transparent !important;
+    color: #111 !important;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+    transition: none;
+}
+
+#ventana-captura-medicamento button:hover,
+#ventana-captura-medicamento button:focus,
+#ventana-captura-medicamento button:active {
+    background: transparent !important;
+    color: #111 !important;
+    box-shadow: none;
+}
+
+#ventana-captura-medicamento button:focus-visible {
+    outline: 2px solid #111;
+    outline-offset: 3px;
+}
+
+/* ========================================= */
+/*       CATÁLOGO DE MEDICAMENTOS CODMAR     */
+/* ========================================= */
+
+.contenido-inicio {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 18px;
+}
+
+.catalogo-medicamentos-codmar {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.catalogo-medicamentos-codmar h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 21px;
+    color: #333;
+}
+
+.lista-medicamentos-codmar {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(160px, 1fr)
+    );
+    gap: 16px;
+}
+
+.tarjeta-medicamento-codmar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 12px;
+    background: white;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}
+
+.tarjeta-medicamento-codmar img {
+    width: 100%;
+    height: 130px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.tarjeta-medicamento-codmar h3 {
+    font-size: 15px;
+    line-height: 20px;
+    height: 40px;
+    margin: 0 0 8px;
+    color: #333;
+    text-align: center;
+    overflow: hidden;
+}
+   
+
+.presentacion-medicamento-codmar {
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.precio-publico-medicamento {
+    font-size: 13px;
+    margin: 5px 0;
+    color: #555;
+}
+
+.precio-tachado {
+    text-decoration: line-through;
+}
+
+.precio-codmar-medicamento {
+    font-size: 23px;
+    font-weight: bold;
+    color: #159c96;
+    margin-top: 5px;
+    line-height: 1.4;
+    display: block;
+}
+
+.mensaje-catalogo-medicamentos {
+    text-align: center;
+    margin: 25px 0;
+    color: #555;
+}
+
+.opcion-tachar-precio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+/* ============================================= */
+/* SELECTOR ADMINISTRACIÓN / VENTA               */
+/* ============================================= */
+
+.controles-modo-catalogo {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px auto 25px;
+    width: 100%;
+}
+
+.controles-modo-catalogo button {
+    padding: 10px 18px;
+    border: 1px solid #159c96;
+    border-radius: 7px;
+    background: white;
+    color: #159c96;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.controles-modo-catalogo button.modo-activo {
+    background: #159c96;
+    color: white;
+}
+
+
+/* ============================================= */
+/* DISEÑO DE CAPTURA DE PRODUCTOS CODMAR         */
+/* ============================================= */
+
+.input-fotografia-oculto {
+    display: none;
+}
+
+.fila-fotografia-producto {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin: 10px 0;
+    padding-left: 25px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.boton-seleccionar-fotografia {
+    padding: 3px 8px;
+    font-size: 12px !important;
+    font-weight: 600;
+    border: 1px solid #168b83;
+    border-radius: 6px;
+    background: #168b83;
+    color: white;
+    cursor: pointer;
+    width: auto;
+    min-width: 0;
+    flex: 0 0 auto;
+    position: relative;
+    left: -60px;
+
+}
+
+
+/* Recuadro de fotografía */
+
+.contenedor-vista-previa-producto {
+    width: 60px;
+    height: 100px;
+    flex: 0 0 100px;
+    border: 2px dashed #aebbc5;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #f5f8fa;
+    box-sizing: border-box;
+}
+
+/* Imagen seleccionada */
+
+.vista-previa-producto {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+}
+
+.vista-previa-producto.visible {
+    display: block;
+}
+
+/* Contenedor de botones */
+
+.contenedor-botones-captura {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+
+/* REDUCIR ALTURA Y LETRA DEL BOTÓN GUARDAR */
+
+#ventana-captura-medicamento button.boton-guardar-captura {
+    height: 20px !important;
+    min-height: 20px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 12px !important;
+}
+
+/* REDUCIR ALTURA Y LETRA DEL BOTÓN CANCELAR */
+
+#ventana-captura-medicamento button.boton-cancelar-captura {
+    height: 20px !important;
+    min-height: 20px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 12px !important;
+}
+
+/* ACERCAR GUARDAR Y CANCELAR A LA LINEA INFERIOR */
+#ventana-captura-medicamento .contenedor-botones-captura {
+    margin-bottom: -12px !important;
+    transform: translateY(10px);
+}
+
+/* ============================================= */
+/* CENTRAR LAS DOS VENTANAS DE REGISTRO          */
+/* ============================================= */
+
+/* CENTRAR LAS DOS VENTANAS DE REGISTRO */
+
+#ventana-captura-medicamento,
+#ventana-precios-medicamento {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* ============================================= */
+/* VENTANA DE DETALLE DEL MEDICAMENTO            */
+/* ============================================= */
+
+.fondo-detalle-medicamento {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.ventana-detalle-medicamento {
+    position: relative;
+    background: #ffffff;
+    width: 100%;
+    max-width: 430px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.cerrar-detalle-medicamento {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: none;
+    background: transparent;
+    font-size: 30px;
+    cursor: pointer;
+    color: #555;
+}
+
+.imagen-detalle-medicamento {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    margin: 10px auto;
+    display: block;
+}
+
+.nombre-detalle-medicamento {
+    font-size: 21px;
+    color: #222;
+    margin: 10px 0;
+}
+
+.presentacion-detalle-medicamento {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0 15px;
+}
+
+.precio-publico-detalle {
+    font-size: 16px;
+    color: #777;
+    margin: 8px 0;
+}
+
+.precio-codmar-detalle {
+    font-size: 23px;
+    font-weight: bold;
+    color: #159c96;
+    margin: 12px 0 20px;
+}
+
+.fila-cantidad-detalle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.cantidad-detalle-medicamento {
+    width: 75px;
+    padding: 8px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+}
+
+.boton-agregar-carrito {
+    width: 100%;
+    padding: 13px;
+    background: #159c96;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton-agregar-carrito:hover {
+    background: #117e79;
+}
+
+
+/* ============================================= */
+/*          VENTANA DE COMPRA CODMAR             */
+/* ============================================= */
+
+.panel-compras-codmar {
+    display: none;
+    position: fixed;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 94%;
+    max-width: 1200px;
+    height: calc(100vh - 191px);
+     max-height: none;
+    background: #ffffff;
+    border: 1px solid #dce1e6;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.16);
+    z-index: 10000;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.panel-compras-codmar.activo {
+    display: block;
+}
+
+/* ============================================= */
+/*          DISTRIBUCION DE LAS DOS AREAS        */
+/* ============================================= */
+
+.distribucion-compra-codmar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+/* ============================================= */
+/*              MEDIOS DE PAGO                   */
+/* ============================================= */
+
+.medios-pago-codmar {
+    padding: 30px;
+    border-right: 1px solid #e5e7eb;
+    box-sizing: border-box;
+}
+
+.medios-pago-codmar h2,
+.nota-compra-codmar h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #263746;
+}
+
+.subtitulo-pago {
+    color: #777777;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.tarjetas-bancarias-codmar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.tarjeta-bancaria {
+    min-height: 75px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #e0e4e8;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #34495e;
+    font-size: 16px;
+}
+
+.aviso-medios-pago {
+    margin-top: 25px;
+    color: #777777;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ============================================= */
+/*                NOTA DE COMPRA                 */
+/* ============================================= */
+
+.nota-compra-codmar {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    padding: 30px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.encabezado-nota-compra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+#cerrar-panel-compras {
+    border: none;
+    background: transparent;
+    color: #555555;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+#lista-productos-carrito {
+    flex: 1 1 0;
+    min-height: 0;
+    height: auto;
+    padding: 20px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    box-sizing: border-box;
+}
+    
+
+.carrito-vacio {
+    text-align: center;
+    color: #777777;
+    padding: 20px 5px;
+}
+
+.resumen-carrito {
+    padding: 18px 0;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+    .encabezado-nota-compra,
+.resumen-carrito {
+    flex-shrink: 0;
+}
+
+}
+
+.total-carrito {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#total-general-carrito {
+    color: #263746;
+}
+
+/* ============================================= */
+/*             TABLA DE PRODUCTOS                */
+/* ============================================= */
+
+.encabezados-nota-codmar,
+.fila-nota-codmar {
+    display: grid;
+    grid-template-columns: 65px minmax(100px, 1fr) 85px 95px;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 5px;
+    box-sizing: border-box;
+}
+
+.encabezados-nota-codmar {
+    background: #f3f5f7;
+    color: #34495e;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #dce1e6;
+}
+
+.fila-nota-codmar {
+    border-bottom: 1px solid #eeeeee;
+    color: #333333;
+    font-size: 14px;
+}
+
+.fila-nota-codmar span {
+    text-align: center;
+}
+
+.fila-nota-codmar span:nth-child(2) {
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.fila-nota-codmar span:nth-child(3),
+.fila-nota-codmar span:nth-child(4) {
+    text-align: right;
+}
+
+/* ============================================= */
+/*             ADAPTACION A CELULAR              */
+/* ============================================= */
+
+@media (max-width: 700px) {
+
+    .panel-compras-codmar {
+        top: 85px;
+        width: 96%;
+        height: calc(100vh - 100px);
+        overflow-y: auto;
+    }
+
+    .distribucion-compra-codmar {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+
+    .medios-pago-codmar {
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 20px;
+    }
+
+    .nota-compra-codmar {
+        min-height: 400px;
+        padding: 20px;
+
+    }
+
+}
+
+
+/* ============================================= */
+/*          PRODUCTOS DEL CARRITO CODMAR         */
+/* ============================================= */
+
+.producto-carrito {
+    padding: 12px 8px;
+    border-bottom: 1px solid #dddddd;
+}
+
+.producto-carrito strong {
+    display: block;
+    color: #333333;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.producto-carrito p {
+    margin: 3px 0 7px;
+    color: #777777;
+    font-size: 12px;
+}
+
+.detalle-producto-carrito {
+    color: #333333;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+
+/* CONTADOR DE PIEZAS DEL CARRITO */
+   
+.contador-carrito {
+    position: absolute;
+    top: -5px;
+    right: -15px;
+    min-width: 19px;
+    height: 19px;
+    padding: 0 4px;
+    background: #e53935;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    z-index: 10;
+}
+
+
+
+@media (max-width: 480px) {
+    .ventana-detalle-medicamento {
+        padding: 20px 15px;
+        max-width: 100%;
+    }
+
+    .imagen-detalle-medicamento {
+        width: 125px;
+        height: 125px;
+    }
+}
+
+
+@media (max-width: 600px) {
+
+    .contenido-inicio {
+        padding: 12px;
+    }
+
+    .lista-medicamentos-codmar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .tarjeta-medicamento-codmar {
+        padding: 9px;
+    }
+
+    .tarjeta-medicamento-codmar img {
+        height: 110px;
+    }
+}
+
+
+
+
+@media (max-width: 480px) {
+    #ventana-captura-medicamento {
+        padding: 20px;
+    }
+
+    #ventana-captura-medicamento h2 {
+        font-size: 18px;
+    }
+
+    #ventana-captura-medicamento button {
+        flex: 1;
+        min-width: 105px;
+    }
+}
+
 
 
 
@@ -2335,4 +3151,80 @@ transform: translateY(-25px);
         font-size: 16px !important;
     }
 
+}
+
+
+
+/* CARGA MASIVA DE PRODUCTOS CODMAR */
+.fondo-carga-masiva-codmar { position: fixed; inset: 0; z-index: 10050; background: rgba(0,0,0,.52); display: flex; align-items: center; justify-content: center; padding: 18px; overflow-y: auto; }
+.panel-carga-masiva-codmar { position: relative; width: min(720px, 100%); max-height: calc(100vh - 36px); overflow-y: auto; background: #fff; border-radius: 12px; padding: 26px; box-shadow: 0 12px 36px rgba(0,0,0,.28); color: #172b3d; font-family: Arial, sans-serif; }
+.panel-carga-masiva-codmar h2 { margin: 0 100px 14px 0; color: #31516e; font-size: 22px; text-align: left; }
+.panel-carga-masiva-codmar p { line-height: 1.45; white-space: pre-line; }
+.cerrar-carga-masiva-codmar { position: absolute; top: 18px; right: 18px; }
+.campo-carga-masiva-codmar { display: block; margin: 14px 0; }
+.campo-carga-masiva-codmar span { display: block; margin-bottom: 6px; font-weight: 700; }
+.campo-carga-masiva-codmar input[type=file], .campo-carga-masiva-codmar select { width: 100%; box-sizing: border-box; padding: 9px; }
+.columnas-carga-masiva-codmar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 14px; margin-top: 12px; }
+.estado-carga-masiva-codmar { min-height: 24px; padding: 10px; border-radius: 6px; background: #f0f7f8; color: #173b47; }
+.boton-accion-carga-masiva-codmar { margin: 6px 8px 0 0; padding: 10px 16px; border: 0; border-radius: 6px; background: #139d98; color: white; font-weight: 700; cursor: pointer; }
+.boton-accion-carga-masiva-codmar:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 600px) { .panel-carga-masiva-codmar { padding: 20px 16px; } .columnas-carga-masiva-codmar { grid-template-columns: 1fr; } }
+
+/* Alineación uniforme de las tarjetas de medicamentos en Administración y Venta */
+.tarjeta-medicamento-codmar {
+    box-sizing: border-box;
+    min-height: 300px;
+}
+
+.tarjeta-medicamento-codmar img {
+    flex: 0 0 130px;
+}
+
+.tarjeta-medicamento-codmar h3 {
+    flex: 0 0 40px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+}
+
+.precio-publico-medicamento {
+    width: 100%;
+    min-height: 20px;
+    margin: auto 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: clamp(10px, 0.8vw, 12px);
+}
+
+.precio-codmar-medicamento {
+    width: 100%;
+    min-height: 32px;
+    margin: 5px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-size: clamp(16px, 1.35vw, 20px);
+    line-height: 1.2;
+}
+
+.boton-eliminar-medicamento {
+    margin-top: 5px;
+}
+
+@media (max-width: 600px) {
+    .tarjeta-medicamento-codmar {
+        min-height: 285px;
+    }
+
+    .precio-publico-medicamento {
+        font-size: 10px;
+    }
+
+    .precio-codmar-medicamento {
+        font-size: 16px;
+    }
 }
