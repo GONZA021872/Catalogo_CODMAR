@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CO D MAR</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=20261105-align">
 </head>
 
 <body>
@@ -414,9 +414,16 @@
                     id="icono-carrito">
                 </span>
 
+                <span
+                  class="contador-carrito"
+                  id="contador-carrito">
+                  0
+                </span>
+
             </button>
 
         </div>
+
 
 
         <!-- ESPACIO CENTRAL -->
@@ -430,7 +437,99 @@
         <div class="barra-inicio-inferior">
         </div>
 
-        
+  
+<!-- ========================================= -->
+<!--        VENTANA DE COMPRA CODMAR           -->
+<!-- ========================================= -->
+
+<div id="panel-compras-codmar" class="panel-compras-codmar">
+
+    <div class="distribucion-compra-codmar">
+
+        <!-- LADO IZQUIERDO: MEDIOS DE PAGO -->
+
+        <section class="medios-pago-codmar">
+
+            <h2>Medios de pago</h2>
+
+            <p class="subtitulo-pago">
+                Opciones disponibles
+            </p>
+
+            <div class="tarjetas-bancarias-codmar">
+
+                <div class="tarjeta-bancaria">
+                    <strong>VISA</strong>
+                </div>
+
+                <div class="tarjeta-bancaria">
+                    <strong>Mastercard</strong>
+                </div>
+
+                <div class="tarjeta-bancaria">
+                    <strong>American Express</strong>
+                </div>
+
+                <div class="tarjeta-bancaria">
+                    <strong>Otras tarjetas</strong>
+                </div>
+
+            </div>
+
+            <p class="aviso-medios-pago">
+                Los medios de pago se habilitarán
+                de acuerdo con el proveedor contratado.
+            </p>
+
+        </section>
+
+
+        <!-- LADO DERECHO: NOTA DE COMPRA -->
+
+        <section class="nota-compra-codmar">
+
+            <div class="encabezado-nota-compra">
+
+                <h2>Mi compra</h2>
+
+                <button
+                    type="button"
+                    id="cerrar-panel-compras">
+                    ×
+                </button>
+
+            </div>
+
+            <div id="lista-productos-carrito">
+
+                <p class="carrito-vacio">
+                    Tu carrito está vacío.
+                </p>
+
+            </div>
+
+            <div class="resumen-carrito">
+
+                <div class="total-carrito">
+
+                    <span>TOTAL:</span>
+
+                    <strong id="total-general-carrito">
+                        $0.00
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+</div>
+      
+
+
 
 <!-- MENÚ DESPLEGABLE -->
 
@@ -1025,6 +1124,7 @@
     <!-- ========================================= -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="script.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script src="script.js?v=20261105-image-replace"></script>
 
 
