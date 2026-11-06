@@ -759,6 +759,19 @@ if (
     const aceptarCabecera =
         document.getElementById("aceptar-cabecera");
 
+     /* ================================================= */
+/*           ACEPTAR CONFIGURACIÓN CABECERA           */
+/* ================================================= */
+
+aceptarCabecera.addEventListener("click", function () {
+
+    formularioCabecera.classList.remove(
+        "formulario-abierto"
+    );
+
+});
+
+
    
     /* ================================================= */
     /*              CONFIGURACIÓN GENERAL               */
@@ -790,6 +803,140 @@ if (
 
     const botonCarrito =
         document.querySelector(".boton-carrito");
+
+
+     
+/* ============================================= */
+/*       ABRIR Y CERRAR PANEL DE COMPRAS         */
+/* ============================================= */
+
+const panelComprasCODMAR =
+    document.getElementById("panel-compras-codmar");
+
+const cerrarPanelCompras =
+    document.getElementById("cerrar-panel-compras");
+
+
+
+/* ============================================= */
+/*       MOSTRAR PRODUCTOS DEL CARRITO           */
+/* ============================================= */
+
+function mostrarProductosCarritoCODMAR() {
+
+    const lista =
+        document.getElementById("lista-productos-carrito");
+
+    const totalGeneral =
+        document.getElementById("total-general-carrito");
+
+    if (!lista || !totalGeneral) {
+        return;
+    }
+
+    lista.innerHTML = "";
+
+    let total = 0;
+
+    // ENCABEZADOS DE LAS COLUMNAS
+
+    const encabezados = document.createElement("div");
+    encabezados.className = "encabezados-nota-codmar";
+
+    encabezados.innerHTML = `
+        <span>CANTIDAD</span>
+        <span>PRODUCTO</span>
+        <span>PRECIO</span>
+        <span>IMPORTE</span>
+    `;
+
+    lista.appendChild(encabezados);
+
+    // CARRITO VACÍO
+
+    if (carritoCODMAR.length === 0) {
+
+        const vacio = document.createElement("p");
+        vacio.className = "carrito-vacio";
+        vacio.textContent = "Tu carrito está vacío.";
+
+        lista.appendChild(vacio);
+
+        totalGeneral.textContent = "$0.00";
+
+        return;
+    }
+
+    // PRODUCTOS
+
+    carritoCODMAR.forEach(function (producto) {
+
+        const precio = Number(producto.precio_codmar) || 0;
+        const cantidad = Number(producto.cantidad) || 0;
+        const importe = precio * cantidad;
+
+        total += importe;
+
+        const fila = document.createElement("div");
+        fila.className = "fila-nota-codmar";
+
+        const cantidadColumna = document.createElement("span");
+        cantidadColumna.textContent = cantidad;
+
+        const productoColumna = document.createElement("span");
+        productoColumna.textContent =
+            producto.nombre +
+            (producto.presentacion ? " " + producto.presentacion : "");
+
+        const precioColumna = document.createElement("span");
+        precioColumna.textContent = "$" + precio.toFixed(2);
+
+        const importeColumna = document.createElement("span");
+        importeColumna.textContent = "$" + importe.toFixed(2);
+
+        fila.appendChild(cantidadColumna);
+        fila.appendChild(productoColumna);
+        fila.appendChild(precioColumna);
+        fila.appendChild(importeColumna);
+
+        lista.appendChild(fila);
+
+    });
+
+    totalGeneral.textContent = "$" + total.toFixed(2);
+
+}
+
+
+
+// ABRIR O CERRAR CON EL BOTÓN SUPERIOR
+
+if (botonCarrito && panelComprasCODMAR) {
+
+    botonCarrito.addEventListener("click", function () {
+
+    panelComprasCODMAR.classList.toggle("activo");
+
+    mostrarProductosCarritoCODMAR();
+       
+
+    });
+
+}
+
+// CERRAR CON LA X
+
+if (cerrarPanelCompras && panelComprasCODMAR) {
+
+    cerrarPanelCompras.addEventListener("click", function () {
+
+        panelComprasCODMAR.classList.remove("activo");
+
+    });
+
+}
+
+
 
 
     /* ================================================= */
@@ -1122,8 +1269,911 @@ function detenerMovimientoLogotipo() {
 
     const clienteId = usuarioCliente.cliente_id;
 
+    // MODO ACTUAL DEL CATÁLOGO
+
+let modoCatalogoMedicamentos = "administracion";
+
     console.log("CLIENTE ACTUAL:", clienteId);
 
+// CARRITO DE COMPRAS CODMAR
+let carritoCODMAR = [];
+
+console.log("CLIENTE ACTUAL:", clienteId);
+
+
+    /* ================================================= */
+/*       CARGAR MEDICAMENTOS DEL NEGOCIO ACTUAL       */
+/* ================================================= */
+
+async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
+
+    const contenedor = document.querySelector(".contenido-inicio");
+
+    if (!contenedor) {
+        return;
+    }
+
+    const tamanoPagina = 50;
+    let seccion;
+    let lista;
+
+    try {
+
+        if (agregar) {
+            seccion = contenedor.querySelector(".catalogo-medicamentos-codmar");
+            lista = seccion?.querySelector(".lista-medicamentos-codmar");
+
+            if (!seccion || !lista) {
+                return;
+            }
+        } else {
+            const seccionAnterior =
+                contenedor.querySelector(".catalogo-medicamentos-codmar");
+
+            if (seccionAnterior?._observadorCarga) {
+                seccionAnterior._observadorCarga.disconnect();
+            }
+
+            contenedor.innerHTML = "";
+            seccion = document.createElement("section");
+            seccion.className = "catalogo-medicamentos-codmar";
+
+            const titulo = document.createElement("h2");
+            titulo.textContent = "MEDICAMENTOS";
+
+            const controlesModo = document.createElement("div");
+            controlesModo.className = "controles-modo-catalogo";
+
+            const botonAdministracion = document.createElement("button");
+            botonAdministracion.textContent = "ADMINISTRACIÓN";
+            botonAdministracion.type = "button";
+
+            const botonVenta = document.createElement("button");
+            botonVenta.textContent = "VENTA";
+            botonVenta.type = "button";
+
+            function actualizarBotonesModo() {
+                botonAdministracion.classList.toggle(
+                    "modo-activo",
+                    modoCatalogoMedicamentos === "administracion"
+                );
+                botonVenta.classList.toggle(
+                    "modo-activo",
+                    modoCatalogoMedicamentos === "venta"
+                );
+            }
+
+            botonAdministracion.addEventListener("click", async function () {
+                modoCatalogoMedicamentos = "administracion";
+                actualizarBotonesModo();
+                await cargarMedicamentosCatalogo();
+            });
+
+            botonVenta.addEventListener("click", async function () {
+                modoCatalogoMedicamentos = "venta";
+                actualizarBotonesModo();
+                await cargarMedicamentosCatalogo();
+            });
+
+            controlesModo.appendChild(botonAdministracion);
+            controlesModo.appendChild(botonVenta);
+
+            const botonLote = document.createElement("button");
+            botonLote.type = "button";
+            botonLote.textContent = "CARGAR HASTA 100";
+            botonLote.addEventListener("click", abrirCargaMasivaProductos);
+            controlesModo.appendChild(botonLote);
+
+
+            actualizarBotonesModo();
+
+            if (modoCatalogoMedicamentos === "administracion") {
+                seccion.appendChild(controlesModo);
+            }
+
+            lista = document.createElement("div");
+            lista.className = "lista-medicamentos-codmar";
+            seccion.appendChild(titulo);
+            seccion.appendChild(lista);
+            contenedor.appendChild(seccion);
+        }
+
+        const { data: medicamentos, error } = await clienteSupabase
+            .from("catalogo_codmar")
+            .select("id,nombre,presentacion,categoria,precio_publico,precio_codmar,tachar_precio_publico,imagen_url,imagen_path")
+            .eq("cliente_id", clienteId)
+            .eq("activo", true)
+            .order("nombre", { ascending: true })
+            .range(offset, offset + tamanoPagina - 1);
+
+        if (error) {
+            throw error;
+        }
+
+        if (!medicamentos || medicamentos.length === 0) {
+            const botonAnterior = seccion.querySelector(".boton-cargar-mas-codmar");
+            if (botonAnterior) {
+                botonAnterior.remove();
+            }
+            if (seccion._observadorCarga) {
+                seccion._observadorCarga.disconnect();
+                seccion._observadorCarga = null;
+            }
+            if (offset === 0) {
+                const aviso = document.createElement("p");
+                aviso.className = "mensaje-catalogo-medicamentos";
+                aviso.textContent = "Todavía no hay productos registrados en esta categoría.";
+                seccion.appendChild(aviso);
+            }
+            return;
+        }
+
+        const formatoPrecio = new Intl.NumberFormat("es-MX", {
+            style: "currency",
+            currency: "MXN"
+        });
+
+        medicamentos.forEach(function (medicamento) {
+            const tarjeta = document.createElement("article");
+            tarjeta.className = "tarjeta-medicamento-codmar";
+
+            if (medicamento.imagen_url) {
+                const imagen = document.createElement("img");
+                imagen.src = medicamento.imagen_url;
+                imagen.alt = medicamento.nombre || "Producto";
+                imagen.loading = "lazy";
+                imagen.onerror = function () {
+                    this.style.display = "none";
+                };
+                tarjeta.appendChild(imagen);
+
+                if (modoCatalogoMedicamentos === "administracion") {
+                    const selectorImagen = document.createElement("input");
+                    selectorImagen.type = "file";
+                    selectorImagen.accept = "image/*";
+                    selectorImagen.hidden = true;
+                    selectorImagen.setAttribute("aria-label", "Cambiar foto de " + (medicamento.nombre || "producto"));
+
+                    imagen.title = "Haz clic para cambiar la foto";
+                    imagen.style.cursor = "pointer";
+                    imagen.addEventListener("click", function (evento) {
+                        evento.stopPropagation();
+                        selectorImagen.click();
+                    });
+
+                    selectorImagen.addEventListener("change", async function () {
+                        const nuevaImagen = selectorImagen.files[0];
+                        if (!nuevaImagen || !nuevaImagen.type.startsWith("image/")) {
+                            return;
+                        }
+
+                        const extension = (nuevaImagen.name.split(".").pop() || "jpg").toLowerCase();
+                        const carpetaCategoria = (medicamento.categoria || "medicamentos")
+                            .trim()
+                            .toLowerCase()
+                            .normalize("NFD")
+                            .replace(/[\u0300-\u036f]/g, "")
+                            .replace(/[^a-z0-9]+/g, "_")
+                            .replace(/^_|_$/g, "");
+                        const rutaImagenNueva = `productos/${clienteId}/${carpetaCategoria}/${Date.now()}_${crypto.randomUUID()}.${extension}`;
+
+                        try {
+                            const { error: errorCarga } = await clienteSupabase.storage
+                                .from("imagenes")
+                                .upload(rutaImagenNueva, nuevaImagen, {
+                                    upsert: false,
+                                    contentType: nuevaImagen.type
+                                });
+
+                            if (errorCarga) throw errorCarga;
+
+                            const { data: urlImagen } = clienteSupabase.storage
+                                .from("imagenes")
+                                .getPublicUrl(rutaImagenNueva);
+
+                            const { error: errorActualizar } = await clienteSupabase
+                                .from("catalogo_codmar")
+                                .update({ imagen_url: urlImagen.publicUrl, imagen_path: rutaImagenNueva })
+                                .eq("id", medicamento.id)
+                                .eq("cliente_id", clienteId);
+
+                            if (errorActualizar) {
+                                await clienteSupabase.storage.from("imagenes").remove([rutaImagenNueva]);
+                                throw errorActualizar;
+                            }
+
+                            await cargarMedicamentosCatalogo();
+                        } catch (error) {
+                            alert("No se pudo cambiar la fotografía: " + error.message);
+                        }
+                    });
+
+                    tarjeta.appendChild(selectorImagen);
+                }
+            }
+
+            const nombre = document.createElement("h3");
+            nombre.textContent = medicamento.nombre || "Sin nombre";
+            tarjeta.appendChild(nombre);
+
+            if (medicamento.presentacion) {
+                const presentacion = document.createElement("p");
+                presentacion.className = "presentacion-medicamento-codmar";
+                presentacion.textContent = medicamento.presentacion;
+                tarjeta.appendChild(presentacion);
+            }
+
+            const precioPublico = document.createElement("p");
+            precioPublico.className = "precio-publico-medicamento";
+            precioPublico.textContent = "Precio público: " +
+                formatoPrecio.format(Number(medicamento.precio_publico));
+
+            if (medicamento.tachar_precio_publico) {
+                precioPublico.classList.add("precio-tachado");
+            }
+            tarjeta.appendChild(precioPublico);
+
+            const precioCodmar = document.createElement("p");
+            precioCodmar.className = "precio-codmar-medicamento";
+            precioCodmar.textContent = "Precio: " +
+                formatoPrecio.format(Number(medicamento.precio_codmar));
+            tarjeta.appendChild(precioCodmar);
+
+            if (modoCatalogoMedicamentos === "administracion") {
+                const botonEliminar = document.createElement("button");
+                botonEliminar.textContent = "ELIMINAR";
+                botonEliminar.className = "boton-eliminar-medicamento";
+                botonEliminar.type = "button";
+                botonEliminar.addEventListener("click", async function () {
+                    await eliminarMedicamentoCatalogo(medicamento, tarjeta);
+                });
+                tarjeta.appendChild(botonEliminar);
+            }
+
+            if (modoCatalogoMedicamentos === "venta") {
+                tarjeta.style.cursor = "pointer";
+                tarjeta.addEventListener("click", function () {
+                    abrirDetalleMedicamento(medicamento);
+                });
+            }
+
+            lista.appendChild(tarjeta);
+        });
+
+        if (seccion._observadorCarga) {
+            seccion._observadorCarga.disconnect();
+            seccion._observadorCarga = null;
+        }
+
+        const botonAnterior = seccion.querySelector(".boton-cargar-mas-codmar");
+        if (botonAnterior) {
+            botonAnterior.remove();
+        }
+
+        if (medicamentos.length === tamanoPagina) {
+            const botonCargarMas = document.createElement("button");
+            botonCargarMas.type = "button";
+            botonCargarMas.className = "boton-cargar-mas-codmar";
+            botonCargarMas.textContent = "Cargar más productos";
+            botonCargarMas.addEventListener("click", async function () {
+                botonCargarMas.disabled = true;
+                botonCargarMas.textContent = "Cargando…";
+                await cargarMedicamentosCatalogo(offset + tamanoPagina, true);
+            });
+            seccion.appendChild(botonCargarMas);
+
+            if ("IntersectionObserver" in window) {
+                seccion._observadorCarga = new IntersectionObserver(
+                    function (entradas) {
+                        if (entradas.some(entrada => entrada.isIntersecting)) {
+                            seccion._observadorCarga.unobserve(botonCargarMas);
+                            botonCargarMas.click();
+                        }
+                    },
+                    { root: contenedor, rootMargin: "250px" }
+                );
+                seccion._observadorCarga.observe(botonCargarMas);
+            }
+        }
+
+    } catch (error) {
+        console.error("Error al cargar productos del catálogo:", error);
+
+        const aviso = document.createElement("p");
+        aviso.className = "mensaje-catalogo-medicamentos";
+        aviso.textContent = "No se pudieron cargar los productos.";
+
+        if (agregar && seccion) {
+            seccion.appendChild(aviso);
+        } else {
+            contenedor.innerHTML = "";
+            contenedor.appendChild(aviso);
+        }
+    }
+}
+
+
+function normalizarClaveLote(valor) {
+    return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase()
+        .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim()
+        .replace(/\s+/g, " ");
+}
+
+function abrirCargaMasivaProductos() {
+    if (!window.XLSX) {
+        alert("No se pudo abrir el lector de Excel. Revisa que tengas internet y actualiza la página.");
+        return;
+    }
+    const anterior = document.getElementById("ventana-carga-masiva-codmar");
+    if (anterior) anterior.remove();
+    const fondo = document.createElement("div");
+    fondo.id = "ventana-carga-masiva-codmar";
+    fondo.className = "fondo-carga-masiva-codmar";
+    const panel = document.createElement("section");
+    panel.className = "panel-carga-masiva-codmar";
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-modal", "true");
+    const titulo = document.createElement("h2");
+    titulo.textContent = "CARGAR HASTA 100 PRODUCTOS";
+    panel.appendChild(titulo);
+    const cerrar = document.createElement("button");
+    cerrar.type = "button";
+    cerrar.className = "cerrar-carga-masiva-codmar";
+    cerrar.textContent = "CERRAR";
+    cerrar.addEventListener("click", () => fondo.remove());
+    panel.appendChild(cerrar);
+    const ayuda = document.createElement("p");
+    ayuda.textContent = "Elige el Excel y la carpeta con las fotos. Cada foto debe tener el nombre del producto. Primero revisaremos que todo coincida; después se cargarán los productos y las imágenes a Supabase.";
+    panel.appendChild(ayuda);
+    function crearCampo(etiquetaTexto, tipo) {
+        const etiqueta = document.createElement("label");
+        etiqueta.className = "campo-carga-masiva-codmar";
+        const texto = document.createElement("span");
+        texto.textContent = etiquetaTexto;
+        const entrada = document.createElement("input");
+        entrada.type = "file";
+        entrada.accept = tipo === "excel" ? ".xlsx,.xls" : "image/*";
+        if (tipo === "carpeta") {
+            entrada.multiple = true;
+            entrada.setAttribute("webkitdirectory", "");
+            entrada.setAttribute("directory", "");
+        }
+        etiqueta.append(texto, entrada);
+        panel.appendChild(etiqueta);
+        return entrada;
+    }
+    const archivoExcel = crearCampo("1. Selecciona el archivo de Excel", "excel");
+    const archivoFotos = crearCampo("2. Selecciona la carpeta de imágenes", "carpeta");
+    const campoLote = document.createElement("label");
+    campoLote.className = "campo-carga-masiva-codmar";
+    const textoLote = document.createElement("span");
+    textoLote.textContent = "Lote de hasta 100 productos";
+    const selectorLote = document.createElement("select");
+    campoLote.append(textoLote, selectorLote);
+    panel.appendChild(campoLote);
+    const campoCategoria = document.createElement("label");
+    campoCategoria.className = "campo-carga-masiva-codmar";
+    const textoCategoria = document.createElement("span");
+    textoCategoria.textContent = "Categoría para los productos";
+    const selectorCategoria = document.createElement("select");
+    (Array.isArray(categorias) ? categorias : []).forEach(categoria => {
+        const opcion = document.createElement("option");
+        opcion.value = categoria;
+        opcion.textContent = categoria;
+        selectorCategoria.appendChild(opcion);
+    });
+    if (!selectorCategoria.options.length) {
+        const opcion = document.createElement("option");
+        opcion.value = "medicamentos";
+        opcion.textContent = "medicamentos";
+        selectorCategoria.appendChild(opcion);
+    }
+    const categoriaMedicamentos = Array.from(selectorCategoria.options).find(o => /medicamento/i.test(o.value));
+    if (categoriaMedicamentos) selectorCategoria.value = categoriaMedicamentos.value;
+    campoCategoria.append(textoCategoria, selectorCategoria);
+    panel.appendChild(campoCategoria);
+    const zonaColumnas = document.createElement("div");
+    zonaColumnas.className = "columnas-carga-masiva-codmar";
+    panel.appendChild(zonaColumnas);
+    const estado = document.createElement("p");
+    estado.className = "estado-carga-masiva-codmar";
+    estado.setAttribute("aria-live", "polite");
+    panel.appendChild(estado);
+    const botonRevisar = document.createElement("button");
+    botonRevisar.type = "button";
+    botonRevisar.textContent = "REVISAR ARCHIVOS";
+    botonRevisar.className = "boton-accion-carga-masiva-codmar";
+    panel.appendChild(botonRevisar);
+    const botonSubir = document.createElement("button");
+    botonSubir.type = "button";
+    botonSubir.textContent = "SUBIR PRODUCTOS";
+    botonSubir.className = "boton-accion-carga-masiva-codmar";
+    botonSubir.disabled = true;
+    panel.appendChild(botonSubir);
+    fondo.appendChild(panel);
+    document.body.appendChild(fondo);
+    let filasPreparadas = [];
+    let mapaImagenes = new Map();
+    let revisionCompleta = false;
+    function selectorColumna(nombre, opciones, sugerida, opcional) {
+        const etiqueta = document.createElement("label");
+        etiqueta.className = "campo-carga-masiva-codmar";
+        const texto = document.createElement("span");
+        texto.textContent = nombre;
+        const select = document.createElement("select");
+        if (!opcional && sugerida < 0) { const sinSeleccion = document.createElement("option"); sinSeleccion.value = ""; sinSeleccion.textContent = "Elige una columna"; select.appendChild(sinSeleccion); }
+        if (opcional) {
+            const o = document.createElement("option");
+            o.value = "";
+            o.textContent = opcional;
+            select.appendChild(o);
+        }
+        opciones.forEach((opcion, indice) => {
+            const o = document.createElement("option");
+            o.value = String(indice);
+            o.textContent = opcion;
+            select.appendChild(o);
+        });
+        if (sugerida >= 0) select.value = String(sugerida);
+        etiqueta.append(texto, select);
+        zonaColumnas.appendChild(etiqueta);
+        return select;
+    }
+    function normalizarEncabezado(valor) {
+        return normalizarClaveLote(valor).replace(/ /g, "");
+    }
+    function numeroPrecio(valor) {
+        if (typeof valor === "number") return valor;
+        let texto = String(valor || "").trim().replace(/[$\s]/g, "");
+        if (texto.includes(",") && !texto.includes(".")) texto = texto.replace(",", ".");
+        else texto = texto.replace(/,/g, "");
+        if (texto === "") return NaN;
+        const numero = Number(texto);
+        return Number.isFinite(numero) ? Math.round((numero + Number.EPSILON) * 100) / 100 : NaN;
+    }
+    function mostrarSelectorColumnas(matriz, indiceEncabezado) {
+        zonaColumnas.innerHTML = "";
+        const encabezado = indiceEncabezado >= 0 ? matriz[indiceEncabezado] : null;
+        const muestra = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
+            .find(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
+        const maxColumnas = Math.max((encabezado || []).length, (muestra || []).length);
+        const opciones = Array.from({ length: maxColumnas }, (_, i) => {
+            const etiqueta = encabezado && encabezado[i] ? String(encabezado[i]).trim() : "";
+            const valor = muestra && muestra[i] !== undefined ? String(muestra[i]).trim() : "";
+            return String.fromCharCode(65 + i) + (etiqueta ? " — " + etiqueta : "") + (valor ? " (ej. " + valor.slice(0, 30) + ")" : "");
+        });
+        const etiquetas = (encabezado || []).map(normalizarEncabezado);
+        const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
+        const colNombre = selectorColumna("Columna del nombre del producto", opciones, encontrar(["producto", "nombre", "medicamento", "descripcion", "articulo"]), null);
+        const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
+        const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta"]), null);
+        const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
+        const colCategoria = selectorColumna("Categoría (si viene en Excel)", opciones, encontrar(["categoria", "seccion", "familia"]), "Usar categoría seleccionada arriba");
+        const colImagen = selectorColumna("Nombre de archivo de foto (si viene en Excel)", opciones, encontrar(["imagen", "foto", "archivoimagen", "nombreimagen"]), "Buscar foto por nombre del producto");
+        return { colNombre, colPublico, colCodmar, colPresentacion, colCategoria, colImagen };
+    }
+    let mapaColumnas = null;
+    let matrizExcel = null;
+    let indiceEncabezadoActual = -1;
+    async function prepararRevision() {
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+        estado.textContent = "";
+        if (!archivoExcel.files.length || !archivoFotos.files.length) {
+            estado.textContent = "Selecciona el Excel y la carpeta que contiene las imágenes.";
+            return;
+        }
+        if (!matrizExcel) {
+            const datos = new Uint8Array(await archivoExcel.files[0].arrayBuffer());
+            const libro = window.XLSX.read(datos, { type: "array", cellDates: true });
+            const nombreHoja = libro.SheetNames[0];
+            matrizExcel = window.XLSX.utils.sheet_to_json(libro.Sheets[nombreHoja], { header: 1, defval: "", raw: false });
+            if (!matrizExcel.length) throw new Error("El Excel no tiene filas de información.");
+            indiceEncabezadoActual = -1;
+            for (let i = 0; i < Math.min(20, matrizExcel.length); i++) {
+                const valores = (matrizExcel[i] || []).map(normalizarEncabezado);
+                if (valores.some(v => ["producto", "nombre", "medicamento", "descripcion"].includes(v)) &&
+                    valores.some(v => ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico", "preciomaximo", "maximo", "precio"].includes(v))) {
+                    indiceEncabezadoActual = i;
+                    break;
+                }
+            }
+            mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
+            botonRevisar.textContent = "VALIDAR LOTE";
+            zonaColumnas.addEventListener("change", function () { revisionCompleta = false; botonSubir.disabled = true; });
+            estado.textContent = "Revisa los campos de columnas que aparecieron y confirma que cada uno apunte al dato correcto. Luego pulsa VALIDAR LOTE.";
+            return;
+        }
+        const filasDatos = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0);
+        const filasConDatos = filasDatos.map((fila, i) => ({ fila, indice: i })).filter(item => item.fila.some(c => String(c || "").trim()));
+        if (!filasConDatos.length) throw new Error("No encontré productos en el Excel.");
+        const numeroLotes = Math.ceil(filasConDatos.length / 100);
+        const loteAnterior = Number(selectorLote.value || 0);
+        selectorLote.innerHTML = "";
+        for (let lote = 0; lote < numeroLotes; lote++) {
+            const desde = lote * 100 + 1;
+            const hasta = Math.min((lote + 1) * 100, filasConDatos.length);
+            const opcion = document.createElement("option");
+            opcion.value = String(lote);
+            opcion.textContent = "Lote " + (lote + 1) + " — productos " + desde + " a " + hasta;
+            selectorLote.appendChild(opcion);
+        }
+        selectorLote.value = String(Math.min(loteAnterior, Math.max(0, numeroLotes - 1)));
+        if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre, precio público y precio CODMAR.");
+        mapaImagenes = new Map();
+        Array.from(archivoFotos.files).filter(f => f.type.startsWith("image/")).forEach(f => {
+            const clave = normalizarClaveLote(f.name.replace(/\.[^.]+$/, ""));
+            if (!mapaImagenes.has(clave)) mapaImagenes.set(clave, f);
+        });
+        const inicioLote = Number(selectorLote.value || 0) * 100;
+        const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + 100);
+        filasPreparadas = filasDelLote.map(({ fila, indice }) => {
+            const obtener = select => select.value === "" ? "" : fila[Number(select.value)] ?? "";
+            const nombre = String(obtener(mapaColumnas.colNombre)).trim();
+            const precioPublico = numeroPrecio(obtener(mapaColumnas.colPublico));
+            const precioCodmar = numeroPrecio(obtener(mapaColumnas.colCodmar));
+            const presentacion = String(obtener(mapaColumnas.colPresentacion)).trim();
+            const categoria = String(obtener(mapaColumnas.colCategoria)).trim() || selectorCategoria.value;
+            const archivoDeclarado = String(obtener(mapaColumnas.colImagen)).trim();
+            const clavesFoto = archivoDeclarado ? [normalizarClaveLote(archivoDeclarado)] : [normalizarClaveLote(nombre), normalizarClaveLote(nombre + " " + presentacion)];
+            const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) || null;
+            const problemas = [];
+            if (!nombre) problemas.push("falta nombre");
+            if (!Number.isFinite(precioPublico) || precioPublico < 0) problemas.push("precio público inválido");
+            if (!Number.isFinite(precioCodmar) || precioCodmar < 0) problemas.push("precio CODMAR inválido");
+            if (Number.isFinite(precioPublico) && Number.isFinite(precioCodmar) && precioCodmar > precioPublico) problemas.push("CODMAR supera el público");
+            if (!foto) problemas.push("falta foto con nombre coincidente");
+            if (foto && foto.size > 8 * 1024 * 1024) problemas.push("foto mayor a 8 MB");
+            return { nombre, presentacion, categoria, precioPublico, precioCodmar, foto, problemas, numero: indice + 1 };
+        });
+        const vistosEnLote = new Set();
+        filasPreparadas.forEach(f => {
+            const clave = normalizarClaveLote(f.nombre);
+            if (clave && vistosEnLote.has(clave)) f.problemas.push("producto repetido dentro del Excel");
+            if (clave) vistosEnLote.add(clave);
+        });
+        const invalidas = filasPreparadas.filter(f => f.problemas.length);
+        const resumen = invalidas.map(f => "Fila " + f.numero + ": " + (f.nombre || "sin nombre") + " — " + f.problemas.join(", ")).join("\n");
+        estado.textContent = "Encontré " + filasPreparadas.length + " productos en este lote. " + (invalidas.length ? invalidas.length + " necesitan corrección antes de subir.\n" + resumen : "Los nombres, precios e imágenes coinciden. Ya puedes subir el lote.");
+        revisionCompleta = invalidas.length === 0;
+        botonSubir.disabled = !revisionCompleta;
+    }
+    archivoExcel.addEventListener("change", () => { matrizExcel = null; mapaColumnas = null; zonaColumnas.innerHTML = ""; botonSubir.disabled = true; botonRevisar.textContent = "REVISAR ARCHIVOS"; });
+    archivoFotos.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+    selectorCategoria.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+    selectorLote.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+    botonRevisar.addEventListener("click", async function () {
+        botonRevisar.disabled = true;
+        try { await prepararRevision(); }
+        catch (error) { estado.textContent = error.message || "No pude revisar esos archivos."; }
+        finally { botonRevisar.disabled = false; }
+    });
+    botonSubir.addEventListener("click", async function () {
+        if (!revisionCompleta || !filasPreparadas.length) return;
+        botonSubir.disabled = true;
+        botonRevisar.disabled = true;
+        archivoExcel.disabled = true;
+        archivoFotos.disabled = true;
+        selectorCategoria.disabled = true;
+        let cargados = 0;
+        let fotoActual = null;
+        let loteTerminado = false;
+        try {
+            estado.textContent = "Revisando que no se repitan productos…";
+            const existentes = new Set();
+            for (let inicio = 0; ; inicio += 1000) {
+                const respuesta = await clienteSupabase.from("catalogo_codmar").select("id,nombre,presentacion").eq("cliente_id", clienteId).order("id", { ascending: true }).range(inicio, inicio + 999);
+                if (respuesta.error) throw respuesta.error;
+                (respuesta.data || []).forEach(p => existentes.add(normalizarClaveLote(p.nombre)));
+                if (!respuesta.data || respuesta.data.length < 1000) break;
+            }
+            const repetidos = filasPreparadas.filter(f => existentes.has(normalizarClaveLote(f.nombre)));
+            filasPreparadas = filasPreparadas.filter(f => !existentes.has(normalizarClaveLote(f.nombre)));
+            if (!filasPreparadas.length) throw new Error("Los productos de este lote ya estaban en el catálogo; no se repitieron.");
+            if (repetidos.length) estado.textContent = "Omitiré " + repetidos.length + " producto(s) que ya existen y subiré los " + filasPreparadas.length + " nuevos.";
+            for (let i = 0; i < filasPreparadas.length; i++) {
+                const fila = filasPreparadas[i];
+                estado.textContent = "Subiendo " + (i + 1) + " de " + filasPreparadas.length + ": " + fila.nombre;
+                const extension = (fila.foto.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+                const nombreArchivo = normalizarClaveLote(fila.nombre).replace(/\s+/g, "_").slice(0, 80) || "producto";
+                const rutaImagen = "productos/" + clienteId + "/" + normalizarClaveLote(fila.categoria).replace(/\s+/g, "_") + "/lote_" + Date.now() + "_" + i + "_" + nombreArchivo + "." + extension;
+                const subida = await clienteSupabase.storage.from("imagenes").upload(rutaImagen, fila.foto, { upsert: false, contentType: fila.foto.type });
+                if (subida.error) throw subida.error;
+                fotoActual = rutaImagen;
+                const url = clienteSupabase.storage.from("imagenes").getPublicUrl(rutaImagen).data.publicUrl;
+                const insercion = await clienteSupabase.from("catalogo_codmar").insert({ cliente_id: clienteId, nombre: fila.nombre, presentacion: fila.presentacion || null, categoria: fila.categoria, precio_publico: fila.precioPublico, precio_codmar: fila.precioCodmar, imagen_url: url, imagen_path: rutaImagen, activo: true });
+                if (insercion.error) {
+                    await clienteSupabase.storage.from("imagenes").remove([rutaImagen]);
+                    fotoActual = null;
+                    throw insercion.error;
+                }
+                existentes.add(normalizarClaveLote(fila.nombre));
+                fotoActual = null;
+                cargados++;
+            }
+            estado.textContent = "Listo: se cargaron " + cargados + " productos nuevos con sus imágenes. Los que ya existían se omitieron.";
+            loteTerminado = true;
+            await cargarMedicamentosCatalogo();
+        } catch (error) {
+            if (fotoActual) await clienteSupabase.storage.from("imagenes").remove([fotoActual]);
+            estado.textContent = (error.message || "Ocurrió un problema durante la carga.") + (cargados ? " Se alcanzaron a guardar " + cargados + " productos; quita esas filas para continuar con el resto." : "");
+        } finally {
+            archivoExcel.disabled = false;
+            archivoFotos.disabled = false;
+            selectorCategoria.disabled = false;
+            botonRevisar.disabled = false;
+            botonSubir.disabled = loteTerminado;
+        }
+    });
+}
+
+/* ACTUALIZAR CONTADOR DE PIEZAS DEL CARRITO */
+
+function actualizarContadorCarritoCODMAR() {
+
+    const contador = document.getElementById("contador-carrito");
+
+    if (!contador) {
+        return;
+    }
+
+    const totalPiezas = carritoCODMAR.reduce(
+        function (total, producto) {
+            return total + (Number(producto.cantidad) || 0);
+        },
+        0
+    );
+
+    contador.textContent = totalPiezas;
+
+    contador.style.display =
+        totalPiezas > 0 ? "flex" : "none";
+}
+
+
+
+/* ============================================= */
+/* VENTANA DE DETALLE DEL MEDICAMENTO            */
+/* ============================================= */
+
+function abrirDetalleMedicamento(medicamento) {
+    
+    // Evitar abrir varias ventanas al mismo tiempo
+    const ventanaAnterior =
+        document.querySelector(".ventana-detalle-medicamento");
+
+    if (ventanaAnterior) {
+        ventanaAnterior.remove();
+    }
+
+    const formatoPrecio = new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    });
+
+    // FONDO
+    const fondo = document.createElement("div");
+    fondo.className = "fondo-detalle-medicamento";
+
+    // VENTANA
+    const ventana = document.createElement("div");
+    ventana.className = "ventana-detalle-medicamento";
+
+    // BOTÓN CERRAR
+    const cerrar = document.createElement("button");
+    cerrar.type = "button";
+    cerrar.className = "cerrar-detalle-medicamento";
+    cerrar.textContent = "×";
+
+    cerrar.addEventListener("click", function () {
+        fondo.remove();
+    });
+
+    // IMAGEN
+    if (medicamento.imagen_url) {
+        const imagen = document.createElement("img");
+        imagen.className = "imagen-detalle-medicamento";
+        imagen.src = medicamento.imagen_url;
+        imagen.alt = medicamento.nombre || "Medicamento";
+        ventana.appendChild(imagen);
+    }
+
+    // NOMBRE
+    const nombre = document.createElement("h2");
+    nombre.className = "nombre-detalle-medicamento";
+    nombre.textContent = medicamento.nombre || "Sin nombre";
+
+    // PRESENTACIÓN
+    const presentacion = document.createElement("p");
+    presentacion.className = "presentacion-detalle-medicamento";
+    presentacion.textContent = medicamento.presentacion || "";
+
+    // PRECIO PÚBLICO
+    const precioPublico = document.createElement("p");
+    precioPublico.className = "precio-publico-detalle";
+    precioPublico.textContent =
+        "Precio público: " +
+        formatoPrecio.format(Number(medicamento.precio_publico));
+
+    if (medicamento.tachar_precio_publico) {
+        precioPublico.classList.add("precio-tachado");
+    }
+
+    // PRECIO CODMAR
+    const precioCodmar = document.createElement("p");
+    precioCodmar.className = "precio-codmar-detalle";
+    precioCodmar.textContent =
+        "Precio CODMAR: " +
+        formatoPrecio.format(Number(medicamento.precio_codmar));
+
+    // CANTIDAD
+    const filaCantidad = document.createElement("div");
+    filaCantidad.className = "fila-cantidad-detalle";
+
+    const etiquetaCantidad = document.createElement("label");
+    etiquetaCantidad.textContent = "Cantidad:";
+
+    const cantidad = document.createElement("input");
+    cantidad.type = "number";
+    cantidad.min = "1";
+    cantidad.step = "1";
+    cantidad.value = "1";
+    cantidad.className = "cantidad-detalle-medicamento";
+
+    filaCantidad.appendChild(etiquetaCantidad);
+    filaCantidad.appendChild(cantidad);
+
+    // BOTÓN AÑADIR AL CARRITO
+    const botonAgregar = document.createElement("button");
+    botonAgregar.type = "button";
+    botonAgregar.className = "boton-agregar-carrito";
+    botonAgregar.textContent = "AÑADIR AL CARRITO";
+
+    botonAgregar.addEventListener("click", function () {
+
+        const unidades = Number(cantidad.value);
+
+        if (!Number.isInteger(unidades) || unidades < 1) {
+            alert("Ingresa una cantidad válida.");
+            cantidad.focus();
+            return;
+        }
+
+        if (!Array.isArray(carritoCODMAR)) {
+            alert("El carrito todavía no está inicializado.");
+            return;
+        }
+
+        const productoExistente = carritoCODMAR.find(function (producto) {
+            return producto.id === medicamento.id;
+        });
+
+        if (productoExistente) {
+            productoExistente.cantidad += unidades;
+        } else {
+            carritoCODMAR.push({
+                id: medicamento.id,
+                nombre: medicamento.nombre,
+                presentacion: medicamento.presentacion,
+                precio_codmar: Number(medicamento.precio_codmar),
+                cantidad: unidades,
+                imagen_url: medicamento.imagen_url
+            });
+        }
+
+           actualizarContadorCarritoCODMAR();
+
+        alert("Medicamento agregado al carrito.");
+        fondo.remove();
+    });
+
+    // ARMAR VENTANA
+    ventana.appendChild(cerrar);
+    ventana.appendChild(nombre);
+    ventana.appendChild(presentacion);
+    ventana.appendChild(precioPublico);
+    ventana.appendChild(precioCodmar);
+    ventana.appendChild(filaCantidad);
+    ventana.appendChild(botonAgregar);
+
+    fondo.appendChild(ventana);
+
+    // CERRAR AL PULSAR FUERA DE LA VENTANA
+    fondo.addEventListener("click", function (evento) {
+        if (evento.target === fondo) {
+            fondo.remove();
+        }
+    });
+
+    document.body.appendChild(fondo);
+}
+
+
+
+async function eliminarMedicamentoCatalogo(medicamento, tarjeta) {
+
+    const confirmar = window.confirm(
+        "¿Deseas eliminar definitivamente " +
+        medicamento.nombre +
+        "?\n\nSe borrará del catálogo y no podrá recuperarse."
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    try {
+
+        const { data, error } = await clienteSupabase
+            .from("catalogo_codmar")
+            .delete()
+            .eq("id", medicamento.id)
+            .eq("cliente_id", clienteId)
+            .select("id");
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            throw new Error(
+                "No se pudo eliminar el medicamento."
+            );
+        }
+
+        let imagenEliminada = true;
+
+        if (medicamento.imagen_path) {
+
+            const { error: errorImagen } =
+                await clienteSupabase
+                    .storage
+                    .from("imagenes")
+                    .remove([medicamento.imagen_path]);
+
+            if (errorImagen) {
+
+                imagenEliminada = false;
+
+                console.error(
+                    "Error al eliminar la imagen:",
+                    errorImagen
+                );
+            }
+        }
+
+        tarjeta.remove();
+
+        if (imagenEliminada) {
+
+            alert(
+                "Medicamento eliminado correctamente."
+            );
+
+        } else {
+
+            alert(
+                "El medicamento fue eliminado, pero no se pudo borrar su fotografía."
+            );
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error al eliminar medicamento:",
+            error
+        );
+
+        alert(
+            "No se pudo eliminar el medicamento. Revisa la consola."
+        );
+    }
+}
 
     /* ================================================= */
     /*               CARGAR CONFIGURACIÓN                */
@@ -1137,6 +2187,7 @@ function detenerMovimientoLogotipo() {
         .select("*")
         .eq("cliente_id", clienteId)
         .maybeSingle();
+
 
 
    
@@ -1819,23 +2870,39 @@ try {
 
 
 /* ============================================= */
-/* GUARDAR CATEGORÍAS                             */
+/* GUARDAR CATEGORÍAS EN SUPABASE                 */
 /* ============================================= */
 
-function guardarCategorias() {
+async function guardarCategorias() {
 
     try {
-        localStorage.setItem(
-            "codmar_categorias",
-            JSON.stringify(categorias)
-        );
+
+        const { error } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update({
+                categorias: categorias
+            })
+            .eq("cliente_id", clienteId);
+
+        if (error) {
+            throw error;
+        }
+
+        if (configuracionGuardada) {
+            configuracionGuardada.categorias = [...categorias];
+        }
 
         return true;
 
     } catch (error) {
 
+        console.error(
+            "Error al guardar categorías en Supabase:",
+            error
+        );
+
         mensajeCategorias.textContent =
-            "No se pudieron guardar los cambios.";
+            "No se pudieron guardar las categorías.";
 
         return false;
     }
@@ -1866,6 +2933,486 @@ function mostrarCategorias() {
             "opcion-menu opcion-categoria";
 
         opcion.textContent = categoria;
+
+        /* ABRIR REGISTRO DINÁMICO DE PRODUCTOS */
+
+        opcion.addEventListener("click", function () {
+
+            const categoriaActual = categoria.trim();
+
+            if (!categoriaActual) {
+                return;
+            }
+
+            panelMenu.classList.remove("menu-abierto");
+
+            const ventanaAnterior =
+                document.getElementById("ventana-captura-medicamento");
+
+            if (ventanaAnterior) {
+                ventanaAnterior.remove();
+            }
+
+            const ventana = document.createElement("div");
+            ventana.id = "ventana-captura-medicamento";
+            ventana.className = "formulario-inicio formulario-abierto";
+
+            const titulo = document.createElement("h2");
+            titulo.textContent =
+                "REGISTRAR: " + categoriaActual.toLocaleUpperCase();
+
+            const nombre = document.createElement("input");
+            nombre.type = "text";
+           nombre.placeholder = "Nombre del medicamento";
+            nombre.autocomplete = "off";
+            nombre.maxLength = 150;
+
+           
+const archivo = document.createElement("input");
+archivo.type = "file";
+archivo.accept = "image/*";
+archivo.capture = "environment";
+archivo.className = "input-fotografia-oculto";
+archivo.style.display = "none";
+
+// FILA DEL SELECTOR Y LA VISTA PREVIA
+
+const filaFotografia = document.createElement("div");
+
+filaFotografia.className = "fila-fotografia-producto";
+
+// BOTÓN PARA SELECCIONAR FOTOGRAFÍA
+
+const botonSeleccionarFoto = document.createElement("button");
+botonSeleccionarFoto.type = "button";
+botonSeleccionarFoto.textContent = "SELECCIONAR ARCHIVO";
+
+botonSeleccionarFoto.className =
+    "boton-seleccionar-fotografia";
+
+botonSeleccionarFoto.addEventListener("click", function () {
+    archivo.click();
+});
+
+// RECUADRO PEQUEÑO PARA LA FOTOGRAFÍA
+
+const contenedorVistaPrevia =
+    document.createElement("div");
+
+contenedorVistaPrevia.className =
+    "contenedor-vista-previa-producto";
+
+// IMAGEN DE VISTA PREVIA
+
+// IMAGEN DE VISTA PREVIA
+
+const vistaPrevia = document.createElement("img");
+
+vistaPrevia.className = "vista-previa-producto";
+
+contenedorVistaPrevia.appendChild(vistaPrevia);
+
+// AGREGAR LOS ELEMENTOS A LA FILA
+
+filaFotografia.appendChild(archivo);
+filaFotografia.appendChild(botonSeleccionarFoto);
+filaFotografia.appendChild(contenedorVistaPrevia);
+
+
+  // =============================================
+// MENSAJE Y BOTONES
+// =============================================
+
+const mensaje = document.createElement("p");
+mensaje.setAttribute("aria-live", "polite");
+
+const guardar = document.createElement("button");
+guardar.type = "button";
+guardar.textContent = "GUARDAR";
+guardar.className = "boton-guardar-captura";
+
+const cancelar = document.createElement("button");
+cancelar.type = "button";
+cancelar.textContent = "CANCELAR";
+cancelar.className = "boton-cancelar-captura";
+
+const botones = document.createElement("div");
+botones.className = "contenedor-botones-captura";
+
+botones.appendChild(guardar);
+botones.appendChild(cancelar);
+
+
+           // =============================================
+// AGREGAR ELEMENTOS A LA VENTANA
+// =============================================
+
+ventana.appendChild(titulo);
+ventana.appendChild(nombre);
+ventana.appendChild(filaFotografia);
+ventana.appendChild(mensaje);
+ventana.appendChild(botones);
+
+document.body.appendChild(ventana);
+
+hacerVentanaMovible(ventana, titulo);
+            // =============================================
+            // VISTA PREVIA DE LA FOTOGRAFÍA
+            // =============================================
+
+            let urlPrevia = null;
+
+            archivo.addEventListener("change", function () {
+
+                const imagen = archivo.files[0];
+
+                if (urlPrevia) {
+                    URL.revokeObjectURL(urlPrevia);
+                    urlPrevia = null;
+                }
+
+                vistaPrevia.removeAttribute("src");
+                vistaPrevia.style.display = "none";
+
+                if (!imagen) {
+                    return;
+                }
+
+                if (!imagen.type.startsWith("image/")) {
+                    archivo.value = "";
+                    mensaje.textContent =
+                        "Selecciona un archivo de imagen válido.";
+                    return;
+                }
+
+                urlPrevia = URL.createObjectURL(imagen);
+                vistaPrevia.src = urlPrevia;
+                vistaPrevia.style.display = "block";
+                mensaje.textContent = "";
+            });
+
+            // =============================================
+            // GUARDAR PRODUCTO
+            // =============================================
+
+            guardar.addEventListener("click", async function () {
+
+                const nombreMedicamento = nombre.value.trim();
+
+                if (!nombreMedicamento) {
+                    mensaje.textContent =
+                        "Escribe el nombre del medicamento.";
+                    nombre.focus();
+                    return;
+                }
+
+                if (!archivo.files.length) {
+                    mensaje.textContent =
+                        "Selecciona o toma una fotografía.";
+                    return;
+                }
+
+                const imagenMedicamento = archivo.files[0];
+
+
+
+
+    /* CERRAR PRIMERA VENTANA */
+
+    ventana.remove();
+
+    /* CREAR SEGUNDA VENTANA */
+
+    const ventanaPrecios = document.createElement("div");
+
+    ventanaPrecios.id = "ventana-precios-medicamento";
+    ventanaPrecios.className =
+        "formulario-inicio formulario-abierto";
+
+    const tituloPrecios = document.createElement("h2");
+    tituloPrecios.textContent = "DATOS DEL MEDICAMENTO";
+
+    const nombreMostrado = document.createElement("p");
+    nombreMostrado.textContent =
+        "Medicamento: " + nombreMedicamento;
+
+    const precioPublico = document.createElement("input");
+    precioPublico.type = "number";
+    precioPublico.min = "0";
+    precioPublico.step = "0.01";
+    precioPublico.placeholder = "Precio público";
+
+    const precioCodmar = document.createElement("input");
+    precioCodmar.type = "number";
+    precioCodmar.min = "0";
+    precioCodmar.step = "0.01";
+    precioCodmar.placeholder = "Precio CODMAR";
+
+    const opcionTacharPrecio = document.createElement("label");
+
+opcionTacharPrecio.className = "opcion-tachar-precio";
+
+const tacharPrecioPublico = document.createElement("input");
+
+tacharPrecioPublico.type = "checkbox";
+tacharPrecioPublico.checked = false;
+
+opcionTacharPrecio.appendChild(tacharPrecioPublico);
+
+opcionTacharPrecio.appendChild(
+    document.createTextNode(" Tachar precio público")
+);
+
+    const mensajePrecios = document.createElement("p");
+    mensajePrecios.setAttribute("aria-live", "polite");
+
+    const botonGuardarProducto =
+        document.createElement("button");
+
+    botonGuardarProducto.type = "button";
+    botonGuardarProducto.textContent = "GUARDAR PRODUCTO";
+
+    const botonRegresar = document.createElement("button");
+
+    botonRegresar.type = "button";
+    botonRegresar.textContent = "REGRESAR";
+
+    const botonesPrecios = document.createElement("div");
+
+    botonesPrecios.style.display = "flex";
+    botonesPrecios.style.justifyContent = "center";
+    botonesPrecios.style.flexWrap = "wrap";
+    botonesPrecios.style.gap = "10px";
+    botonesPrecios.style.marginTop = "15px";
+
+    botonesPrecios.appendChild(botonGuardarProducto);
+    botonesPrecios.appendChild(botonRegresar);
+
+    ventanaPrecios.appendChild(tituloPrecios);
+ventanaPrecios.appendChild(nombreMostrado);
+ventanaPrecios.appendChild(precioPublico);
+ventanaPrecios.appendChild(precioCodmar);
+
+// OPCIÓN PARA TACHAR EL PRECIO PÚBLICO
+
+ventanaPrecios.appendChild(opcionTacharPrecio);
+
+ventanaPrecios.appendChild(mensajePrecios);
+ventanaPrecios.appendChild(botonesPrecios);
+
+    document.body.appendChild(ventanaPrecios);
+
+   
+    hacerVentanaMovible(ventanaPrecios, tituloPrecios);
+
+    /* REGRESAR A LA CAPTURA */
+
+    botonRegresar.addEventListener("click", function () {
+
+        ventanaPrecios.remove();
+        document.body.appendChild(ventana);
+
+    });
+
+/* GUARDAR MEDICAMENTO EN SUPABASE */
+
+botonGuardarProducto.addEventListener(
+    "click",
+    async function () {
+
+        const publico = precioPublico.value.trim();
+        const codmar = precioCodmar.value.trim();
+
+        // VALIDAR PRECIOS
+
+        if (
+            publico === "" ||
+            codmar === "" ||
+            !Number.isFinite(Number(publico)) ||
+            !Number.isFinite(Number(codmar)) ||
+            Number(publico) < 0 ||
+            Number(codmar) < 0
+        ) {
+            mensajePrecios.textContent =
+                "Escribe ambos precios correctamente.";
+            return;
+        }
+
+        if (Number(codmar) > Number(publico)) {
+            mensajePrecios.textContent =
+                "El precio CODMAR no puede ser mayor al precio público.";
+            return;
+        }
+
+        if (!imagenMedicamento) {
+            mensajePrecios.textContent =
+                "No se encontró la fotografía del medicamento.";
+            return;
+        }
+
+        botonGuardarProducto.disabled = true;
+
+        mensajePrecios.textContent =
+            "Guardando medicamento...";
+
+        let rutaImagen = null;
+
+        try {
+
+            // PREPARAR NOMBRE DE LA IMAGEN
+
+            const extension =
+                imagenMedicamento.name.split(".").pop().toLowerCase();
+
+            const nombreArchivo =
+                `${Date.now()}_${crypto.randomUUID()}.${extension}`;
+
+            // RUTA EN STORAGE SEGÚN LA CATEGORÍA
+
+const carpetaCategoria = categoriaActual
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+
+rutaImagen =
+    `productos/${clienteId}/${carpetaCategoria}/${nombreArchivo}`;
+              
+
+
+            // SUBIR FOTOGRAFÍA
+
+            const { error: errorImagen } =
+                    await clienteSupabase.storage
+                    .from("imagenes")
+                    .upload(
+                        rutaImagen,
+                        imagenMedicamento,
+                        {
+                            upsert: false,
+                            contentType: imagenMedicamento.type
+                        }
+                    );
+
+            if (errorImagen) {
+                throw errorImagen;
+            }
+
+            // OBTENER URL PÚBLICA
+
+            const { data: urlImagen } =
+                 
+               clienteSupabase.storage
+              .from("imagenes")
+              .getPublicUrl(rutaImagen);   
+                   
+            // PREPARAR REGISTRO
+
+           
+            const nuevoProducto = {
+
+    cliente_id: clienteId,
+
+    nombre: nombreMedicamento,
+
+    categoria: categoriaActual,
+
+    precio_publico: Number(publico),
+
+    precio_codmar: Number(codmar),
+tachar_precio_publico: tacharPrecioPublico.checked,
+
+    imagen_url: urlImagen.publicUrl,
+
+    imagen_path: rutaImagen,
+
+    activo: true
+
+};
+
+
+            // GUARDAR EN LA TABLA CORRECTA
+
+            const { data, error } = await clienteSupabase
+                .from("catalogo_codmar")
+                .insert(nuevoProducto)
+                .select()
+                .single();
+
+            if (error) {
+                throw error;
+            }
+
+            console.log(
+                "Medicamento guardado correctamente:",
+                data
+            );
+
+            mensajePrecios.textContent =
+                "¡Medicamento guardado correctamente!";
+
+             // ACTUALIZAR EL CATÁLOGO SIN RECARGAR LA PÁGINA
+            await cargarMedicamentosCatalogo();
+
+
+            // CERRAR VENTANA DESPUÉS DE GUARDAR
+
+            setTimeout(function () {
+
+                if (urlPrevia) {
+                    URL.revokeObjectURL(urlPrevia);
+                }
+
+                ventana.remove();
+
+            }, 1200);
+
+        } catch (error) {
+
+            console.error(
+                "Error al guardar medicamento:",
+                error
+            );
+
+            // ELIMINAR IMAGEN SI FALLÓ EL REGISTRO
+
+            if (rutaImagen) {
+
+                     await clienteSupabase.storage
+                    .from("imagenes")
+                    .remove([rutaImagen]);
+
+            }
+
+            mensajePrecios.textContent =
+                "No se pudo guardar: " + error.message;
+
+        } finally {
+
+            botonGuardarProducto.disabled = false;
+
+        }
+
+    }
+);
+    precioPublico.focus();
+
+});
+
+
+            cancelar.addEventListener("click", function () {
+
+                if (urlPrevia) {
+                    URL.revokeObjectURL(urlPrevia);
+                }
+
+                ventana.remove();
+            });
+
+            nombre.focus();
+        });
 
         listaCategorias.insertBefore(
             opcion,
@@ -1945,10 +3492,9 @@ if (
 
     /* ACEPTAR O GUARDAR CATEGORÍA */
 
-    aceptarCategoria.addEventListener(
+       aceptarCategoria.addEventListener(
         "click",
-        function () {
-
+         async function () {
             const nombre =
                 nombreCategoria.value.trim();
 
@@ -1992,8 +3538,11 @@ if (
 
                 categorias[indiceCategoriaEditando] = nombre;
             }
+     
 
-            if (!guardarCategorias()) {
+             if (!(await guardarCategorias())) {
+              
+            
 
                 categorias = categoriasAnteriores;
                 return;
@@ -2010,77 +3559,6 @@ if (
         }
     );
 
-
-/* BOTÓN EDITAR */
-
-editarCategoria.addEventListener(
-    "click",
-    function () {
-
-        const ventanaAnterior =
-            document.getElementById("ventana-seleccionar-categoria");
-
-        if (ventanaAnterior) {
-            ventanaAnterior.remove();
-        }
-
-        const ventana = document.createElement("div");
-
-        ventana.id = "ventana-seleccionar-categoria";
-        ventana.className = "formulario-inicio formulario-abierto";
-
-        const titulo = document.createElement("h2");
-        titulo.textContent = "¿QUÉ CATEGORÍA QUIERES EDITAR?";
-
-        const campoCategoria = document.createElement("input");
-
-        campoCategoria.type = "text";
-        campoCategoria.id = "campo-categoria-editar";
-        campoCategoria.placeholder = "Nombre de la categoría";
-        campoCategoria.maxLength = 60;
-        campoCategoria.autocomplete = "off";
-
-        const contenedorBotones = document.createElement("div");
-
-        contenedorBotones.style.display = "flex";
-        contenedorBotones.style.flexDirection = "column";
-        contenedorBotones.style.gap = "10px";
-        contenedorBotones.style.marginTop = "15px";
-
-        const botonEditar = document.createElement("button");
-        botonEditar.type = "button";
-        botonEditar.textContent = "EDITAR";
-
-        const botonBorrar = document.createElement("button");
-        botonBorrar.type = "button";
-        botonBorrar.textContent = "BORRAR";
-
-        const botonAceptar = document.createElement("button");
-        botonAceptar.type = "button";
-        botonAceptar.textContent = "ACEPTAR";
-
-      /* MOSTRAR BOTONES Y VENTANA */
-
-contenedorBotones.appendChild(botonEditar);
-contenedorBotones.appendChild(botonBorrar);
-contenedorBotones.appendChild(botonAceptar);
-contenedorBotones.appendChild(botonCerrar);
-
-botonCerrar.addEventListener("click", function () {
-    ventana.remove();
-    formularioCategorias.classList.add("formulario-abierto");
-});
-
-ventana.appendChild(titulo);
-ventana.appendChild(campoCategoria);
-ventana.appendChild(contenedorBotones);
-ventana.appendChild(mensaje);
-
-document.body.appendChild(ventana);
-
-campoCategoria.focus();
-
-});
 
 
 /* BOTÓN EDITAR */
@@ -2165,9 +3643,9 @@ function buscarCategoria(nombre) {
             return categoria.toLocaleLowerCase() === nombreBuscado;
         });
     }
-
-    function guardarYActualizar() {
-        if (!guardarCategorias()) {
+         async function guardarYActualizar() {
+    
+          if (!(await guardarCategorias())) {
             return false;
         }
 
@@ -2179,7 +3657,7 @@ function buscarCategoria(nombre) {
 
     /* EDITAR: SELECCIONAR LA CATEGORÍA EXISTENTE */
 
-    botonEditar.addEventListener("click", function () {
+    botonEditar.addEventListener("click", async function () {
 
         const nombre = campoCategoria.value.trim();
 
@@ -2209,7 +3687,7 @@ function buscarCategoria(nombre) {
     
 /* BORRAR: ELIMINAR LA CATEGORÍA DEL MENÚ */
 
-botonBorrar.addEventListener("click", function () {
+botonEditar.addEventListener("click", async function () {
 
     const nombre = campoCategoria.value.trim();
 
@@ -2230,10 +3708,10 @@ botonBorrar.addEventListener("click", function () {
 
     categorias.splice(indice, 1);
 
-    if (!guardarYActualizar()) {
-        categorias.splice(indice, 0, categoriaEliminada);
-        return;
-    }
+   if (!(await guardarYActualizar())) {
+    categorias.splice(indice, 0, categoriaEliminada);
+    return;
+}
 
     indiceSeleccionado = null;
     campoCategoria.value = "";
@@ -2248,7 +3726,7 @@ botonBorrar.addEventListener("click", function () {
 
     /* ACEPTAR: GUARDAR EL NOMBRE NUEVO */
 
-    botonAceptar.addEventListener("click", function () {
+    botonAceptar.addEventListener("click", async function () {
 
         const nombreNuevo = campoCategoria.value.trim();
 
@@ -2285,10 +3763,10 @@ botonBorrar.addEventListener("click", function () {
 
         categorias[indice] = nombreNuevo;
 
-        if (!guardarYActualizar()) {
-            categorias[indice] = nombreAnterior;
-            return;
-        }
+        if (!(await guardarYActualizar())) {
+    categorias[indice] = nombreAnterior;
+    return;
+}
 
         indiceSeleccionado = null;
         campoCategoria.value = nombreNuevo;
@@ -2303,10 +3781,12 @@ botonBorrar.addEventListener("click", function () {
 
  });
 
-
     contenedorBotones.appendChild(botonEditar);
     contenedorBotones.appendChild(botonBorrar);
     contenedorBotones.appendChild(botonAceptar);
+    contenedorBotones.appendChild(botonCerrar);
+    
+   
 
     ventana.appendChild(titulo);
     ventana.appendChild(campoCategoria);
@@ -2355,9 +3835,29 @@ botonBorrar.addEventListener("click", function () {
 /* CARGAR CATEGORÍAS AL INICIAR                   */
 /* ============================================= */
 
+if (configuracionGuardada) {
+
+    categorias = Array.isArray(configuracionGuardada.categorias)
+        ? configuracionGuardada.categorias.filter(
+            categoria => typeof categoria === "string"
+        )
+        : [];
+
+} else {
+
+    categorias = [];
+}
+
+console.log(
+    "CATEGORÍAS RECUPERADAS DEL CLIENTE:",
+    clienteId,
+    categorias
+);
+
 mostrarCategorias();
 
-
+// MOSTRAR LOS MEDICAMENTOS DEL NEGOCIO AL ABRIR EL CATÁLOGO
+cargarMedicamentosCatalogo();
 
 
 /* ================================================= */
@@ -3398,40 +4898,45 @@ aceptarLogotipo.addEventListener(
             : configuracionGuardada?.logotipo_url_escritorio || null;
 
 
-        /* SUBIR IMAGEN SI SE SELECCIONÓ UN ARCHIVO */
+        
+/* SUBIR IMAGEN SI SE SELECCIONÓ UN ARCHIVO */
 
-        if (archivo) {
+if (archivo) {
 
-            const nombreArchivo =
-                `logotipo_${Date.now()}_${archivo.name}`;
+    const nombreArchivo =
+        `logotipo_${Date.now()}_${archivo.name}`;
 
-            const { error: errorSubida } = await clienteSupabase
-                .storage
-                .from("imagenes")
-                .upload(
-                    `logotipos/${nombreArchivo}`,
-                    archivo
-                );
+    const rutaLogotipo =
+        `negocios/${clienteId}/logotipo/${nombreArchivo}`;
 
-            if (errorSubida) {
+    const { error: errorSubida } = await clienteSupabase
+        .storage
+        .from("imagenes")
+        .upload(
+            rutaLogotipo,
+            archivo
+        );
 
-                console.error(
-                    "Error al subir el logotipo:",
-                    errorSubida
-                );
+    if (errorSubida) {
 
-                return;
-            }
+        console.error(
+            "Error al subir el logotipo:",
+            errorSubida
+        );
 
-            const { data } = clienteSupabase
-                .storage
-                .from("imagenes")
-                .getPublicUrl(
-                    `logotipos/${nombreArchivo}`
-                );
+        return;
+    }
 
-            logotipoUrl = data.publicUrl;
-        }
+    const { data } = clienteSupabase
+        .storage
+        .from("imagenes")
+        .getPublicUrl(
+            rutaLogotipo
+        );
+
+    logotipoUrl = data.publicUrl;
+}
+
 
 
      
@@ -3962,138 +5467,7 @@ aceptarNombreComercial.addEventListener(
 );
 
 
-/* ================================================= */
-/*          ACEPTAR CONFIGURACIÓN DE CABECERA         */
-/* ================================================= */
 
-aceptarCabecera.addEventListener(
-    "click",
-    async function () {
-
-        const archivo = archivoLogotipo.files[0];
-
-        let logotipoUrl =
-            configuracionGuardada?.logotipo_url || null;
-
-
-        /* SUBIR LOGOTIPO SI SE SELECCIONÓ */
-
-        if (archivo) {
-
-            const nombreArchivo =
-                `logotipo_${Date.now()}_${archivo.name}`;
-
-            const { error: errorSubida } = await clienteSupabase
-                .storage
-                .from("imagenes")
-                .upload(
-                    `logotipos/${nombreArchivo}`,
-                    archivo,
-                    {
-                        upsert: false
-                    }
-                );
-
-            if (errorSubida) {
-
-                console.error(
-                    "Error al subir logotipo:",
-                    errorSubida
-                );
-
-                return;
-            }
-
-            const { data: urlLogotipo } = clienteSupabase
-                .storage
-                .from("imagenes")
-                .getPublicUrl(
-                    `logotipos/${nombreArchivo}`
-                );
-
-            logotipoUrl = urlLogotipo.publicUrl;
-
-
-            let imagenFranja =
-                document.getElementById("logotipo-franja");
-
-            if (!imagenFranja) {
-
-                imagenFranja =
-                    document.createElement("img");
-
-                imagenFranja.id =
-                    "logotipo-franja";
-
-                franjaSuperior.appendChild(imagenFranja);
-            }
-
-            imagenFranja.src = logotipoUrl;
-
-            imagenFranja.classList.toggle(
-                "oculto",
-                !mostrarLogotipo.checked
-            );
-        }
-
-
-        /* ACTUALIZAR VISIBILIDAD */
-
-        botonCarrito.classList.toggle(
-            "oculto",
-            !mostrarCarrito.checked
-        );
-
-        buscador.classList.toggle(
-            "oculto",
-            !mostrarBuscador.checked
-        );
-
-
-         /* GUARDAR CONFIGURACIÓN */
-
-        const { error: errorGuardado } = await clienteSupabase
-            .from("configuracion_inicio")
-            .update({
-
-                logotipo_url:
-                    logotipoUrl,
-
-                mostrar_carrito:
-                    mostrarCarrito.checked,
-
-                mostrar_nombre_comercial:
-                    mostrarNombreComercial.checked,
-
-                mostrar_buscador:
-                    mostrarBuscador.checked,
-
-                tipo_carrito:
-                    tipoCarritoSeleccionado
-
-            })
-            .eq("cliente_id", clienteId);
-
-
-        if (errorGuardado) {
-
-            console.error(
-                "Error al guardar encabezado:",
-                errorGuardado
-            );
-
-            return;
-        }
-
-
-        formularioCabecera.classList.remove(
-            "formulario-abierto"
-        );
-    }
-);
-
-
-      
 /* ================================================= */
 /*          ACEPTAR CONFIGURACIÓN DE INICIO           */
 /* ================================================= */
@@ -4115,11 +5489,14 @@ aceptarInicio.addEventListener(
             const nombreArchivo =
                 `logotipo_${Date.now()}_${archivo.name}`;
 
+            const rutaLogotipo =
+                `negocios/${clienteId}/logotipo/${nombreArchivo}`;
+
             const { error: errorSubida } = await clienteSupabase
                 .storage
                 .from("imagenes")
                 .upload(
-                    `logotipos/${nombreArchivo}`,
+                    rutaLogotipo,
                     archivo,
                     {
                         upsert: false
@@ -4140,11 +5517,10 @@ aceptarInicio.addEventListener(
                 .storage
                 .from("imagenes")
                 .getPublicUrl(
-                    `logotipos/${nombreArchivo}`
+                    rutaLogotipo
                 );
 
             logotipoUrl = urlLogotipo.publicUrl;
-
 
             let imagenFranja =
                 document.getElementById("logotipo-franja");
@@ -4154,8 +5530,7 @@ aceptarInicio.addEventListener(
                 imagenFranja =
                     document.createElement("img");
 
-                imagenFranja.id =
-                    "logotipo-franja";
+                imagenFranja.id = "logotipo-franja";
 
                 franjaSuperior.appendChild(imagenFranja);
             }
@@ -4164,46 +5539,45 @@ aceptarInicio.addEventListener(
         }
 
 
-     
         /* PREPARAR CONFIGURACIÓN */
 
-       const configuracion = {
-    cliente_id: clienteId,
+        const configuracion = {
+            cliente_id: clienteId,
 
-    color_franjas_escritorio: esMovil
-        ? (configuracionGuardada?.color_franjas_escritorio || "#ffffff")
-        : colorFranjas.value,
+            color_franjas_escritorio: esMovil
+                ? (configuracionGuardada?.color_franjas_escritorio || "#ffffff")
+                : colorFranjas.value,
 
-    color_franjas_movil: esMovil
-        ? colorFranjas.value
-        : (configuracionGuardada?.color_franjas_movil || "#ffffff"),
+            color_franjas_movil: esMovil
+                ? colorFranjas.value
+                : (configuracionGuardada?.color_franjas_movil || "#ffffff"),
 
-    color_boton_menu_escritorio: esMovil
-        ? (configuracionGuardada?.color_boton_menu_escritorio || "#159c96")
-        : colorBotonMenu.value,
+            color_boton_menu_escritorio: esMovil
+                ? (configuracionGuardada?.color_boton_menu_escritorio || "#159c96")
+                : colorBotonMenu.value,
 
-    color_boton_menu_movil: esMovil
-        ? colorBotonMenu.value
-        : (configuracionGuardada?.color_boton_menu_movil || "#159c96"),
+            color_boton_menu_movil: esMovil
+                ? colorBotonMenu.value
+                : (configuracionGuardada?.color_boton_menu_movil || "#159c96"),
 
-    color_texto_menu_escritorio: esMovil
-        ? (configuracionGuardada?.color_texto_menu_escritorio || "#f2f2f2")
-        : colorTextoMenu.value,
+            color_texto_menu_escritorio: esMovil
+                ? (configuracionGuardada?.color_texto_menu_escritorio || "#f2f2f2")
+                : colorTextoMenu.value,
 
-    color_texto_menu_movil: esMovil
-        ? colorTextoMenu.value
-        : (configuracionGuardada?.color_texto_menu_movil || "#f2f2f2"),
+            color_texto_menu_movil: esMovil
+                ? colorTextoMenu.value
+                : (configuracionGuardada?.color_texto_menu_movil || "#f2f2f2"),
 
-    color_panel_menu_escritorio: esMovil
-        ? (configuracionGuardada?.color_panel_menu_escritorio || "#D8E2EE")
-        : colorPanelMenu.value,
+            color_panel_menu_escritorio: esMovil
+                ? (configuracionGuardada?.color_panel_menu_escritorio || "#D8E2EE")
+                : colorPanelMenu.value,
 
-    color_panel_menu_movil: esMovil
-        ? colorPanelMenu.value
-        : (configuracionGuardada?.color_panel_menu_movil || "#D8E2EE"),
+            color_panel_menu_movil: esMovil
+                ? colorPanelMenu.value
+                : (configuracionGuardada?.color_panel_menu_movil || "#D8E2EE"),
 
-    logotipo_url: logotipoUrl
-};
+            logotipo_url: logotipoUrl
+        };
 
 
         /* GUARDAR EN SUPABASE */
@@ -4213,13 +5587,11 @@ aceptarInicio.addEventListener(
             .update(configuracion)
             .eq("cliente_id", clienteId);
 
-
         if (error) {
 
             console.error(
                 "Error al guardar configuración:",
                 error
-                
             );
 
             return;
@@ -4233,43 +5605,43 @@ aceptarInicio.addEventListener(
             );
         }
 
-  
 
-/* APLICAR COLORES DEL DISPOSITIVO ACTUAL */
+        /* APLICAR COLORES DEL DISPOSITIVO ACTUAL */
 
-actualizarVariableCSS(
-    "--color-franjas",
-    colorFranjas.value
-);
+        actualizarVariableCSS(
+            "--color-franjas",
+            colorFranjas.value
+        );
 
-actualizarVariableCSS(
-    "--color-boton-menu",
-    colorBotonMenu.value
-);
+        actualizarVariableCSS(
+            "--color-boton-menu",
+            colorBotonMenu.value
+        );
 
-actualizarVariableCSS(
-    "--color-texto-menu",
-    colorTextoMenu.value
-);
+        actualizarVariableCSS(
+            "--color-texto-menu",
+            colorTextoMenu.value
+        );
 
-actualizarVariableCSS(
-    "--color-panel-menu",
-    colorPanelMenu.value
-);
+        actualizarVariableCSS(
+            "--color-panel-menu",
+            colorPanelMenu.value
+        );
 
-/* CERRAR CONFIGURACIÓN Y REGRESAR AL MENÚ */
 
-formularioInicio.classList.remove(
-    "formulario-abierto"
-);
+        /* CERRAR CONFIGURACIÓN Y REGRESAR AL MENÚ */
 
-panelMenu.classList.remove(
-    "menu-abierto"
-);
+        formularioInicio.classList.remove(
+            "formulario-abierto"
+        );
 
-        
+        panelMenu.classList.remove(
+            "menu-abierto"
+        );
+
     }
 );
+
 
 
 /* ================================================= */
@@ -4294,5 +5666,70 @@ if (botonBusqueda && buscador) {
 /*          FIN DEL BLOQUE PRINCIPAL                  */
 /* ================================================= */
 
+});
 
-}); 
+/* =========================================
+   PERMITIR ARRASTRAR LAS VENTANAS CODMAR
+========================================= */
+
+function hacerVentanaMovible(ventana, encabezado) {
+
+    if (!ventana || !encabezado) return;
+
+    let moviendo = false;
+    let posicionX = 0;
+    let posicionY = 0;
+
+    encabezado.style.cursor = "move";
+
+    encabezado.addEventListener("mousedown", function(e) {
+
+        if (e.target.closest("button, input, select, textarea")) return;
+
+        moviendo = true;
+
+        const rect = ventana.getBoundingClientRect();
+
+        posicionX = e.clientX - rect.left;
+        posicionY = e.clientY - rect.top;
+
+       ventana.style.position = "fixed";
+       ventana.style.left = rect.left + "px";
+       ventana.style.top = rect.top + "px";
+       ventana.style.margin = "0";
+       ventana.style.transform = "none";
+
+        e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", function(e) {
+
+        if (!moviendo) return;
+
+        ventana.style.left = (e.clientX - posicionX) + "px";
+        ventana.style.top = (e.clientY - posicionY) + "px";
+    });
+
+    document.addEventListener("mouseup", function() {
+        moviendo = false;
+    });
+}
+
+// =============================================
+// HACER MOVIBLES LAS VENTANAS DE CONFIGURACIÓN
+// =============================================
+
+hacerVentanaMovible(
+    document.getElementById("formulario-inicio"),
+    document.querySelector("#formulario-inicio h2")
+);
+
+hacerVentanaMovible(
+    document.getElementById("formulario-cabecera"),
+    document.querySelector("#formulario-cabecera h2")
+);
+
+hacerVentanaMovible(
+    document.getElementById("formulario-categorias"),
+    document.querySelector("#formulario-categorias h2")
+);
