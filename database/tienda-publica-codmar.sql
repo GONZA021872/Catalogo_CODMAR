@@ -1,6 +1,7 @@
 -- CODMAR: acceso público de sólo lectura para la tienda
 -- La tienda sólo podrá consultar productos activos del cliente CODMAR (cliente_id = 1).
--- No se concede acceso a precio_codmar, existencia ni caducidad.
+-- Se publica el precio de venta bajo el alias "precio".
+-- No se concede acceso a existencia ni caducidad.
 
 drop policy if exists "Publico puede consultar catalogo de tienda CODMAR"
 on public.catalogo_codmar;
@@ -21,6 +22,7 @@ grant select (
     precio_publico,
     tachar_precio_publico,
     imagen_url,
+    precio_codmar,
     activo,
     cliente_id
 )
@@ -37,7 +39,8 @@ select
     categoria,
     precio_publico,
     tachar_precio_publico,
-    imagen_url
+    imagen_url,
+    precio_codmar as precio
 from public.catalogo_codmar
 where activo = true
   and cliente_id = 1;
