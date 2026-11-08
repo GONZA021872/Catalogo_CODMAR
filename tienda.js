@@ -62,10 +62,17 @@
       datos.appendChild(presentacion);
     }
 
+    const precioReferencia = document.createElement("p");
+    precioReferencia.className = "precio-referencia";
+    precioReferencia.textContent = "Precio público: " +
+      formatoPrecio.format(Number(producto.precio_publico) || 0);
+    precioReferencia.classList.add("precio-tachado");
+    datos.appendChild(precioReferencia);
+
     const precio = document.createElement("p");
     precio.className = "precio-producto";
-    precio.textContent = formatoPrecio.format(Number(producto.precio_publico) || 0);
-    if (producto.tachar_precio_publico) precio.classList.add("precio-tachado");
+    precio.textContent = "Precio: " +
+      formatoPrecio.format(Number(producto.precio) || 0);
     datos.appendChild(precio);
 
     const agregar = document.createElement("button");
@@ -160,7 +167,7 @@
     mostrarEstado("Cargando productos…");
     try {
       let consulta = supabase.from("catalogo_codmar_publico")
-        .select("id,nombre,presentacion,categoria,precio_publico,tachar_precio_publico,imagen_url")
+        .select("id,nombre,presentacion,categoria,precio_publico,precio,imagen_url")
         .order("nombre", { ascending: true })
         .range(pagina * TAMANO_PAGINA, (pagina + 1) * TAMANO_PAGINA - 1);
 
@@ -216,7 +223,7 @@
       id: producto.id,
       nombre: textoSeguro(producto.nombre),
       presentacion: textoSeguro(producto.presentacion),
-      precio: Number(producto.precio_publico) || 0,
+      precio: Number(producto.precio) || 0,
       cantidad: 1
     });
     actualizarCarrito();
