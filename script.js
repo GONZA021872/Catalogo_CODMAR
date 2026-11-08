@@ -1358,11 +1358,6 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             controlesModo.appendChild(botonAdministracion);
             controlesModo.appendChild(botonVenta);
 
-            const botonLote = document.createElement("button");
-            botonLote.type = "button";
-            botonLote.textContent = "CARGAR HASTA 100";
-            botonLote.addEventListener("click", abrirCargaMasivaProductos);
-            controlesModo.appendChild(botonLote);
 
 
             actualizarBotonesModo();
@@ -1619,7 +1614,7 @@ function abrirCargaMasivaProductos() {
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
     const titulo = document.createElement("h2");
-    titulo.textContent = "CARGAR HASTA 100 PRODUCTOS";
+    titulo.textContent = "IMPORTAR PRODUCTOS POR CATEGORÍA";
     panel.appendChild(titulo);
     const cerrar = document.createElement("button");
     cerrar.type = "button";
@@ -1652,7 +1647,7 @@ function abrirCargaMasivaProductos() {
     const campoLote = document.createElement("label");
     campoLote.className = "campo-carga-masiva-codmar";
     const textoLote = document.createElement("span");
-    textoLote.textContent = "Lote de hasta 100 productos";
+    textoLote.textContent = "Bloque de importación (máximo 100 productos)";
     const selectorLote = document.createElement("select");
     campoLote.append(textoLote, selectorLote);
     panel.appendChild(campoLote);
@@ -2833,6 +2828,17 @@ const tituloAccionCategoria =
 
 const listaCategoriasGestion =
     document.getElementById("lista-categorias-gestion");
+
+// La importación se inicia desde la administración de categorías.
+const botonImportarProductosCategoria =
+    document.getElementById("boton-importar-productos-categoria");
+
+if (botonImportarProductosCategoria) {
+    botonImportarProductosCategoria.addEventListener(
+        "click",
+        abrirCargaMasivaProductos
+    );
+}
 
 const botonConfiguracion =
     document.getElementById("boton-configuracion");
