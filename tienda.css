@@ -60,3 +60,5 @@ button,input{font:inherit}
 body.carrito-abierto{overflow:hidden}
 @media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda span{display:none}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.imagen-producto{height:145px}.datos-producto{padding:11px}.datos-producto h2{font-size:13px;min-height:37px}.precio-producto{font-size:17px}.boton-agregar{font-size:12px;padding:10px 6px}}
 @media(max-width:360px){.rejilla-productos{grid-template-columns:1fr}}
+
+.precio-producto.precio-tachado{text-decoration:line-through;color:#89939d;font-weight:500}
