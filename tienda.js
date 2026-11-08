@@ -65,6 +65,7 @@
     const precio = document.createElement("p");
     precio.className = "precio-producto";
     precio.textContent = formatoPrecio.format(Number(producto.precio_publico) || 0);
+    if (producto.tachar_precio_publico) precio.classList.add("precio-tachado");
     datos.appendChild(precio);
 
     const agregar = document.createElement("button");
@@ -90,9 +91,15 @@
     ]);
 
     if (respuestaCategorias.error) throw respuestaCategorias.error;
-    const categorias = [...new Set((respuestaCategorias.data || [])
-      .map(item => textoSeguro(item.categoria))
-      .filter(Boolean))].sort((a, b) => a.localeCompare(b, "es"));
+    const categoriasUnicas = new Map();
+    (respuestaCategorias.data || []).forEach(item => {
+      const categoria = textoSeguro(item.categoria);
+      if (!categoria) return;
+      const clave = categoria.toLocaleLowerCase("es");
+      if (!categoriasUnicas.has(clave)) categoriasUnicas.set(clave, categoria);
+    });
+    const categorias = [...categoriasUnicas.values()]
+      .sort((a, b) => a.localeCompare(b, "es"));
 
     categoriasEl.querySelectorAll("button:not([data-categoria=''])").forEach(b => b.remove());
     categorias.forEach(categoria => {
@@ -157,9 +164,9 @@
         .order("nombre", { ascending: true })
         .range(pagina * TAMANO_PAGINA, (pagina + 1) * TAMANO_PAGINA - 1);
 
-      if (categoriaActiva) consulta = consulta.eq("categoria", categoriaActiva);
+      if (categoriaActiva) consulta = consulta.ilike("categoria", categoriaActiva);
       if (termino) {
-        const seguro = termino.replace(/[,%()]/g, " ").trim();
+        const seguro = termino.replace(/[,%()*._]/g, " ").trim();
         if (seguro) consulta = consulta.or("nombre.ilike.%" + seguro + "%,presentacion.ilike.%" + seguro + "%");
       }
 
