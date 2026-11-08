@@ -32,7 +32,8 @@ button,input{font:inherit}
 .datos-producto{display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:15px}
 .datos-producto h2{display:-webkit-box;min-height:42px;margin:0 0 7px;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:15px;line-height:1.4;color:#25374a}
 .presentacion-producto{min-height:32px;margin:0 0 12px;color:#778493;font-size:12px}
-.precio-producto{margin:auto 0 13px;color:var(--color-marca);font-size:20px;font-weight:800}
+.precio-referencia{margin:7px 0 3px;color:#66717d;font-size:12px;text-decoration:line-through}
+.precio-producto{margin:3px 0 13px;color:#00a6a6;font-size:20px;font-weight:800}
 .boton-agregar,.boton-pedido{width:100%;padding:11px 13px;border:0;border-radius:8px;background:var(--color-marca);color:white;font-weight:700;cursor:pointer}
 .boton-agregar:hover,.boton-pedido:hover{filter:brightness(1.12)}
 .boton-pedido:disabled{opacity:.45;cursor:not-allowed}
@@ -58,7 +59,7 @@ button,input{font:inherit}
 .pie-carrito small{display:block;margin-top:12px;color:#7b8794;line-height:1.4}
 .carrito-vacio{padding:28px 8px;text-align:center;color:#84909c}
 body.carrito-abierto{overflow:hidden}
-@media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda span{display:none}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.imagen-producto{height:145px}.datos-producto{padding:11px}.datos-producto h2{font-size:13px;min-height:37px}.precio-producto{font-size:17px}.boton-agregar{font-size:12px;padding:10px 6px}}
+@media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda span{display:none}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.imagen-producto{height:145px}.datos-producto{padding:11px}.datos-producto h2{font-size:13px;min-height:37px}.precio-referencia{font-size:11px}.precio-producto{font-size:17px}.boton-agregar{font-size:12px;padding:10px 6px}}
 @media(max-width:360px){.rejilla-productos{grid-template-columns:1fr}}
 
 .precio-producto.precio-tachado{text-decoration:line-through;color:#89939d;font-weight:500}
