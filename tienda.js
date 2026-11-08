@@ -62,7 +62,7 @@
 
     const precioReferencia = document.createElement("p");
     precioReferencia.className = "precio-referencia";
-    precioReferencia.textContent = "Precio máximo al público: " +
+    precioReferencia.textContent = "Precio público: " +
       formatoPrecio.format(Number(producto.precio_publico) || 0);
     precioReferencia.classList.add("precio-tachado");
     datos.appendChild(precioReferencia);
