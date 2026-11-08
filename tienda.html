@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#314f6d">
+  <title>CODMAR | Tienda</title>
+  <link rel="stylesheet" href="tienda.css?v=1">
+</head>
+<body>
+  <header class="encabezado-tienda">
+    <a class="marca-tienda" href="tienda.html" aria-label="Inicio CODMAR">
+      <img id="logo-tienda" alt="Logotipo CODMAR" hidden>
+      <span id="nombre-tienda">CODMAR</span>
+    </a>
+    <label class="busqueda-tienda">
+      <span aria-hidden="true">⌕</span>
+      <input id="buscar-productos" type="search" placeholder="Buscar productos..." autocomplete="off">
+    </label>
+    <button id="abrir-carrito" class="boton-carrito-tienda" type="button" aria-label="Abrir carrito">
+      🛒 <span>Carrito</span><b id="contador-carrito">0</b>
+    </button>
+  </header>
+
+  <main class="contenido-tienda">
+    <section class="presentacion-tienda">
+      <p class="sobrelinea">CATÁLOGO EN LÍNEA</p>
+      <h1>Encuentra lo que necesitas</h1>
+      <p>Consulta productos y precios disponibles en CODMAR.</p>
+    </section>
+    <nav id="categorias-tienda" class="categorias-tienda" aria-label="Categorías">
+      <button class="categoria activa" type="button" data-categoria="">Todos</button>
+    </nav>
+    <p id="estado-tienda" class="estado-tienda" role="status" aria-live="polite">Cargando catálogo…</p>
+    <section id="productos-tienda" class="rejilla-productos" aria-label="Productos"></section>
+    <div id="fin-catalogo" class="fin-catalogo" aria-live="polite"></div>
+    <div id="observador-tienda" class="observador-tienda" aria-hidden="true"></div>
+  </main>
+
+  <div id="fondo-carrito" class="fondo-carrito" hidden>
+    <section class="panel-carrito" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+      <div class="encabezado-carrito">
+        <h2 id="titulo-carrito">Mi carrito</h2>
+        <button id="cerrar-carrito" type="button" aria-label="Cerrar carrito">×</button>
+      </div>
+      <div id="items-carrito" class="items-carrito">
+        <p class="carrito-vacio">Tu carrito está vacío.</p>
+      </div>
+      <div class="pie-carrito">
+        <p>Total <strong id="total-carrito">$0.00</strong></p>
+        <button id="enviar-pedido" class="boton-pedido" type="button" disabled>Enviar pedido por WhatsApp</button>
+        <small>El pedido se enviará para confirmar disponibilidad y entrega.</small>
+      </div>
+    </section>
+  </div>
+  <footer class="pie-tienda">CODMAR · Catálogo en línea</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="tienda.js?v=1"></script>
+</body>
+</html>
