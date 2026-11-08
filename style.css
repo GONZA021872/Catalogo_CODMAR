@@ -3228,3 +3228,8 @@ transform: translateY(-25px);
         font-size: 16px;
     }
 }
+
+
+/* Enlace privado desde Administración hacia la tienda pública */
+.opcion-menu-enlace { display: block; color: inherit; text-decoration: none; }
+.opcion-menu-enlace:hover { background: rgba(255,255,255,.35); }
