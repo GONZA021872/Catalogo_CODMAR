@@ -55,12 +55,10 @@
     nombre.textContent = textoSeguro(producto.nombre) || "Producto sin nombre";
     datos.appendChild(nombre);
 
-    if (producto.presentacion) {
-      const presentacion = document.createElement("p");
-      presentacion.className = "presentacion-producto";
-      presentacion.textContent = textoSeguro(producto.presentacion);
-      datos.appendChild(presentacion);
-    }
+    const presentacion = document.createElement("p");
+    presentacion.className = "presentacion-producto";
+    presentacion.textContent = textoSeguro(producto.presentacion);
+    datos.appendChild(presentacion);
 
     const precioReferencia = document.createElement("p");
     precioReferencia.className = "precio-referencia";
