@@ -1,0 +1,62 @@
+:root{--color-marca:#314f6d;--fondo:#f4f6f8;--texto:#243447;--borde:#e2e7ec}
+*{box-sizing:border-box}
+html{min-height:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--fondo);color:var(--texto);font-family:Arial,Helvetica,sans-serif}
+button,input{font:inherit}
+.encabezado-tienda{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:minmax(150px,1fr) minmax(220px,2fr) auto;align-items:center;gap:24px;padding:14px clamp(16px,4vw,54px);background:var(--color-marca);box-shadow:0 3px 14px #172b3d24}
+.marca-tienda{display:flex;align-items:center;gap:12px;min-width:0;color:white;text-decoration:none;font-weight:800;font-size:clamp(19px,2vw,28px);letter-spacing:.04em}
+.marca-tienda img{max-width:125px;max-height:48px;object-fit:contain}
+.busqueda-tienda{display:flex;align-items:center;gap:10px;max-width:620px;width:100%;height:44px;padding:0 14px;background:white;border-radius:9px;color:#657587}
+.busqueda-tienda span{font-size:25px}
+.busqueda-tienda input{width:100%;border:0;outline:0;background:transparent;color:#263746}
+.boton-carrito-tienda{display:flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid #ffffff55;border-radius:9px;background:#ffffff17;color:white;cursor:pointer}
+.boton-carrito-tienda b{display:grid;place-items:center;min-width:23px;height:23px;padding:0 5px;border-radius:50%;background:white;color:var(--color-marca);font-size:12px}
+.carrito-actualizado{transform:scale(1.04)}
+.contenido-tienda{width:min(1440px,100%);margin:auto;padding:28px clamp(14px,3vw,42px) 60px}
+.presentacion-tienda{padding:28px 4px 24px}
+.sobrelinea{margin:0 0 8px;color:var(--color-marca);font-size:11px;font-weight:800;letter-spacing:.18em}
+.presentacion-tienda h1{margin:0 0 8px;font-size:clamp(25px,3vw,38px);color:#1d3044}
+.presentacion-tienda p:last-child{margin:0;color:#6b7785}
+.categorias-tienda{display:flex;gap:9px;overflow-x:auto;padding:12px 0 22px}
+.categoria{flex:0 0 auto;padding:10px 17px;border:1px solid #d7dfe7;border-radius:22px;background:white;color:#405268;cursor:pointer}
+.categoria.activa,.categoria:hover{border-color:var(--color-marca);background:var(--color-marca);color:white}
+.estado-tienda{min-height:22px;margin:4px 0 15px;color:#68798a;font-size:13px}
+.estado-tienda.error{color:#a12d2d}
+.estado-tienda.vacio{text-align:center;padding:32px}
+.rejilla-productos{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:18px}
+.producto-tienda{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--borde);border-radius:13px;background:white;box-shadow:0 4px 14px #1e35470a;transition:transform .15s,box-shadow .15s}
+.producto-tienda:hover{transform:translateY(-2px);box-shadow:0 8px 20px #1e354716}
+.imagen-producto{display:grid;place-items:center;height:190px;padding:12px;background:white;border-bottom:1px solid #eef1f4}
+.imagen-producto img{width:100%;height:100%;object-fit:contain}
+.imagen-producto.sin-imagen{color:#9aa5af;font-size:12px;background:#f7f8fa}
+.datos-producto{display:flex;flex:1;flex-direction:column;align-items:flex-start;padding:15px}
+.datos-producto h2{display:-webkit-box;min-height:42px;margin:0 0 7px;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:15px;line-height:1.4;color:#25374a}
+.presentacion-producto{min-height:32px;margin:0 0 12px;color:#778493;font-size:12px}
+.precio-producto{margin:auto 0 13px;color:var(--color-marca);font-size:20px;font-weight:800}
+.boton-agregar,.boton-pedido{width:100%;padding:11px 13px;border:0;border-radius:8px;background:var(--color-marca);color:white;font-weight:700;cursor:pointer}
+.boton-agregar:hover,.boton-pedido:hover{filter:brightness(1.12)}
+.boton-pedido:disabled{opacity:.45;cursor:not-allowed}
+.observador-tienda{height:8px}
+.fin-catalogo{text-align:center;padding:22px;color:#8793a0;font-size:13px}
+.pie-tienda{padding:22px;text-align:center;color:#82909c;font-size:12px}
+.fondo-carrito{position:fixed;inset:0;z-index:50;display:flex;justify-content:flex-end;background:#0c182c80}
+.fondo-carrito[hidden]{display:none}
+.panel-carrito{display:flex;flex-direction:column;width:min(470px,100%);height:100%;padding:22px;background:white;box-shadow:-10px 0 30px #0002}
+.encabezado-carrito{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--borde);padding-bottom:15px}
+.encabezado-carrito h2{margin:0;font-size:23px}
+.encabezado-carrito button{border:0;background:none;font-size:30px;color:#526171;cursor:pointer}
+.items-carrito{flex:1;overflow:auto;padding:12px 0}
+.item-carrito{display:flex;justify-content:space-between;gap:12px;padding:14px 0;border-bottom:1px solid var(--borde)}
+.item-carrito>div:first-child{display:grid;gap:5px}
+.item-carrito strong{font-size:14px}
+.item-carrito small,.item-carrito span{color:#758292;font-size:12px}
+.controles-cantidad{display:flex;align-items:center;gap:10px}
+.controles-cantidad button{width:30px;height:30px;border:1px solid var(--borde);border-radius:50%;background:white;cursor:pointer}
+.pie-carrito{border-top:1px solid var(--borde);padding-top:16px}
+.pie-carrito>p{display:flex;justify-content:space-between;margin:0 0 16px;font-size:16px}
+.pie-carrito>p strong{font-size:23px}
+.pie-carrito small{display:block;margin-top:12px;color:#7b8794;line-height:1.4}
+.carrito-vacio{padding:28px 8px;text-align:center;color:#84909c}
+body.carrito-abierto{overflow:hidden}
+@media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda span{display:none}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.imagen-producto{height:145px}.datos-producto{padding:11px}.datos-producto h2{font-size:13px;min-height:37px}.precio-producto{font-size:17px}.boton-agregar{font-size:12px;padding:10px 6px}}
+@media(max-width:360px){.rejilla-productos{grid-template-columns:1fr}}
