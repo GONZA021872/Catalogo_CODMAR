@@ -5,20 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#314f6d">
   <title>CODMAR | Tienda</title>
-  <link rel="stylesheet" href="tienda.css?v=7">
+  <link rel="stylesheet" href="tienda.css?v=8">
 </head>
 <body>
-  <header class="encabezado-tienda">
+  <header class="encabezado-tienda" id="encabezado-tienda">
     <a class="marca-tienda" href="tienda.html" aria-label="Inicio CODMAR">
       <img id="logo-tienda" alt="Logotipo CODMAR" hidden>
       <span id="nombre-tienda">CODMAR</span>
     </a>
-    <label class="busqueda-tienda">
+    <label class="busqueda-tienda" id="busqueda-tienda">
       <span aria-hidden="true">⌕</span>
       <input id="buscar-productos" type="search" placeholder="Buscar productos..." autocomplete="off">
     </label>
     <button id="abrir-carrito" class="boton-carrito-tienda" type="button" aria-label="Abrir carrito">
-      🛒 <span>Carrito</span><b id="contador-carrito">0</b>
+      <span id="icono-bolsita-tienda" class="bolsita-tienda" aria-hidden="true"></span>
+      <span id="icono-carrito-tienda" class="icono-carrito-tienda" aria-hidden="true" hidden></span>
+      <span class="texto-carrito-tienda">Carrito</span>
+      <b id="contador-carrito">0</b>
     </button>
   </header>
 
@@ -55,6 +58,6 @@
   </div>
   <footer class="pie-tienda">CODMAR · Catálogo en línea</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="tienda.js?v=6"></script>
+  <script src="tienda.js?v=7"></script>
 </body>
 </html>
