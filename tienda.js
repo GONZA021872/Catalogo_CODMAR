@@ -4,7 +4,12 @@
   const SUPABASE_URL = "https://lkajqjiiqatleydroibw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_tfOFSgp4Rq8Q6WKSWhstaA_VsdxHk9D";
   const TELEFONO_PEDIDOS = "5212282116197";
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // Evitar que el navegador reutilice respuestas antiguas al recargar la tienda.
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    global: {
+      fetch: (input, init = {}) => fetch(input, { ...init, cache: "no-store" })
+    }
+  });
 
   const porId = (id) => document.getElementById(id);
   const contenedor = porId("productos-tienda");
@@ -405,7 +410,13 @@
   });
 
   // Mantener la tienda sincronizada con los cambios de Administración.
+  let actualizandoConfiguracionTienda = false;
+
   async function actualizarConfiguracionTienda() {
+    // No permitir consultas simultáneas que puedan aplicar respuestas fuera de orden.
+    if (actualizandoConfiguracionTienda) return;
+    actualizandoConfiguracionTienda = true;
+
     try {
       const { data, error } = await supabase
         .from("configuracion_tienda_codmar_publica")
@@ -416,6 +427,8 @@
       if (data) aplicarIdentidad(data);
     } catch (error) {
       console.error("No se pudo actualizar la configuración de la tienda:", error);
+    } finally {
+      actualizandoConfiguracionTienda = false;
     }
   }
 
