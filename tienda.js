@@ -156,6 +156,9 @@
       ? config.tamano_nombre_comercial_movil
       : config.tamano_nombre_comercial_escritorio) || config.tamano_nombre_comercial || "20px";
     raiz.setProperty("--fuente-nombre-comercial", fuente);
+    const colorNombre = /^#[0-9a-f]{6}$/i.test(String(config.color_nombre_comercial || ""))
+      ? config.color_nombre_comercial : "#000000";
+    raiz.setProperty("--color-nombre-comercial", colorNombre);
     raiz.setProperty("--tamano-nombre-comercial", /^\d+(\.\d+)?(px|rem|em|%)$/i.test(String(tamanoNombre)) ? tamanoNombre : "20px");
     raiz.setProperty("--ajuste-x", valorNumerico(config, "ajuste_nombre_comercial_x_movil", "ajuste_nombre_comercial_x_escritorio", "ajuste_nombre_comercial_x", 0, movil) + "px");
     raiz.setProperty("--ajuste-y", valorNumerico(config, "ajuste_nombre_comercial_y_movil", "ajuste_nombre_comercial_y_escritorio", "ajuste_nombre_comercial_y", 0, movil) + "px");
