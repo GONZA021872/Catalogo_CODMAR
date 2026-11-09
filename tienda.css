@@ -219,3 +219,5 @@ body.carrito-abierto{overflow:hidden}
   #logo-tienda:not([hidden]){max-width:35vw;height:72px;max-height:72px;top:14px}
   #nombre-tienda{max-width:42vw}
 }
+
+#nombre-tienda[hidden],.bolsita-tienda[hidden]{display:none!important}
