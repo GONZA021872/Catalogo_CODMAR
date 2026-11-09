@@ -439,11 +439,15 @@ transform: translate(
     transform: translateX(-50%);
 }
 
+#formulario-nombre-comercial {
+    padding-bottom: 12px;
+}
+
 #aceptar-nombre-comercial {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: static;
+    display: block;
+    margin: 12px auto 0;
+    transform: none;
 }
 
 #aceptar-logotipo {
