@@ -110,7 +110,7 @@ body.carrito-abierto{overflow:hidden}
   display:inline-block;
   max-width:45vw;
   overflow:hidden;
-  color:#fff;
+  color:var(--color-nombre-comercial,#000000);
   font-family:var(--fuente-nombre-comercial,Arial);
   font-size:var(--tamano-nombre-comercial,20px);
   font-weight:400;
@@ -262,3 +262,9 @@ body.carrito-abierto{overflow:hidden}
 .contenido-tienda{
   padding-bottom:100px;
 }
+
+
+/* Selector de color del nombre comercial en Administración */
+.control-color-nombre{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%}
+.control-color-nombre input[type="color"]{width:64px;height:42px;padding:3px;border:1px solid #b8c2cc;border-radius:8px;background:#fff;cursor:pointer}
+.control-color-nombre span{flex:1 1 180px;min-width:0;font-size:13px;line-height:1.4;color:#4b5563}
