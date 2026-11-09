@@ -529,6 +529,7 @@ transform: translate(
     left: 50%;
     top: 50%;
 
+    color: var(--color-nombre-comercial, #000000);
     font-family: var(--fuente-nombre-comercial);
     font-size: var(--tamano-nombre-comercial);
 
