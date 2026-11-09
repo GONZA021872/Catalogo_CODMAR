@@ -1272,10 +1272,6 @@ function detenerMovimientoLogotipo() {
 
     const clienteId = usuarioCliente.cliente_id;
 
-    // MODO ACTUAL DEL CATÁLOGO
-
-let modoCatalogoMedicamentos = "administracion";
-
     console.log("CLIENTE ACTUAL:", clienteId);
 
 // CARRITO DE COMPRAS CODMAR
@@ -1336,9 +1332,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
 
             controlesModo.appendChild(botonAdministracion);
 
-            if (modoCatalogoMedicamentos === "administracion") {
-                seccion.appendChild(controlesModo);
-            }
+            seccion.appendChild(controlesModo);
 
             lista = document.createElement("div");
             lista.className = "lista-medicamentos-codmar";
@@ -1396,7 +1390,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
                 };
                 tarjeta.appendChild(imagen);
 
-                if (modoCatalogoMedicamentos === "administracion") {
+                {
                     const selectorImagen = document.createElement("input");
                     selectorImagen.type = "file";
                     selectorImagen.accept = "image/*";
@@ -1488,7 +1482,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
                 formatoPrecio.format(Number(medicamento.precio_codmar));
             tarjeta.appendChild(precioCodmar);
 
-            if (modoCatalogoMedicamentos === "administracion") {
+            {
                 const botonEliminar = document.createElement("button");
                 botonEliminar.textContent = "ELIMINAR";
                 botonEliminar.className = "boton-eliminar-medicamento";
@@ -1497,13 +1491,6 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
                     await eliminarMedicamentoCatalogo(medicamento, tarjeta);
                 });
                 tarjeta.appendChild(botonEliminar);
-            }
-
-            if (modoCatalogoMedicamentos === "venta") {
-                tarjeta.style.cursor = "pointer";
-                tarjeta.addEventListener("click", function () {
-                    abrirDetalleMedicamento(medicamento);
-                });
             }
 
             lista.appendChild(tarjeta);
@@ -1882,187 +1869,6 @@ function abrirCargaMasivaProductos() {
 }
 
 /* ACTUALIZAR CONTADOR DE PIEZAS DEL CARRITO */
-
-function actualizarContadorCarritoCODMAR() {
-
-    const contador = document.getElementById("contador-carrito");
-
-    if (!contador) {
-        return;
-    }
-
-    const totalPiezas = carritoCODMAR.reduce(
-        function (total, producto) {
-            return total + (Number(producto.cantidad) || 0);
-        },
-        0
-    );
-
-    contador.textContent = totalPiezas;
-
-    contador.style.display =
-        totalPiezas > 0 ? "flex" : "none";
-}
-
-
-
-/* ============================================= */
-/* VENTANA DE DETALLE DEL MEDICAMENTO            */
-/* ============================================= */
-
-function abrirDetalleMedicamento(medicamento) {
-    
-    // Evitar abrir varias ventanas al mismo tiempo
-    const ventanaAnterior =
-        document.querySelector(".ventana-detalle-medicamento");
-
-    if (ventanaAnterior) {
-        ventanaAnterior.remove();
-    }
-
-    const formatoPrecio = new Intl.NumberFormat("es-MX", {
-        style: "currency",
-        currency: "MXN"
-    });
-
-    // FONDO
-    const fondo = document.createElement("div");
-    fondo.className = "fondo-detalle-medicamento";
-
-    // VENTANA
-    const ventana = document.createElement("div");
-    ventana.className = "ventana-detalle-medicamento";
-
-    // BOTÓN CERRAR
-    const cerrar = document.createElement("button");
-    cerrar.type = "button";
-    cerrar.className = "cerrar-detalle-medicamento";
-    cerrar.textContent = "×";
-
-    cerrar.addEventListener("click", function () {
-        fondo.remove();
-    });
-
-    // IMAGEN
-    if (medicamento.imagen_url) {
-        const imagen = document.createElement("img");
-        imagen.className = "imagen-detalle-medicamento";
-        imagen.src = medicamento.imagen_url;
-        imagen.alt = medicamento.nombre || "Medicamento";
-        ventana.appendChild(imagen);
-    }
-
-    // NOMBRE
-    const nombre = document.createElement("h2");
-    nombre.className = "nombre-detalle-medicamento";
-    nombre.textContent = medicamento.nombre || "Sin nombre";
-
-    // PRESENTACIÓN
-    const presentacion = document.createElement("p");
-    presentacion.className = "presentacion-detalle-medicamento";
-    presentacion.textContent = medicamento.presentacion || "";
-
-    // PRECIO PÚBLICO
-    const precioPublico = document.createElement("p");
-    precioPublico.className = "precio-publico-detalle";
-    precioPublico.textContent =
-        "Precio público: " +
-        formatoPrecio.format(Number(medicamento.precio_publico));
-
-    if (medicamento.tachar_precio_publico) {
-        precioPublico.classList.add("precio-tachado");
-    }
-
-    // PRECIO CODMAR
-    const precioCodmar = document.createElement("p");
-    precioCodmar.className = "precio-codmar-detalle";
-    precioCodmar.textContent =
-        "Precio CODMAR: " +
-        formatoPrecio.format(Number(medicamento.precio_codmar));
-
-    // CANTIDAD
-    const filaCantidad = document.createElement("div");
-    filaCantidad.className = "fila-cantidad-detalle";
-
-    const etiquetaCantidad = document.createElement("label");
-    etiquetaCantidad.textContent = "Cantidad:";
-
-    const cantidad = document.createElement("input");
-    cantidad.type = "number";
-    cantidad.min = "1";
-    cantidad.step = "1";
-    cantidad.value = "1";
-    cantidad.className = "cantidad-detalle-medicamento";
-
-    filaCantidad.appendChild(etiquetaCantidad);
-    filaCantidad.appendChild(cantidad);
-
-    // BOTÓN AÑADIR AL CARRITO
-    const botonAgregar = document.createElement("button");
-    botonAgregar.type = "button";
-    botonAgregar.className = "boton-agregar-carrito";
-    botonAgregar.textContent = "AÑADIR AL CARRITO";
-
-    botonAgregar.addEventListener("click", function () {
-
-        const unidades = Number(cantidad.value);
-
-        if (!Number.isInteger(unidades) || unidades < 1) {
-            alert("Ingresa una cantidad válida.");
-            cantidad.focus();
-            return;
-        }
-
-        if (!Array.isArray(carritoCODMAR)) {
-            alert("El carrito todavía no está inicializado.");
-            return;
-        }
-
-        const productoExistente = carritoCODMAR.find(function (producto) {
-            return producto.id === medicamento.id;
-        });
-
-        if (productoExistente) {
-            productoExistente.cantidad += unidades;
-        } else {
-            carritoCODMAR.push({
-                id: medicamento.id,
-                nombre: medicamento.nombre,
-                presentacion: medicamento.presentacion,
-                precio_codmar: Number(medicamento.precio_codmar),
-                cantidad: unidades,
-                imagen_url: medicamento.imagen_url
-            });
-        }
-
-           actualizarContadorCarritoCODMAR();
-
-        alert("Medicamento agregado al carrito.");
-        fondo.remove();
-    });
-
-    // ARMAR VENTANA
-    ventana.appendChild(cerrar);
-    ventana.appendChild(nombre);
-    ventana.appendChild(presentacion);
-    ventana.appendChild(precioPublico);
-    ventana.appendChild(precioCodmar);
-    ventana.appendChild(filaCantidad);
-    ventana.appendChild(botonAgregar);
-
-    fondo.appendChild(ventana);
-
-    // CERRAR AL PULSAR FUERA DE LA VENTANA
-    fondo.addEventListener("click", function (evento) {
-        if (evento.target === fondo) {
-            fondo.remove();
-        }
-    });
-
-    document.body.appendChild(fondo);
-}
-
-
 
 async function eliminarMedicamentoCatalogo(medicamento, tarjeta) {
 
