@@ -404,11 +404,32 @@
     if (evento.key === "Escape") cerrarCarrito();
   });
 
+  // Mantener la tienda sincronizada con los cambios de Administración.
+  async function actualizarConfiguracionTienda() {
+    try {
+      const { data, error } = await supabase
+        .from("configuracion_tienda_codmar_publica")
+        .select("*")
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) aplicarIdentidad(data);
+    } catch (error) {
+      console.error("No se pudo actualizar la configuración de la tienda:", error);
+    }
+  }
+
   async function iniciar() {
     try {
       await cargarCategorias();
       prepararCargaAutomatica();
       await cargarProductos();
+
+      // Refleja los cambios visuales sin recargar los productos.
+      window.setInterval(actualizarConfiguracionTienda, 2000);
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) actualizarConfiguracionTienda();
+      });
     } catch (error) {
       console.error("No se pudo iniciar la tienda CODMAR:", error);
       mostrarEstado("No se pudo conectar con la tienda CODMAR.", "error");
