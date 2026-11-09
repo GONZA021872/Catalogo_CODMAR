@@ -63,3 +63,159 @@ body.carrito-abierto{overflow:hidden}
 @media(max-width:360px){.rejilla-productos{grid-template-columns:1fr}}
 
 .precio-producto.precio-tachado{text-decoration:line-through;color:#89939d;font-weight:500}
+
+
+/* =====================================================
+   ENCABEZADO VINCULADO A CONFIGURACION_INICIO (CODMAR)
+   Los valores se cargan desde Supabase, no se duplican.
+===================================================== */
+.encabezado-tienda{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:block;
+  width:100%;
+  height:101px;
+  min-height:101px;
+  padding:0;
+  overflow:visible;
+  background:var(--color-marca);
+}
+.marca-tienda{
+  position:absolute;
+  inset:0;
+  display:block;
+  min-width:0;
+  color:#fff;
+  text-decoration:none;
+  pointer-events:none;
+}
+#logo-tienda:not([hidden]){
+  display:block;
+  position:absolute;
+  left:50%;
+  top:10px;
+  width:auto;
+  height:80px;
+  max-width:min(42vw,260px);
+  max-height:80px;
+  object-fit:contain;
+  transform:translate(var(--logo-x,0px),var(--logo-y,0px));
+  pointer-events:auto;
+}
+#nombre-tienda{
+  position:absolute;
+  left:50%;
+  top:50%;
+  display:inline-block;
+  max-width:45vw;
+  overflow:hidden;
+  color:#fff;
+  font-family:var(--fuente-nombre-comercial,Arial);
+  font-size:var(--tamano-nombre-comercial,20px);
+  font-weight:700;
+  line-height:1.1;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  transform:translate(calc(-50% + var(--nombre-x,0px)),calc(-50% + var(--nombre-y,0px)));
+  pointer-events:auto;
+}
+.busqueda-tienda{
+  position:absolute;
+  right:150px;
+  top:60%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:var(--buscador-ancho,150px);
+  max-width:none;
+  height:var(--buscador-alto,25px);
+  min-height:0;
+  padding:0 8px;
+  background:#fff;
+  border:1px solid #ccc;
+  border-radius:6px;
+  color:#657587;
+  transform:translate(var(--buscador-x,0px),calc(-50% + var(--buscador-y,0px)));
+}
+.busqueda-tienda>span{flex:0 0 auto;font-size:22px;line-height:1}
+.busqueda-tienda input{
+  width:100%;
+  min-width:0;
+  height:100%;
+  padding:0 4px;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:#263746;
+  font-size:14px;
+}
+.boton-carrito-tienda{
+  position:absolute;
+  right:110px;
+  top:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:46px;
+  height:40px;
+  min-width:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#fff;
+  cursor:pointer;
+  transform:translate(var(--carrito-x,0px),var(--carrito-y,0px));
+}
+.texto-carrito-tienda{display:none!important}
+.bolsita-tienda{
+  position:relative;
+  display:block;
+  width:25px;
+  height:28px;
+  border:2px solid #fff;
+  border-radius:3px;
+}
+.bolsita-tienda::before{
+  content:"";
+  position:absolute;
+  top:-9px;
+  left:4px;
+  width:12px;
+  height:8px;
+  border:2px solid #fff;
+  border-bottom:0;
+  border-radius:8px 8px 0 0;
+}
+.icono-carrito-tienda{
+  display:block;
+  width:46px;
+  height:40px;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 100'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 10 L30 16 L39 28'/%3E%3Cpath d='M30 16 L108 16 L98 62 L43 62 Z'/%3E%3Cpath d='M43 62 L98 62 C108 62 111 70 103 75 L39 75'/%3E%3C/g%3E%3Ccircle cx='48' cy='91' r='6' fill='%23ffffff'/%3E%3Ccircle cx='91' cy='91' r='6' fill='%23ffffff'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:contain;
+}
+.icono-carrito-tienda[hidden],#logo-tienda[hidden]{display:none!important}
+#contador-carrito{
+  position:absolute;
+  top:-7px;
+  right:-10px;
+  display:grid;
+  place-items:center;
+  min-width:20px;
+  height:20px;
+  padding:0 4px;
+  border-radius:50%;
+  background:#fff;
+  color:var(--color-marca);
+  font-size:11px;
+}
+@media(max-width:700px){
+  .encabezado-tienda{height:101px;min-height:101px;padding:0}
+  .busqueda-tienda{right:150px;top:60%;max-width:none}
+  .boton-carrito-tienda{right:110px;top:50px}
+  #logo-tienda:not([hidden]){max-width:35vw;height:72px;max-height:72px;top:14px}
+  #nombre-tienda{max-width:42vw}
+}
