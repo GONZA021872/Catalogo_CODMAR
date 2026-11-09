@@ -241,3 +241,9 @@ body.carrito-abierto{overflow:hidden}
 }
 
 #nombre-tienda[hidden],.bolsita-tienda[hidden]{display:none!important}
+
+
+/* El color de la franja siempre procede de configuracion_inicio en Supabase. */
+.encabezado-tienda{
+  background-color:var(--color-franjas,var(--color-marca)) !important;
+}
