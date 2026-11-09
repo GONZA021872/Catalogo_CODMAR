@@ -247,3 +247,18 @@ body.carrito-abierto{overflow:hidden}
 .encabezado-tienda{
   background-color:var(--color-franjas,var(--color-marca)) !important;
 }
+
+
+/* Franja inferior de Tienda, igual a la de Administración */
+.barra-inicio-inferior{
+  position:fixed;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:70px;
+  background-color:var(--color-franjas,var(--color-marca));
+  z-index:1000;
+}
+.contenido-tienda{
+  padding-bottom:100px;
+}
