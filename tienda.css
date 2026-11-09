@@ -212,12 +212,32 @@ body.carrito-abierto{overflow:hidden}
   color:var(--color-marca);
   font-size:11px;
 }
-@media(max-width:700px){
+@media(max-width:768px){
   .encabezado-tienda{height:101px;min-height:101px;padding:0}
-  .busqueda-tienda{right:150px;top:60%;max-width:none}
-  .boton-carrito-tienda{right:110px;top:50px}
-  #logo-tienda:not([hidden]){max-width:none;height:72px;max-height:72px;top:14px}
-  #nombre-tienda{max-width:42vw}
+  .busqueda-tienda{
+    left:calc(30px + var(--buscador-x,0px));
+    right:auto;
+    top:calc(50px + var(--buscador-y,0px));
+    width:var(--buscador-ancho,200px);
+    max-width:none;
+    transform:none;
+  }
+  .boton-carrito-tienda{
+    position:fixed;
+    right:20px;
+    top:50px;
+    left:auto;
+    z-index:3001;
+  }
+  #logo-tienda:not([hidden]){
+    left:10px;
+    top:25px;
+    height:50px;
+    max-height:50px;
+    max-width:none;
+    transform:translate(calc(-50% + var(--logo-x,0px)),var(--logo-y,0px));
+  }
+  #nombre-tienda{max-width:55%;white-space:nowrap}
 }
 
 #nombre-tienda[hidden],.bolsita-tienda[hidden]{display:none!important}
