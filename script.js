@@ -955,6 +955,9 @@ if (cerrarPanelCompras && panelComprasCODMAR) {
     const tamanoNombreComercial =
         document.getElementById("tamano-nombre-comercial");
 
+    const colorNombreComercial =
+        document.getElementById("color-nombre-comercial");
+
 
     /* ================================================= */
     /*                     BUSCADOR                      */
@@ -2430,6 +2433,11 @@ if (configuracionGuardada) {
 
         fuenteNombreComercial.value =
             configuracionGuardada.fuente_nombre_comercial || "Arial";
+
+        if (colorNombreComercial) {
+            colorNombreComercial.value =
+                configuracionGuardada.color_nombre_comercial || "#000000";
+        }
 
 
         /* ================================================= */
@@ -5382,6 +5390,9 @@ aceptarNombreComercial.addEventListener(
 
             fuente_nombre_comercial:
                 fuenteNombreComercial.value,
+
+            color_nombre_comercial:
+                colorNombreComercial?.value || "#000000",
 
             mostrar_nombre_comercial:
                 mostrarNombreComercial.checked
