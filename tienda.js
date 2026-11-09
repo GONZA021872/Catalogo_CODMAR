@@ -157,8 +157,8 @@
       : config.tamano_nombre_comercial_escritorio) || config.tamano_nombre_comercial || "20px";
     raiz.setProperty("--fuente-nombre-comercial", fuente);
     raiz.setProperty("--tamano-nombre-comercial", /^\d+(\.\d+)?(px|rem|em|%)$/i.test(String(tamanoNombre)) ? tamanoNombre : "20px");
-    raiz.setProperty("--nombre-x", valorNumerico(config, "ajuste_nombre_comercial_x_movil", "ajuste_nombre_comercial_x_escritorio", "ajuste_nombre_comercial_x", 0, movil) + "px");
-    raiz.setProperty("--nombre-y", valorNumerico(config, "ajuste_nombre_comercial_y_movil", "ajuste_nombre_comercial_y_escritorio", "ajuste_nombre_comercial_y", 0, movil) + "px");
+    raiz.setProperty("--ajuste-x", valorNumerico(config, "ajuste_nombre_comercial_x_movil", "ajuste_nombre_comercial_x_escritorio", "ajuste_nombre_comercial_x", 0, movil) + "px");
+    raiz.setProperty("--ajuste-y", valorNumerico(config, "ajuste_nombre_comercial_y_movil", "ajuste_nombre_comercial_y_escritorio", "ajuste_nombre_comercial_y", 0, movil) + "px");
 
     const logoUrl = (movil
       ? (config.logotipo_url_movil || config.logotipo_url_escritorio)
@@ -171,10 +171,10 @@
     } else {
       logo.hidden = true;
     }
-    raiz.setProperty("--logo-x", valorNumerico(
+    raiz.setProperty("--ajuste-logotipo-x", valorNumerico(
       config, "ajuste_logotipo_x_movil", "ajuste_logotipo_x", "ajuste_logotipo_x", 0, movil
     ) + "px");
-    raiz.setProperty("--logo-y", valorNumerico(
+    raiz.setProperty("--ajuste-logotipo-y", valorNumerico(
       config, "ajuste_logotipo_y_movil", "ajuste_logotipo_y_escritorio", null, 0, movil
     ) + "px");
 
@@ -192,8 +192,8 @@
     const altoBuscador = valorNumerico(config, "alto_buscador_movil", "alto_buscador_escritorio", "alto_buscador", 25, movil);
     raiz.setProperty("--buscador-ancho", Math.max(100, anchoBuscador) + "px");
     raiz.setProperty("--buscador-alto", Math.max(20, altoBuscador) + "px");
-    raiz.setProperty("--buscador-x", valorNumerico(config, "ajuste_buscador_x_movil", "ajuste_buscador_x_escritorio", "ajuste_buscador_x", 0, movil) + "px");
-    raiz.setProperty("--buscador-y", valorNumerico(config, "ajuste_buscador_y_movil", "ajuste_buscador_y_escritorio", "ajuste_buscador_y", 0, movil) + "px");
+    raiz.setProperty("--ajuste-buscador-x", valorNumerico(config, "ajuste_buscador_x_movil", "ajuste_buscador_x_escritorio", "ajuste_buscador_x", 0, movil) + "px");
+    raiz.setProperty("--ajuste-buscador-y", valorNumerico(config, "ajuste_buscador_y_movil", "ajuste_buscador_y_escritorio", "ajuste_buscador_y", 0, movil) + "px");
 
     carritoEl.hidden = config.mostrar_carrito === false;
     carritoEl.style.display = config.mostrar_carrito === false ? "none" : "flex";
@@ -203,8 +203,8 @@
     iconoBolsa.hidden = tipoCarrito !== "bolsita";
     iconoCarrito.hidden = tipoCarrito !== "carrito";
     carritoEl.setAttribute("aria-label", tipoCarrito === "carrito" ? "Abrir carrito de compras" : "Abrir bolsa de compras");
-    raiz.setProperty("--carrito-x", valorNumerico(config, "ajuste_carrito_x_movil", "ajuste_carrito_x_escritorio", "ajuste_carrito_x", 0, movil) + "px");
-    raiz.setProperty("--carrito-y", valorNumerico(config, "ajuste_carrito_y_movil", "ajuste_carrito_y_escritorio", "ajuste_carrito_y", 0, movil) + "px");
+    raiz.setProperty("--ajuste-carrito-x", valorNumerico(config, "ajuste_carrito_x_movil", "ajuste_carrito_x_escritorio", "ajuste_carrito_x", 0, movil) + "px");
+    raiz.setProperty("--ajuste-carrito-y", valorNumerico(config, "ajuste_carrito_y_movil", "ajuste_carrito_y_escritorio", "ajuste_carrito_y", 0, movil) + "px");
 
     if (encabezado) encabezado.style.backgroundColor = color;
   }
