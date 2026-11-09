@@ -120,27 +120,98 @@
     if (!respuestaConfig.error && respuestaConfig.data) aplicarIdentidad(respuestaConfig.data);
   }
 
+  let configuracionTiendaActiva = null;
+
+  function valorNumerico(config, campoMovil, campoEscritorio, campoGeneral, defecto = 0, movil = false) {
+    const valor = movil
+      ? (config[campoMovil] ?? config[campoGeneral] ?? defecto)
+      : (config[campoEscritorio] ?? config[campoGeneral] ?? defecto);
+    const numero = Number.parseFloat(valor);
+    return Number.isFinite(numero) ? numero : defecto;
+  }
+
   function aplicarIdentidad(config) {
-    const movil = window.matchMedia("(max-width: 700px)").matches;
-    const nombre = (movil ? config.nombre_comercial_movil : config.nombre_comercial_escritorio)
-      || config.nombre_comercial || "CODMAR";
-    if (config.mostrar_nombre_comercial !== false) {
-      porId("nombre-tienda").textContent = nombre.trim() || "CODMAR";
-    }
-    const logoUrl = movil
-      ? (config.logotipo_url_movil || config.logotipo_url_escritorio)
-      : (config.logotipo_url_escritorio || config.logotipo_url_movil);
+    if (!config) return;
+    configuracionTiendaActiva = config;
+
+    // Administración trabaja con un ajuste distinto para computadora y celular.
+    const movil = window.matchMedia("(max-width: 768px)").matches;
+    const raiz = document.documentElement.style;
+    const encabezado = porId("encabezado-tienda");
+    const nombreEl = porId("nombre-tienda");
     const logo = porId("logo-tienda");
-    if (config.mostrar_logotipo !== false && logoUrl) {
-      logo.src = logoUrl;
+    const buscadorEl = porId("busqueda-tienda");
+    const carritoEl = porId("abrir-carrito");
+    const iconoBolsa = porId("icono-bolsita-tienda");
+    const iconoCarrito = porId("icono-carrito-tienda");
+
+    const nombre = (movil
+      ? config.nombre_comercial_movil
+      : config.nombre_comercial_escritorio) || config.nombre_comercial || "CODMAR";
+    nombreEl.textContent = textoSeguro(nombre) || "CODMAR";
+    nombreEl.hidden = config.mostrar_nombre_comercial === false;
+
+    const fuente = textoSeguro(config.fuente_nombre_comercial) || "Arial";
+    const tamanoNombre = (movil
+      ? config.tamano_nombre_comercial_movil
+      : config.tamano_nombre_comercial_escritorio) || config.tamano_nombre_comercial || "20px";
+    raiz.setProperty("--fuente-nombre-comercial", fuente);
+    raiz.setProperty("--tamano-nombre-comercial", /^\d+(\.\d+)?(px|rem|em|%)$/i.test(String(tamanoNombre)) ? tamanoNombre : "20px");
+    raiz.setProperty("--nombre-x", valorNumerico(config, "ajuste_nombre_comercial_x_movil", "ajuste_nombre_comercial_x_escritorio", "ajuste_nombre_comercial_x", 0, movil) + "px");
+    raiz.setProperty("--nombre-y", valorNumerico(config, "ajuste_nombre_comercial_y_movil", "ajuste_nombre_comercial_y_escritorio", "ajuste_nombre_comercial_y", 0, movil) + "px");
+
+    const logoUrl = (movil
+      ? (config.logotipo_url_movil || config.logotipo_url_escritorio)
+      : (config.logotipo_url_escritorio || config.logotipo_url_movil)) || config.logotipo_url || "";
+    const mostrarLogo = config.mostrar_logotipo !== false && Boolean(logoUrl);
+    if (mostrarLogo) {
+      if (logo.src !== logoUrl) logo.src = logoUrl;
       logo.hidden = false;
       logo.onerror = () => { logo.hidden = true; };
+    } else {
+      logo.hidden = true;
     }
-    const color = movil ? config.color_franjas_movil : config.color_franjas_escritorio;
-    if (color && /^#[0-9a-f]{6}$/i.test(color)) {
-      document.documentElement.style.setProperty("--color-marca", color);
+    raiz.setProperty("--logo-x", valorNumerico(
+      config, "ajuste_logotipo_x_movil", "ajuste_logotipo_x", "ajuste_logotipo_x", 0, movil
+    ) + "px");
+    raiz.setProperty("--logo-y", valorNumerico(
+      config, "ajuste_logotipo_y_movil", "ajuste_logotipo_y_escritorio", null, 0, movil
+    ) + "px");
+
+    const color = (movil ? config.color_franjas_movil : config.color_franjas_escritorio)
+      || config.color_franjas || "#314f6d";
+    if (/^#[0-9a-f]{6}$/i.test(color)) {
+      raiz.setProperty("--color-marca", color);
+      const metaColor = document.querySelector('meta[name="theme-color"]');
+      if (metaColor) metaColor.setAttribute("content", color);
     }
+
+    buscadorEl.hidden = config.mostrar_buscador === false;
+    buscadorEl.style.display = config.mostrar_buscador === false ? "none" : "flex";
+    const anchoBuscador = valorNumerico(config, "ancho_buscador_movil", "ancho_buscador_escritorio", "ancho_buscador", 150, movil);
+    const altoBuscador = valorNumerico(config, "alto_buscador_movil", "alto_buscador_escritorio", "alto_buscador", 25, movil);
+    raiz.setProperty("--buscador-ancho", Math.max(100, anchoBuscador) + "px");
+    raiz.setProperty("--buscador-alto", Math.max(20, altoBuscador) + "px");
+    raiz.setProperty("--buscador-x", valorNumerico(config, "ajuste_buscador_x_movil", "ajuste_buscador_x_escritorio", "ajuste_buscador_x", 0, movil) + "px");
+    raiz.setProperty("--buscador-y", valorNumerico(config, "ajuste_buscador_y_movil", "ajuste_buscador_y_escritorio", "ajuste_buscador_y", 0, movil) + "px");
+
+    carritoEl.hidden = config.mostrar_carrito === false;
+    carritoEl.style.display = config.mostrar_carrito === false ? "none" : "flex";
+    const tipoCarrito = (movil
+      ? (config.tipo_carrito_movil || config.tipo_carrito)
+      : (config.tipo_carrito_escritorio || config.tipo_carrito)) || "bolsita";
+    iconoBolsa.hidden = tipoCarrito !== "bolsita";
+    iconoCarrito.hidden = tipoCarrito !== "carrito";
+    carritoEl.setAttribute("aria-label", tipoCarrito === "carrito" ? "Abrir carrito de compras" : "Abrir bolsa de compras");
+    raiz.setProperty("--carrito-x", valorNumerico(config, "ajuste_carrito_x_movil", "ajuste_carrito_x_escritorio", "ajuste_carrito_x", 0, movil) + "px");
+    raiz.setProperty("--carrito-y", valorNumerico(config, "ajuste_carrito_y_movil", "ajuste_carrito_y_escritorio", "ajuste_carrito_y", 0, movil) + "px");
+
+    if (encabezado) encabezado.style.backgroundColor = color;
   }
+
+  window.addEventListener("resize", () => {
+    if (configuracionTiendaActiva) aplicarIdentidad(configuracionTiendaActiva);
+  });
 
   function seleccionarCategoria(categoria) {
     categoriaActiva = categoria;
