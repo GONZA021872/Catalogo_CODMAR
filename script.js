@@ -2435,8 +2435,9 @@ if (configuracionGuardada) {
             configuracionGuardada.fuente_nombre_comercial || "Arial";
 
         if (colorNombreComercial) {
-            colorNombreComercial.value =
-                configuracionGuardada.color_nombre_comercial || "#000000";
+            const colorGuardado = configuracionGuardada.color_nombre_comercial || "#000000";
+            colorNombreComercial.value = colorGuardado;
+            actualizarVariableCSS("--color-nombre-comercial", colorGuardado);
         }
 
 
@@ -5278,6 +5279,52 @@ aceptarBuscador.addEventListener(
 );
 
 
+
+
+/* ================================================= */
+/*       COLOR DEL NOMBRE COMERCIAL EN TIEMPO REAL   */
+/* ================================================= */
+
+let temporizadorColorNombreComercial = null;
+
+async function guardarColorNombreComercial() {
+    if (!colorNombreComercial) return;
+
+    const colorSeleccionado = colorNombreComercial.value;
+    const { error: errorColor } = await clienteSupabase
+        .from("configuracion_inicio")
+        .update({ color_nombre_comercial: colorSeleccionado })
+        .eq("cliente_id", clienteId);
+
+    if (errorColor) {
+        console.error("No se pudo guardar el color del nombre comercial:", errorColor);
+        return;
+    }
+
+    if (configuracionGuardada) {
+        configuracionGuardada.color_nombre_comercial = colorSeleccionado;
+    }
+}
+
+if (colorNombreComercial) {
+    colorNombreComercial.addEventListener("input", function () {
+        actualizarVariableCSS("--color-nombre-comercial", colorNombreComercial.value);
+
+        const nombreVisible = document.getElementById("nombre-comercial-encabezado");
+        if (nombreVisible) nombreVisible.style.color = colorNombreComercial.value;
+
+        clearTimeout(temporizadorColorNombreComercial);
+        temporizadorColorNombreComercial = setTimeout(
+            guardarColorNombreComercial,
+            300
+        );
+    });
+
+    colorNombreComercial.addEventListener("change", function () {
+        clearTimeout(temporizadorColorNombreComercial);
+        guardarColorNombreComercial();
+    });
+}
 
 
 /* ================================================= */
