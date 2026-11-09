@@ -100,7 +100,7 @@ body.carrito-abierto{overflow:hidden}
   max-width:none;
   max-height:80px;
   object-fit:contain;
-  transform:translate(calc(-50% + var(--logo-x,0px)),var(--logo-y,0px));
+  transform:translate(calc(-50% + var(--ajuste-logotipo-x,0px)),var(--ajuste-logotipo-y,0px));
   pointer-events:auto;
 }
 #nombre-tienda{
@@ -117,7 +117,7 @@ body.carrito-abierto{overflow:hidden}
   line-height:1.1;
   white-space:nowrap;
   text-overflow:ellipsis;
-  transform:translate(calc(-50% + var(--nombre-x,0px)),calc(-50% + var(--nombre-y,0px)));
+  transform:translate(calc(-50% + var(--ajuste-x,0px)),calc(-50% + var(--ajuste-y,0px)));
   pointer-events:auto;
 }
 .busqueda-tienda{
@@ -136,7 +136,7 @@ body.carrito-abierto{overflow:hidden}
   border:1px solid #ccc;
   border-radius:6px;
   color:#657587;
-  transform:translate(var(--buscador-x,0px),calc(-50% + var(--buscador-y,0px)));
+  transform:translate(var(--ajuste-buscador-x,0px),calc(-50% + var(--ajuste-buscador-y,0px)));
 }
 .busqueda-tienda>span{flex:0 0 auto;font-size:22px;line-height:1}
 .busqueda-tienda input{
@@ -166,7 +166,7 @@ body.carrito-abierto{overflow:hidden}
   background:transparent;
   color:#fff;
   cursor:pointer;
-  transform:translate(var(--carrito-x,0px),var(--carrito-y,0px));
+  transform:translate(var(--ajuste-carrito-x,0px),var(--ajuste-carrito-y,0px));
 }
 .texto-carrito-tienda{display:none!important}
 .bolsita-tienda{
@@ -215,9 +215,9 @@ body.carrito-abierto{overflow:hidden}
 @media(max-width:768px){
   .encabezado-tienda{height:101px;min-height:101px;padding:0}
   .busqueda-tienda{
-    left:calc(30px + var(--buscador-x,0px));
+    left:calc(30px + var(--ajuste-buscador-x,0px));
     right:auto;
-    top:calc(50px + var(--buscador-y,0px));
+    top:calc(50px + var(--ajuste-buscador-y,0px));
     width:var(--buscador-ancho,200px);
     max-width:none;
     transform:none;
@@ -235,7 +235,7 @@ body.carrito-abierto{overflow:hidden}
     height:50px;
     max-height:50px;
     max-width:none;
-    transform:translate(calc(-50% + var(--logo-x,0px)),var(--logo-y,0px));
+    transform:translate(calc(-50% + var(--ajuste-logotipo-x,0px)),var(--ajuste-logotipo-y,0px));
   }
   #nombre-tienda{max-width:55%;white-space:nowrap}
 }
