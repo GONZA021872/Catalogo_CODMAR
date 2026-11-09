@@ -178,13 +178,20 @@
       config, "ajuste_logotipo_y_movil", "ajuste_logotipo_y_escritorio", null, 0, movil
     ) + "px");
 
-    const color = (movil ? config.color_franjas_movil : config.color_franjas_escritorio)
-      || config.color_franjas || "#314f6d";
-    if (/^#[0-9a-f]{6}$/i.test(color)) {
-      raiz.setProperty("--color-marca", color);
-      const metaColor = document.querySelector('meta[name="theme-color"]');
-      if (metaColor) metaColor.setAttribute("content", color);
+    // La franja de Tienda usa exactamente el color guardado por Administración.
+    const colorConfigurado = movil
+      ? (config.color_franjas_movil || config.color_franjas)
+      : (config.color_franjas_escritorio || config.color_franjas);
+    const color = /^#[0-9a-f]{6}$/i.test(String(colorConfigurado || ""))
+      ? String(colorConfigurado).trim()
+      : "#314f6d";
+    raiz.setProperty("--color-marca", color);
+    raiz.setProperty("--color-franjas", color);
+    if (encabezado) {
+      encabezado.style.setProperty("background-color", color, "important");
     }
+    const metaColor = document.querySelector('meta[name="theme-color"]');
+    if (metaColor) metaColor.setAttribute("content", color);
 
     buscadorEl.hidden = config.mostrar_buscador === false;
     buscadorEl.style.display = config.mostrar_buscador === false ? "none" : "flex";
