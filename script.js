@@ -1324,46 +1324,17 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             const titulo = document.createElement("h2");
             titulo.textContent = "MEDICAMENTOS";
 
+            // En el sistema administrativo solo se muestra el acceso de ADMINISTRACIÓN.
+            // Las ventas se realizan desde la página pública de tienda.
             const controlesModo = document.createElement("div");
             controlesModo.className = "controles-modo-catalogo";
 
             const botonAdministracion = document.createElement("button");
             botonAdministracion.textContent = "ADMINISTRACIÓN";
             botonAdministracion.type = "button";
-
-            const botonVenta = document.createElement("button");
-            botonVenta.textContent = "VENTA";
-            botonVenta.type = "button";
-
-            function actualizarBotonesModo() {
-                botonAdministracion.classList.toggle(
-                    "modo-activo",
-                    modoCatalogoMedicamentos === "administracion"
-                );
-                botonVenta.classList.toggle(
-                    "modo-activo",
-                    modoCatalogoMedicamentos === "venta"
-                );
-            }
-
-            botonAdministracion.addEventListener("click", async function () {
-                modoCatalogoMedicamentos = "administracion";
-                actualizarBotonesModo();
-                await cargarMedicamentosCatalogo();
-            });
-
-            botonVenta.addEventListener("click", async function () {
-                modoCatalogoMedicamentos = "venta";
-                actualizarBotonesModo();
-                await cargarMedicamentosCatalogo();
-            });
+            botonAdministracion.classList.add("modo-activo");
 
             controlesModo.appendChild(botonAdministracion);
-            controlesModo.appendChild(botonVenta);
-
-
-
-            actualizarBotonesModo();
 
             if (modoCatalogoMedicamentos === "administracion") {
                 seccion.appendChild(controlesModo);
