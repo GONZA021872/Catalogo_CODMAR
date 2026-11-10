@@ -1302,7 +1302,6 @@ function detenerMovimientoLogotipo() {
     // =============================================
     // ACTUALIZAR PRECIOS DE PRODUCTOS EXISTENTES
     // =============================================
-    const botonAbrirActualizarPrecios = document.getElementById("boton-actualizar-precios");
     const ventanaActualizarPrecios = document.getElementById("formulario-actualizar-precios");
     const botonCerrarActualizarPrecios = document.getElementById("cerrar-actualizar-precios");
     const productoSeleccionadoPrecio = document.getElementById("producto-seleccionado-precio");
@@ -1329,13 +1328,6 @@ function detenerMovimientoLogotipo() {
         panelMenu?.classList.remove("menu-abierto");
         formularioCategorias?.classList.remove("formulario-abierto");
         ventanaActualizarPrecios?.classList.add("formulario-abierto");
-    }
-
-    if (botonAbrirActualizarPrecios && ventanaActualizarPrecios) {
-        botonAbrirActualizarPrecios.addEventListener(
-            "click",
-            abrirVentanaActualizarPrecios
-        );
     }
 
     botonCerrarActualizarPrecios?.addEventListener("click", cerrarVentanaActualizarPrecios);
