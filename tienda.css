@@ -456,3 +456,35 @@ body.carrito-abierto{overflow:hidden}
     min-height: 34px !important;
   }
 }
+
+
+/* AJUSTE FINO 2: COMPACTAR UN POCO MAS TARJETA MOVIL */
+@media screen and (max-width: 768px) {
+  #productos-tienda .datos-producto {
+    grid-template-rows: 32px 17px 18px 27px 32px !important;
+    gap: 1px !important;
+  }
+  #productos-tienda .datos-producto h2 {
+    height: 32px !important;
+    min-height: 32px !important;
+    line-height: 16px !important;
+  }
+  #productos-tienda .presentacion-producto {
+    height: 17px !important;
+    min-height: 17px !important;
+    line-height: 16px !important;
+  }
+  #productos-tienda .precio-referencia {
+    height: 18px !important;
+    line-height: 16px !important;
+  }
+  #productos-tienda .precio-producto {
+    height: 27px !important;
+  }
+  #productos-tienda .boton-agregar {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
