@@ -11,7 +11,14 @@ const SUPABASE_KEY =
 const clienteSupabase =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY
+        SUPABASE_KEY,
+        {
+            global: {
+                // Evitar que el navegador reutilice una configuración antigua de Supabase.
+                fetch: (input, init = {}) =>
+                    fetch(input, { ...init, cache: "no-store" })
+            }
+        }
     );
 
 
@@ -2060,17 +2067,15 @@ if (configuracionGuardada) {
         /* COLORES SEGÚN DISPOSITIVO                     */
         /* --------------------------------------------- */
 
-        const colorFranjasActual = esMovil
-            ? (
-                configuracionGuardada.color_franjas_movil
-                || configuracionGuardada.color_franjas
-                || "#ffffff"
-            )
-            : (
-                configuracionGuardada.color_franjas_escritorio
-                || configuracionGuardada.color_franjas
-                || "#ffffff"
-            );
+        // Leer el dispositivo al momento de aplicar el color, no usar un valor anterior.
+        const esMovilColorFranjas =
+            window.matchMedia("(max-width: 768px)").matches;
+
+        // Cada pantalla usa exclusivamente su propio color guardado.
+        // La columna general antigua puede contener el azul marino anterior.
+        const colorFranjasActual = esMovilColorFranjas
+            ? (configuracionGuardada.color_franjas_movil || "#ffffff")
+            : (configuracionGuardada.color_franjas_escritorio || "#ffffff");
 
         const colorBotonMenuActual = esMovil
             ? (
