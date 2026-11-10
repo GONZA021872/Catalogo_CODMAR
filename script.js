@@ -1403,6 +1403,11 @@ function detenerMovimientoLogotipo() {
                     boton.classList.add("seleccionado");
                 });
                 resultadosBuscarPrecio.appendChild(boton);
+
+                // Si la búsqueda devuelve un solo medicamento, selecciónalo automáticamente.
+                if (data.length === 1) {
+                    boton.click();
+                }
             });
         } catch (error) {
             console.error("Error al buscar productos para actualizar precios:", error);
