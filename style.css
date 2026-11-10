@@ -2829,11 +2829,13 @@ transform: translateY(-25px);
     }
 
     .controles-modo-catalogo button {
-        width: 100%;
-        max-width: 260px;
+        flex: 1 1 0;
+        width: auto;
+        max-width: 220px;
+        min-width: 0;
         min-height: 42px;
-        padding: 10px 14px;
-        font-size: 13px;
+        padding: 10px 10px;
+        font-size: 12px;
         touch-action: manipulation;
     }
 
