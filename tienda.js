@@ -252,7 +252,7 @@
     try {
       let consulta = supabase.from("catalogo_codmar_publico")
         .select("id,nombre,presentacion,categoria,precio_publico,precio,imagen_url")
-        .order("nombre", { ascending: true })
+        .order("id", { ascending: false })
         .range(pagina * TAMANO_PAGINA, (pagina + 1) * TAMANO_PAGINA - 1);
 
       if (categoriaActiva) consulta = consulta.ilike("categoria", categoriaActiva);
