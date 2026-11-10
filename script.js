@@ -1326,13 +1326,18 @@ function detenerMovimientoLogotipo() {
         if (mensajeActualizarPrecios) mensajeActualizarPrecios.textContent = "";
     }
 
+    function abrirVentanaActualizarPrecios() {
+        panelMenu?.classList.remove("menu-abierto");
+        formularioCategorias?.classList.remove("formulario-abierto");
+        ventanaActualizarPrecios?.classList.add("formulario-abierto");
+        campoBuscarPrecio?.focus();
+    }
+
     if (botonAbrirActualizarPrecios && ventanaActualizarPrecios) {
-        botonAbrirActualizarPrecios.addEventListener("click", function () {
-            panelMenu.classList.remove("menu-abierto");
-            formularioCategorias?.classList.remove("formulario-abierto");
-            ventanaActualizarPrecios.classList.add("formulario-abierto");
-            campoBuscarPrecio?.focus();
-        });
+        botonAbrirActualizarPrecios.addEventListener(
+            "click",
+            abrirVentanaActualizarPrecios
+        );
     }
 
     botonCerrarActualizarPrecios?.addEventListener("click", cerrarVentanaActualizarPrecios);
@@ -1527,6 +1532,15 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             botonAdministracion.classList.add("modo-activo");
 
             controlesModo.appendChild(botonAdministracion);
+
+            const botonActualizarPreciosPrincipal = document.createElement("button");
+            botonActualizarPreciosPrincipal.textContent = "ACTUALIZAR PRECIOS";
+            botonActualizarPreciosPrincipal.type = "button";
+            botonActualizarPreciosPrincipal.addEventListener(
+                "click",
+                abrirVentanaActualizarPrecios
+            );
+            controlesModo.appendChild(botonActualizarPreciosPrincipal);
 
             seccion.appendChild(controlesModo);
 
