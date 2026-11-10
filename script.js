@@ -1641,6 +1641,19 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
                     imagen.style.cursor = "pointer";
                     imagen.addEventListener("click", function (evento) {
                         evento.stopPropagation();
+
+                        // En modo Actualizar precios, la foto selecciona el medicamento.
+                        // Fuera de ese modo, conserva la función de cambiar la imagen.
+                        if (ventanaActualizarPrecios?.classList.contains("formulario-abierto")) {
+                            productoPrecioSeleccionado = medicamento;
+                            productoSeleccionadoPrecio.textContent = medicamento.nombre +
+                                (medicamento.presentacion ? " · " + medicamento.presentacion : "");
+                            campoPrecioPublicoEditar.value = Number(medicamento.precio_publico ?? 0).toFixed(2);
+                            campoPrecioCodmarEditar.value = Number(medicamento.precio_codmar ?? 0).toFixed(2);
+                            mensajeActualizarPrecios.textContent = "Medicamento seleccionado. Modifica los precios y guarda los cambios.";
+                            return;
+                        }
+
                         selectorImagen.click();
                     });
 
