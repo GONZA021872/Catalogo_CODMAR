@@ -1299,6 +1299,180 @@ function detenerMovimientoLogotipo() {
 
     console.log("CLIENTE ACTUAL:", clienteId);
 
+    // =============================================
+    // ACTUALIZAR PRECIOS DE PRODUCTOS EXISTENTES
+    // =============================================
+    const botonAbrirActualizarPrecios = document.getElementById("boton-actualizar-precios");
+    const ventanaActualizarPrecios = document.getElementById("formulario-actualizar-precios");
+    const botonCerrarActualizarPrecios = document.getElementById("cerrar-actualizar-precios");
+    const campoBuscarPrecio = document.getElementById("buscar-producto-precio");
+    const botonBuscarPrecio = document.getElementById("boton-buscar-producto-precio");
+    const resultadosBuscarPrecio = document.getElementById("resultados-productos-precio");
+    const productoSeleccionadoPrecio = document.getElementById("producto-seleccionado-precio");
+    const campoPrecioPublicoEditar = document.getElementById("precio-publico-editar");
+    const campoPrecioCodmarEditar = document.getElementById("precio-codmar-editar");
+    const botonGuardarPrecios = document.getElementById("guardar-precios-producto");
+    const mensajeActualizarPrecios = document.getElementById("mensaje-actualizar-precios");
+    let productoPrecioSeleccionado = null;
+
+    function cerrarVentanaActualizarPrecios() {
+        ventanaActualizarPrecios?.classList.remove("formulario-abierto");
+        productoPrecioSeleccionado = null;
+        if (campoBuscarPrecio) campoBuscarPrecio.value = "";
+        if (resultadosBuscarPrecio) resultadosBuscarPrecio.innerHTML = "";
+        if (productoSeleccionadoPrecio) productoSeleccionadoPrecio.textContent = "Selecciona un medicamento para editar sus precios.";
+        if (campoPrecioPublicoEditar) campoPrecioPublicoEditar.value = "";
+        if (campoPrecioCodmarEditar) campoPrecioCodmarEditar.value = "";
+        if (mensajeActualizarPrecios) mensajeActualizarPrecios.textContent = "";
+    }
+
+    if (botonAbrirActualizarPrecios && ventanaActualizarPrecios) {
+        botonAbrirActualizarPrecios.addEventListener("click", function () {
+            panelMenu.classList.remove("menu-abierto");
+            formularioCategorias?.classList.remove("formulario-abierto");
+            ventanaActualizarPrecios.classList.add("formulario-abierto");
+            campoBuscarPrecio?.focus();
+        });
+    }
+
+    botonCerrarActualizarPrecios?.addEventListener("click", cerrarVentanaActualizarPrecios);
+
+    async function buscarProductosParaActualizarPrecios() {
+        const termino = (campoBuscarPrecio?.value || "").trim();
+        resultadosBuscarPrecio.innerHTML = "";
+        mensajeActualizarPrecios.textContent = "";
+        productoPrecioSeleccionado = null;
+        productoSeleccionadoPrecio.textContent = "Selecciona un medicamento para editar sus precios.";
+        campoPrecioPublicoEditar.value = "";
+        campoPrecioCodmarEditar.value = "";
+
+        if (termino.length < 2) {
+            mensajeActualizarPrecios.textContent = "Escribe al menos 2 letras del nombre del medicamento.";
+            return;
+        }
+
+        botonBuscarPrecio.disabled = true;
+        mensajeActualizarPrecios.textContent = "Buscando medicamentos...";
+
+        try {
+            const { data, error } = await clienteSupabase
+                .from("catalogo_codmar")
+                .select("id,nombre,presentacion,categoria,precio_publico,precio_codmar")
+                .eq("cliente_id", clienteId)
+                .eq("activo", true)
+                .ilike("nombre", "%" + termino.replace(/[%_]/g, "\\    const clienteId = usuarioCliente.cliente_id;
+
+    console.log("CLIENTE ACTUAL:", clienteId);") + "%")
+                .order("nombre", { ascending: true })
+                .limit(30);
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                mensajeActualizarPrecios.textContent = "No se encontraron medicamentos con ese nombre.";
+                return;
+            }
+
+            mensajeActualizarPrecios.textContent = data.length + " resultado(s). Selecciona el medicamento que deseas modificar.";
+            data.forEach(producto => {
+                const boton = document.createElement("button");
+                boton.type = "button";
+                boton.className = "resultado-producto-precio";
+                const nombre = document.createElement("strong");
+                nombre.textContent = producto.nombre;
+                const detalle = document.createElement("span");
+                detalle.textContent = (producto.presentacion || producto.categoria || "") +
+                    " · Público: " + formatoPrecio.format(Number(producto.precio_publico) || 0) +
+                    " · CODMAR: " + formatoPrecio.format(Number(producto.precio_codmar) || 0);
+                boton.append(nombre, detalle);
+                boton.addEventListener("click", function () {
+                    productoPrecioSeleccionado = producto;
+                    productoSeleccionadoPrecio.textContent = producto.nombre +
+                        (producto.presentacion ? " · " + producto.presentacion : "");
+                    campoPrecioPublicoEditar.value = Number(producto.precio_publico ?? 0).toFixed(2);
+                    campoPrecioCodmarEditar.value = Number(producto.precio_codmar ?? 0).toFixed(2);
+                    mensajeActualizarPrecios.textContent = "Edita los precios y guarda los cambios.";
+                    resultadosBuscarPrecio.querySelectorAll("button").forEach(item => item.classList.remove("seleccionado"));
+                    boton.classList.add("seleccionado");
+                });
+                resultadosBuscarPrecio.appendChild(boton);
+            });
+        } catch (error) {
+            console.error("Error al buscar productos para actualizar precios:", error);
+            mensajeActualizarPrecios.textContent = "No se pudieron consultar los medicamentos. " + (error.message || "");
+        } finally {
+            botonBuscarPrecio.disabled = false;
+        }
+    }
+
+    botonBuscarPrecio?.addEventListener("click", buscarProductosParaActualizarPrecios);
+    campoBuscarPrecio?.addEventListener("keydown", function (evento) {
+        if (evento.key === "Enter") {
+            evento.preventDefault();
+            buscarProductosParaActualizarPrecios();
+        }
+    });
+
+    botonGuardarPrecios?.addEventListener("click", async function () {
+        mensajeActualizarPrecios.textContent = "";
+
+        if (!productoPrecioSeleccionado) {
+            mensajeActualizarPrecios.textContent = "Primero busca y selecciona un medicamento.";
+            return;
+        }
+
+        const precioPublico = Number(campoPrecioPublicoEditar.value);
+        const precioCodmar = Number(campoPrecioCodmarEditar.value);
+
+        if (campoPrecioPublicoEditar.value.trim() === "" ||
+            campoPrecioCodmarEditar.value.trim() === "" ||
+            !Number.isFinite(precioPublico) ||
+            !Number.isFinite(precioCodmar) ||
+            precioPublico < 0 ||
+            precioCodmar < 0) {
+            mensajeActualizarPrecios.textContent = "Escribe ambos precios con cantidades válidas, iguales o mayores que cero.";
+            return;
+        }
+
+        if (precioCodmar > precioPublico) {
+            mensajeActualizarPrecios.textContent = "El precio CODMAR no puede ser mayor al precio público.";
+            return;
+        }
+
+        botonGuardarPrecios.disabled = true;
+        mensajeActualizarPrecios.textContent = "Guardando precios...";
+
+        try {
+            const { data, error } = await clienteSupabase
+                .from("catalogo_codmar")
+                .update({
+                    precio_publico: precioPublico,
+                    precio_codmar: precioCodmar
+                })
+                .eq("id", productoPrecioSeleccionado.id)
+                .eq("cliente_id", clienteId)
+                .select("id,nombre,precio_publico,precio_codmar")
+                .single();
+
+            if (error) throw error;
+
+            productoPrecioSeleccionado = { ...productoPrecioSeleccionado, ...data };
+            campoPrecioPublicoEditar.value = Number(data.precio_publico).toFixed(2);
+            campoPrecioCodmarEditar.value = Number(data.precio_codmar).toFixed(2);
+            productoSeleccionadoPrecio.textContent = data.nombre + " · Precios actualizados";
+            mensajeActualizarPrecios.textContent = "¡Precios actualizados correctamente!";
+            await cargarMedicamentosCatalogo();
+            await buscarProductosParaActualizarPrecios();
+        } catch (error) {
+            console.error("Error al actualizar precios:", error);
+            mensajeActualizarPrecios.textContent = "No se pudieron guardar los precios. " + (error.message || "");
+        } finally {
+            botonGuardarPrecios.disabled = false;
+        }
+    });
+
+
+
 // CARRITO DE COMPRAS CODMAR
 let carritoCODMAR = [];
 
