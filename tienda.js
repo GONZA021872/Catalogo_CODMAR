@@ -95,10 +95,26 @@
   }
 
   async function cargarCategorias() {
-    const [respuestaCategorias, respuestaConfig] = await Promise.all([
-      supabase.from("catalogo_codmar_publico").select("categoria").order("categoria"),
-      supabase.from("configuracion_tienda_codmar_publica").select("*").maybeSingle()
-    ]);
+    // Cargar y aplicar la identidad de la tienda en cuanto responda Supabase,
+    // sin esperar a que termine la consulta independiente de categorías.
+    const respuestaConfigPromise = supabase
+      .from("configuracion_tienda_codmar_publica")
+      .select("*")
+      .maybeSingle()
+      .then(respuesta => {
+        if (respuesta.error) {
+          console.error("No se pudo cargar la identidad de la tienda:", respuesta.error);
+          return respuesta;
+        }
+        if (respuesta.data) aplicarIdentidad(respuesta.data);
+        else console.error("La vista pública no devolvió la configuración de la tienda.");
+        return respuesta;
+      });
+
+    const respuestaCategorias = await supabase
+      .from("catalogo_codmar_publico")
+      .select("categoria")
+      .order("categoria");
 
     if (respuestaCategorias.error) throw respuestaCategorias.error;
     const categoriasUnicas = new Map();
@@ -122,7 +138,7 @@
       categoriasEl.appendChild(boton);
     });
 
-    if (!respuestaConfig.error && respuestaConfig.data) aplicarIdentidad(respuestaConfig.data);
+    await respuestaConfigPromise;
   }
 
   let configuracionTiendaActiva = null;
