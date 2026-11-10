@@ -271,3 +271,31 @@ body.carrito-abierto{overflow:hidden}
 .control-color-nombre{display:flex;align-items:center;gap:12px;flex-wrap:wrap;width:100%}
 .control-color-nombre input[type="color"]{width:64px;height:42px;padding:3px;border:1px solid #b8c2cc;border-radius:8px;background:#fff;cursor:pointer}
 .control-color-nombre span{flex:1 1 180px;min-width:0;font-size:13px;line-height:1.4;color:#4b5563}
+
+/* Carrito y contador con la misma apariencia de Administración */
+.boton-carrito-tienda{
+  width:46px;
+  height:40px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+}
+#contador-carrito{
+  position:absolute;
+  top:-5px;
+  right:-15px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:19px;
+  height:19px;
+  padding:0 4px;
+  background:#e53935;
+  color:#ffffff;
+  border-radius:50%;
+  font-size:11px;
+  font-weight:bold;
+  line-height:1;
+  z-index:10;
+}
