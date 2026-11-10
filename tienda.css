@@ -215,16 +215,13 @@ body.carrito-abierto{overflow:hidden}
 @media(max-width:768px){
   .encabezado-tienda{height:101px;min-height:101px;padding:0}
   .busqueda-tienda{
-    left:30px;
+    /* Misma referencia y mismas coordenadas que el buscador móvil de Administración. */
+    left:calc(30px + var(--ajuste-buscador-x,0px));
     right:auto;
-    top:50px;
+    top:calc(50px + var(--ajuste-buscador-y,0px));
     width:var(--buscador-ancho,200px);
     max-width:none;
-    /* Las flechas de Administración mueven el buscador en ambos ejes. */
-    transform:translate(
-      var(--ajuste-buscador-x,0px),
-      var(--ajuste-buscador-y,0px)
-    );
+    transform:none;
   }
   .boton-carrito-tienda{
     position:fixed;
