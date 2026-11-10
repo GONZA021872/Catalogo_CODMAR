@@ -187,12 +187,14 @@
     ) + "px");
 
     // La franja de Tienda usa exactamente el color guardado por Administración.
+    // Tienda usa el mismo color específico que Administración para cada dispositivo.
+    // No recurrir a color_franjas general: conserva un azul marino antiguo.
     const colorConfigurado = movil
-      ? (config.color_franjas_movil || config.color_franjas)
-      : (config.color_franjas_escritorio || config.color_franjas);
-    const color = /^#[0-9a-f]{6}$/i.test(String(colorConfigurado || ""))
+      ? config.color_franjas_movil
+      : config.color_franjas_escritorio;
+    const color = /^#[0-9a-f]{6}$/i.test(String(colorConfigurado || "").trim())
       ? String(colorConfigurado).trim()
-      : "#314f6d";
+      : "#ffffff";
     raiz.setProperty("--color-marca", color);
     raiz.setProperty("--color-franjas", color);
     if (encabezado) {
