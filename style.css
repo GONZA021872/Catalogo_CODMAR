@@ -3239,3 +3239,125 @@ transform: translateY(-25px);
 /* Enlace privado desde Administración hacia la tienda pública */
 .opcion-menu-enlace { display: block; color: inherit; text-decoration: none; }
 .opcion-menu-enlace:hover { background: rgba(255,255,255,.35); }
+
+
+/* ============================================= */
+/*       VENTANA PARA ACTUALIZAR PRECIOS         */
+/* ============================================= */
+.ventana-actualizar-precios {
+    width: min(560px, calc(100vw - 28px));
+    max-height: min(82vh, 760px);
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 22px;
+    z-index: 1800;
+}
+
+.ventana-actualizar-precios h2 {
+    margin: 0 0 18px;
+    text-align: center;
+}
+
+.ventana-actualizar-precios label {
+    display: block;
+    margin: 12px 0 6px;
+    font-weight: 600;
+}
+
+.busqueda-producto-precio {
+    display: flex;
+    gap: 8px;
+}
+
+.busqueda-producto-precio input {
+    flex: 1;
+    min-width: 0;
+}
+
+.busqueda-producto-precio button,
+.acciones-actualizar-precios button {
+    cursor: pointer;
+}
+
+.resultados-productos-precio {
+    display: grid;
+    gap: 6px;
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+.resultado-producto-precio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    background: #fff;
+    color: #222;
+    text-align: left;
+    cursor: pointer;
+}
+
+.resultado-producto-precio.seleccionado {
+    border: 2px solid #168f89;
+    background: #e9f7f5;
+}
+
+.resultado-producto-precio span {
+    font-size: 12px;
+}
+
+.edicion-precios-producto {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px 12px;
+    margin-top: 15px;
+}
+
+.edicion-precios-producto strong {
+    grid-column: 1 / -1;
+    margin-bottom: 4px;
+}
+
+.edicion-precios-producto label {
+    margin-bottom: 0;
+}
+
+.edicion-precios-producto input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#mensaje-actualizar-precios {
+    min-height: 20px;
+    margin: 12px 0;
+}
+
+.acciones-actualizar-precios {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+    .ventana-actualizar-precios {
+        padding: 16px;
+    }
+
+    .busqueda-producto-precio {
+        flex-direction: column;
+    }
+
+    .edicion-precios-producto {
+        grid-template-columns: 1fr;
+    }
+
+    .edicion-precios-producto strong {
+        grid-column: 1;
+    }
+}
