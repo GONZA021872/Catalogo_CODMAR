@@ -60,7 +60,7 @@ button,input{font:inherit}
 .carrito-vacio{padding:28px 8px;text-align:center;color:#84909c}
 body.carrito-abierto{overflow:hidden}
 @media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda .texto-carrito-tienda{display:none!important}.boton-carrito-tienda .bolsita-tienda:not([hidden]),.boton-carrito-tienda .icono-carrito-tienda:not([hidden]){display:block!important}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.producto-tienda{height:405px;min-height:405px;max-height:405px}.imagen-producto{height:145px;min-height:145px;max-height:145px;flex-basis:145px}.imagen-producto img{width:min(100%,121px);height:121px;max-width:121px;max-height:121px}.datos-producto{grid-template-rows:37px 32px 28px 38px 38px;gap:4px;padding:11px}.datos-producto h2{height:37px;min-height:37px;font-size:13px}.precio-referencia{height:28px;font-size:11px;line-height:1.15}.precio-producto{height:38px;font-size:clamp(14px,3.5vw,17px);line-height:1.15}.boton-agregar{height:38px;font-size:12px;padding:10px 6px}}
-@media(max-width:360px){.rejilla-productos{grid-template-columns:1fr}}
+@media(max-width:360px){.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 
 .precio-producto.precio-tachado{text-decoration:line-through;color:#89939d;font-weight:500}
 
