@@ -481,3 +481,94 @@ body.carrito-abierto{overflow:hidden}
     padding-bottom: 6px !important;
   }
 }
+
+
+/* =====================================================
+   CARRITO PUBLICO: NOTA DE COMPRA Y MEDIOS DE PAGO
+===================================================== */
+.fondo-carrito{
+  justify-content:center;align-items:center;padding:16px;
+  background:rgba(12,24,44,.42);
+}
+.panel-carrito{
+  width:min(1200px,96vw);height:min(540px,calc(100vh - 40px));
+  padding:0;border:1px solid #dce1e6;border-radius:12px;
+  overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.16);
+}
+.distribucion-compra-tienda{
+  display:grid;grid-template-columns:1fr 1fr;width:100%;height:100%;
+  min-height:0;background:#fff;
+}
+.medios-pago-tienda{min-width:0;padding:30px;border-right:1px solid #e5e7eb}
+.medios-pago-tienda h2,.nota-compra-tienda h2{
+  margin:0;color:#263746;font-family:Georgia,"Times New Roman",serif;font-size:22px
+}
+.subtitulo-pago-tienda{margin:8px 0 0;color:#777;font-family:Georgia,"Times New Roman",serif;font-size:14px}
+.tarjetas-pago-tienda{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:25px}
+.tarjeta-pago-tienda{
+  display:flex;min-height:75px;align-items:center;justify-content:center;
+  border:1px solid #e0e4e8;border-radius:8px;color:#34495e;background:#fff;
+  font-family:Georgia,"Times New Roman",serif
+}
+.aviso-pago-tienda{margin-top:25px;color:#777;font-family:Georgia,"Times New Roman",serif;font-size:13px;line-height:1.5}
+.nota-compra-tienda{
+  display:flex;flex-direction:column;min-width:0;min-height:0;height:100%;
+  padding:30px;overflow:hidden
+}
+.nota-compra-tienda .encabezado-carrito{flex-shrink:0;padding-bottom:20px}
+.nota-compra-tienda .encabezado-carrito h2{font-family:Georgia,"Times New Roman",serif}
+.items-carrito{flex:1 1 0;min-height:0;padding:20px 0;overflow:auto}
+.encabezados-nota-tienda,.fila-nota-tienda{
+  display:grid;grid-template-columns:minmax(76px,.85fr) minmax(110px,1.5fr) minmax(72px,.9fr) minmax(78px,.95fr);
+  align-items:center;gap:8px;padding:12px 5px;box-sizing:border-box
+}
+.encabezados-nota-tienda{
+  background:#f3f5f7;border-bottom:1px solid #dce1e6;color:#34495e;
+  font-family:Georgia,"Times New Roman",serif;font-size:12px;font-weight:700;text-align:center
+}
+.fila-nota-tienda{border-bottom:1px solid #eee;color:#333;font-size:13px}
+.fila-nota-tienda>span{text-align:right}
+.fila-nota-tienda .producto-nota-tienda{text-align:left;overflow-wrap:anywhere}
+.cantidad-nota-tienda{display:flex;flex-direction:column;align-items:center;gap:5px}
+.controles-cantidad{display:flex;align-items:center;gap:5px}
+.controles-cantidad button{
+  width:23px;height:23px;padding:0;border:1px solid var(--borde);
+  border-radius:50%;background:#fff;color:#405268;cursor:pointer;line-height:1
+}
+.nota-compra-tienda .pie-carrito{flex-shrink:0;border-top:1px solid #e5e7eb;padding:18px 0}
+.nota-compra-tienda .pie-carrito>p{
+  align-items:center;margin:0 0 16px;font-family:Georgia,"Times New Roman",serif;font-weight:700
+}
+.nota-compra-tienda .pie-carrito>p strong{font-size:17px;color:#263746}
+.nota-compra-tienda .boton-pedido{background:#00a6a6}
+.nota-compra-tienda .pie-carrito small{font-family:Arial,Helvetica,sans-serif}
+.carrito-vacio{text-align:center;color:#777;padding:20px 5px}
+
+/* Único cambio de color solicitado en las tarjetas: botón AGREGAR AL CARRITO */
+#productos-tienda .boton-agregar{background:#00a6a6!important}
+
+@media(max-width:700px){
+  .fondo-carrito{padding:8px}
+  .panel-carrito{width:96vw;height:94vh;max-height:760px}
+  .distribucion-compra-tienda{
+    grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);overflow:auto
+  }
+  .medios-pago-tienda{padding:15px 16px;border-right:0;border-bottom:1px solid #e5e7eb}
+  .medios-pago-tienda h2,.nota-compra-tienda h2{font-size:18px}
+  .subtitulo-pago-tienda{margin-top:4px}
+  .tarjetas-pago-tienda{gap:8px;margin-top:12px}
+  .tarjeta-pago-tienda{min-height:42px;font-size:12px}
+  .aviso-pago-tienda{margin:10px 0 0;font-size:11px}
+  .nota-compra-tienda{padding:15px 12px;min-height:280px}
+  .nota-compra-tienda .encabezado-carrito{padding-bottom:12px}
+  .items-carrito{padding:12px 0}
+  .encabezados-nota-tienda,.fila-nota-tienda{
+    grid-template-columns:minmax(48px,.7fr) minmax(82px,1.5fr) minmax(62px,.9fr) minmax(68px,1fr);
+    gap:4px;padding:10px 2px;font-size:10px
+  }
+  .encabezados-nota-tienda{font-size:9px}
+  .fila-nota-tienda{font-size:11px}
+  .controles-cantidad button{width:21px;height:21px}
+  .nota-compra-tienda .pie-carrito{padding:12px 0}
+  .nota-compra-tienda .pie-carrito>p{font-size:14px}
+}
