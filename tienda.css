@@ -1,4 +1,4 @@
-:root{--color-marca:#314f6d;--fondo:#f4f6f8;--texto:#243447;--borde:#e2e7ec}
+:root{--color-marca:#ffffff;--fondo:#f4f6f8;--texto:#243447;--borde:#e2e7ec}
 *{box-sizing:border-box}
 html{min-height:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--fondo);color:var(--texto);font-family:Arial,Helvetica,sans-serif}
