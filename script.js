@@ -1169,6 +1169,24 @@ let altoBuscadorSeleccionado = 25;
         );
     }
 
+    // Aplicar el color guardado directamente a las dos franjas.
+    // Así ningún color predeterminado del CSS puede sustituirlo al recargar.
+    function aplicarColorFranjasEnEncabezados(color) {
+        if (!color) return;
+
+        actualizarVariableCSS("--color-franjas", color);
+
+        document.querySelectorAll(
+            ".barra-inicio-superior, .barra-inicio-inferior"
+        ).forEach(function (franja) {
+            franja.style.setProperty(
+                "background-color",
+                color,
+                "important"
+            );
+        });
+    }
+
 
     /* ================================================= */
     /*                LOGOTIPO: POSICIÓN                 */
@@ -2090,10 +2108,7 @@ if (configuracionGuardada) {
                 || "#D8E2EE"
             );
 
-        actualizarVariableCSS(
-            "--color-franjas",
-            colorFranjasActual
-        );
+        aplicarColorFranjasEnEncabezados(colorFranjasActual);
 
         actualizarVariableCSS(
             "--color-boton-menu",
@@ -5510,10 +5525,7 @@ aceptarInicio.addEventListener(
 
         /* APLICAR COLORES DEL DISPOSITIVO ACTUAL */
 
-        actualizarVariableCSS(
-            "--color-franjas",
-            colorFranjas.value
-        );
+        aplicarColorFranjasEnEncabezados(colorFranjas.value);
 
         actualizarVariableCSS(
             "--color-boton-menu",
