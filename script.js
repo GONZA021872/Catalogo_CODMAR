@@ -1306,65 +1306,36 @@ function detenerMovimientoLogotipo() {
     const ventanaActualizarPrecios = document.getElementById("formulario-actualizar-precios");
     const botonCerrarActualizarPrecios = document.getElementById("cerrar-actualizar-precios");
     const productoSeleccionadoPrecio = document.getElementById("producto-seleccionado-precio");
-    const imagenProductoPrecio = document.getElementById("imagen-producto-precio");
     const campoPrecioPublicoEditar = document.getElementById("precio-publico-editar");
     const campoPrecioCodmarEditar = document.getElementById("precio-codmar-editar");
     const botonGuardarPrecios = document.getElementById("guardar-precios-producto");
     const mensajeActualizarPrecios = document.getElementById("mensaje-actualizar-precios");
     let productoPrecioSeleccionado = null;
-    let modoActualizarPrecios = false;
+    const formatoPrecioActualizar = new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    });
 
     function cerrarVentanaActualizarPrecios() {
         ventanaActualizarPrecios?.classList.remove("formulario-abierto");
         productoPrecioSeleccionado = null;
-        if (productoSeleccionadoPrecio) productoSeleccionadoPrecio.textContent = "";
-        if (imagenProductoPrecio) {
-            imagenProductoPrecio.removeAttribute("src");
-            imagenProductoPrecio.hidden = true;
-        }
+        if (productoSeleccionadoPrecio) productoSeleccionadoPrecio.textContent = "Toca la foto del medicamento que deseas actualizar.";
         if (campoPrecioPublicoEditar) campoPrecioPublicoEditar.value = "";
         if (campoPrecioCodmarEditar) campoPrecioCodmarEditar.value = "";
         if (mensajeActualizarPrecios) mensajeActualizarPrecios.textContent = "";
     }
 
-    function abrirVentanaActualizarPrecios(medicamento) {
-        if (!medicamento || !ventanaActualizarPrecios) return;
-
+    function abrirVentanaActualizarPrecios() {
         panelMenu?.classList.remove("menu-abierto");
         formularioCategorias?.classList.remove("formulario-abierto");
-
-        productoPrecioSeleccionado = medicamento;
-        productoSeleccionadoPrecio.textContent = medicamento.nombre +
-            (medicamento.presentacion ? " · " + medicamento.presentacion : "");
-
-        if (imagenProductoPrecio) {
-            if (medicamento.imagen_url) {
-                imagenProductoPrecio.src = medicamento.imagen_url;
-                imagenProductoPrecio.hidden = false;
-            } else {
-                imagenProductoPrecio.removeAttribute("src");
-                imagenProductoPrecio.hidden = true;
-            }
-        }
-
-        campoPrecioPublicoEditar.value = Number(medicamento.precio_publico ?? 0).toFixed(2);
-        campoPrecioCodmarEditar.value = Number(medicamento.precio_codmar ?? 0).toFixed(2);
-        mensajeActualizarPrecios.textContent = "";
-        ventanaActualizarPrecios.classList.add("formulario-abierto");
-    }
-
-    function alternarModoActualizarPrecios() {
-        modoActualizarPrecios = !modoActualizarPrecios;
-        panelMenu?.classList.remove("menu-abierto");
-        document.body.classList.toggle("modo-actualizar-precios", modoActualizarPrecios);
-
-        if (!modoActualizarPrecios) {
-            cerrarVentanaActualizarPrecios();
-        }
+        ventanaActualizarPrecios?.classList.add("formulario-abierto");
     }
 
     if (botonAbrirActualizarPrecios && ventanaActualizarPrecios) {
-        botonAbrirActualizarPrecios.addEventListener("click", alternarModoActualizarPrecios);
+        botonAbrirActualizarPrecios.addEventListener(
+            "click",
+            abrirVentanaActualizarPrecios
+        );
     }
 
     botonCerrarActualizarPrecios?.addEventListener("click", cerrarVentanaActualizarPrecios);
@@ -1426,7 +1397,6 @@ function detenerMovimientoLogotipo() {
 
             mensajeActualizarPrecios.textContent = "¡Precios actualizados correctamente!";
             await cargarMedicamentosCatalogo();
-            cerrarVentanaActualizarPrecios();
         } catch (error) {
             console.error("Error al actualizar precios:", error);
             const detalleError = error?.hint || error?.details || error?.message || "Error desconocido.";
@@ -1571,30 +1541,23 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
                     selectorImagen.hidden = true;
                     selectorImagen.setAttribute("aria-label", "Cambiar foto de " + (medicamento.nombre || "producto"));
 
-                    imagen.title = "Haz doble toque para actualizar precios";
+                    imagen.title = "Haz clic para cambiar la foto";
                     imagen.style.cursor = "pointer";
-                    imagen.style.touchAction = "manipulation";
-                    let ultimoToqueImagenPrecio = 0;
-
                     imagen.addEventListener("click", function (evento) {
                         evento.stopPropagation();
 
-                        // En modo actualización, un toque no abre la galería.
-                        // El segundo toque abre la ventana con los datos del medicamento.
-                        if (modoActualizarPrecios) {
-                            evento.preventDefault();
-                            const ahora = Date.now();
-
-                            if (ahora - ultimoToqueImagenPrecio <= 420) {
-                                ultimoToqueImagenPrecio = 0;
-                                abrirVentanaActualizarPrecios(medicamento);
-                            } else {
-                                ultimoToqueImagenPrecio = ahora;
-                            }
+                        // En modo Actualizar precios, la foto selecciona el medicamento.
+                        // Fuera de ese modo, conserva la función de cambiar la imagen.
+                        if (ventanaActualizarPrecios?.classList.contains("formulario-abierto")) {
+                            productoPrecioSeleccionado = medicamento;
+                            productoSeleccionadoPrecio.textContent = medicamento.nombre +
+                                (medicamento.presentacion ? " · " + medicamento.presentacion : "");
+                            campoPrecioPublicoEditar.value = Number(medicamento.precio_publico ?? 0).toFixed(2);
+                            campoPrecioCodmarEditar.value = Number(medicamento.precio_codmar ?? 0).toFixed(2);
+                            mensajeActualizarPrecios.textContent = "Medicamento seleccionado. Modifica los precios y guarda los cambios.";
                             return;
                         }
 
-                        // Fuera del modo actualización, se conserva el cambio de fotografía.
                         selectorImagen.click();
                     });
 
