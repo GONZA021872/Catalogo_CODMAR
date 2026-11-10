@@ -4337,6 +4337,39 @@ function aplicarAjusteBuscador() {
 /*       MOVER EL BUSCADOR                       */
 /* ============================================= */
 
+let temporizadorGuardarPosicionBuscador = null;
+
+async function guardarPosicionBuscadorAutomatica() {
+    const esMovilActual = window.matchMedia("(max-width: 768px)").matches;
+    const datosPosicion = esMovilActual
+        ? {
+            ajuste_buscador_x_movil: ajusteBuscadorX,
+            ajuste_buscador_y_movil: ajusteBuscadorY
+        }
+        : {
+            ajuste_buscador_x_escritorio: ajusteBuscadorX,
+            ajuste_buscador_y_escritorio: ajusteBuscadorY
+        };
+
+    const { data, error } = await clienteSupabase
+        .from("configuracion_inicio")
+        .update(datosPosicion)
+        .eq("cliente_id", clienteId)
+        .select("cliente_id");
+
+    if (error || !data || data.length === 0) {
+        console.error(
+            "No se pudo guardar automáticamente la posición del buscador:",
+            error || "No se encontró la configuración del negocio."
+        );
+        return;
+    }
+
+    if (configuracionGuardada) {
+        Object.assign(configuracionGuardada, datosPosicion);
+    }
+}
+
 function moverBuscador(direccionX, direccionY) {
 
     const paso = 4;
@@ -4345,6 +4378,14 @@ function moverBuscador(direccionX, direccionY) {
     ajusteBuscadorY += direccionY * paso;
 
     aplicarAjusteBuscador();
+
+    // Guarda la última posición al terminar de usar las flechas.
+    // El pequeño retraso evita enviar una consulta por cada repetición del botón.
+    window.clearTimeout(temporizadorGuardarPosicionBuscador);
+    temporizadorGuardarPosicionBuscador = window.setTimeout(
+        guardarPosicionBuscadorAutomatica,
+        450
+    );
 }
 
 
@@ -4965,6 +5006,8 @@ aceptarBuscador.addEventListener(
     "click",
     async function () {
 
+        window.clearTimeout(temporizadorGuardarPosicionBuscador);
+
         /* IDENTIFICAR DISPOSITIVO */
 
         const esMovilBuscador =
@@ -5004,14 +5047,15 @@ aceptarBuscador.addEventListener(
 
         /* GUARDAR EN SUPABASE */
 
-        const { error: errorBuscador } =
+        const { data: filasActualizadas, error: errorBuscador } =
             await clienteSupabase
                 .from("configuracion_inicio")
                 .update(datosBuscador)
-                .eq("cliente_id", clienteId);
+                .eq("cliente_id", clienteId)
+                .select("cliente_id");
 
 
-        if (errorBuscador) {
+        if (errorBuscador || !filasActualizadas || filasActualizadas.length === 0) {
 
             console.error(
                 "Error al guardar configuración del buscador:",
@@ -5019,7 +5063,9 @@ aceptarBuscador.addEventListener(
             );
 
             alert(
-                "No se pudo guardar la configuración del buscador."
+                errorBuscador
+                    ? "No se pudo guardar la configuración del buscador."
+                    : "No se encontró la configuración de este negocio para guardar la posición."
             );
 
             return;
