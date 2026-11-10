@@ -547,6 +547,10 @@
         Categorías
     </div>
 
+    <div class="opcion-menu" id="boton-actualizar-precios">
+        Actualizar precios
+    </div>
+
     <div class="opcion-menu" id="boton-configuracion">Configuración</div>
 
 
@@ -561,6 +565,39 @@
 
 </div>
 
+
+
+<!-- ========================================= -->
+<!--          ACTUALIZAR PRECIOS               -->
+<!-- ========================================= -->
+<div class="formulario-inicio ventana-actualizar-precios" id="formulario-actualizar-precios">
+    <h2>ACTUALIZAR PRECIOS</h2>
+
+    <label for="buscar-producto-precio">Buscar medicamento por nombre</label>
+    <div class="busqueda-producto-precio">
+        <input type="search" id="buscar-producto-precio" placeholder="Escribe el nombre del medicamento..." autocomplete="off">
+        <button type="button" id="boton-buscar-producto-precio">BUSCAR</button>
+    </div>
+
+    <div id="resultados-productos-precio" class="resultados-productos-precio"></div>
+
+    <div class="edicion-precios-producto">
+        <strong id="producto-seleccionado-precio">Selecciona un medicamento para editar sus precios.</strong>
+
+        <label for="precio-publico-editar">Precio público</label>
+        <input type="number" id="precio-publico-editar" min="0" step="0.01" placeholder="0.00">
+
+        <label for="precio-codmar-editar">Precio CODMAR</label>
+        <input type="number" id="precio-codmar-editar" min="0" step="0.01" placeholder="0.00">
+    </div>
+
+    <p id="mensaje-actualizar-precios" role="status" aria-live="polite"></p>
+
+    <div class="acciones-actualizar-precios">
+        <button type="button" id="guardar-precios-producto">GUARDAR PRECIOS</button>
+        <button type="button" id="cerrar-actualizar-precios">CERRAR</button>
+    </div>
+</div>
 
 <!-- ========================================= -->
 <!--       CONFIGURACIÓN DE CATEGORÍAS         -->
@@ -1144,6 +1181,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script src="script.js?v=20261109-colores-dispositivo-2"></script>
+<script src="script.js?v=20261110-actualizar-precios-1"></script>
 
 
