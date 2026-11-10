@@ -299,3 +299,22 @@ body.carrito-abierto{overflow:hidden}
   line-height:1;
   z-index:10;
 }
+
+
+/* Asegurar que el carrito y su contador permanezcan visibles en el encabezado. */
+.boton-carrito-tienda:not([hidden]){
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  z-index:3002 !important;
+}
+#icono-bolsita-tienda:not([hidden]),
+#icono-carrito-tienda:not([hidden]){
+  visibility:visible !important;
+}
+#contador-carrito{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  z-index:3003 !important;
+}
