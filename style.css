@@ -2822,6 +2822,21 @@ transform: translateY(-25px);
         padding: 12px;
     }
 
+    .controles-modo-catalogo {
+        margin: 10px auto 18px;
+        padding: 0 4px;
+        box-sizing: border-box;
+    }
+
+    .controles-modo-catalogo button {
+        width: 100%;
+        max-width: 260px;
+        min-height: 42px;
+        padding: 10px 14px;
+        font-size: 13px;
+        touch-action: manipulation;
+    }
+
     .lista-medicamentos-codmar {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
