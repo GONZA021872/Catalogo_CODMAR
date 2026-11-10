@@ -1314,6 +1314,10 @@ function detenerMovimientoLogotipo() {
     const botonGuardarPrecios = document.getElementById("guardar-precios-producto");
     const mensajeActualizarPrecios = document.getElementById("mensaje-actualizar-precios");
     let productoPrecioSeleccionado = null;
+    const formatoPrecioActualizar = new Intl.NumberFormat("es-MX", {
+        style: "currency",
+        currency: "MXN"
+    });
 
     function cerrarVentanaActualizarPrecios() {
         ventanaActualizarPrecios?.classList.remove("formulario-abierto");
@@ -1385,8 +1389,8 @@ function detenerMovimientoLogotipo() {
                 nombre.textContent = producto.nombre;
                 const detalle = document.createElement("span");
                 detalle.textContent = (producto.presentacion || producto.categoria || "") +
-                    " · Público: " + formatoPrecio.format(Number(producto.precio_publico) || 0) +
-                    " · CODMAR: " + formatoPrecio.format(Number(producto.precio_codmar) || 0);
+                    " · Público: " + formatoPrecioActualizar.format(Number(producto.precio_publico) || 0) +
+                    " · CODMAR: " + formatoPrecioActualizar.format(Number(producto.precio_codmar) || 0);
                 boton.append(nombre, detalle);
                 boton.addEventListener("click", function () {
                     productoPrecioSeleccionado = producto;
@@ -1477,8 +1481,8 @@ function detenerMovimientoLogotipo() {
                 const detalle = resultadoSeleccionado.querySelector("span");
                 if (detalle) {
                     detalle.textContent = (data.presentacion || "") +
-                        " · Público: " + formatoPrecio.format(Number(data.precio_publico)) +
-                        " · CODMAR: " + formatoPrecio.format(Number(data.precio_codmar));
+                        " · Público: " + formatoPrecioActualizar.format(Number(data.precio_publico)) +
+                        " · CODMAR: " + formatoPrecioActualizar.format(Number(data.precio_codmar));
                 }
             }
 
@@ -1700,7 +1704,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             const precioPublico = document.createElement("p");
             precioPublico.className = "precio-publico-medicamento";
             precioPublico.textContent = "Precio público: " +
-                formatoPrecio.format(Number(medicamento.precio_publico));
+                formatoPrecioActualizar.format(Number(medicamento.precio_publico));
 
             if (medicamento.tachar_precio_publico) {
                 precioPublico.classList.add("precio-tachado");
@@ -1710,7 +1714,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             const precioCodmar = document.createElement("p");
             precioCodmar.className = "precio-codmar-medicamento";
             precioCodmar.textContent = "Precio: " +
-                formatoPrecio.format(Number(medicamento.precio_codmar));
+                formatoPrecioActualizar.format(Number(medicamento.precio_codmar));
             tarjeta.appendChild(precioCodmar);
 
             {
