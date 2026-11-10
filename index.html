@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CO D MAR</title>
 
-    <link rel="stylesheet" href="style.css?v=20261110-actualizar-precios-8">
+    <link rel="stylesheet" href="style.css?v=20261110-doble-toque-1">
 </head>
 
 <body>
@@ -571,22 +571,23 @@
 <!--          ACTUALIZAR PRECIOS               -->
 <!-- ========================================= -->
 <div class="formulario-inicio ventana-actualizar-precios" id="formulario-actualizar-precios">
-    <h2>ACTUALIZAR PRECIOS</h2>
+    <h2>ACTUALIZAR PRECIO</h2>
 
     <div class="edicion-precios-producto">
-        <strong id="producto-seleccionado-precio">Toca la foto del medicamento que deseas actualizar.</strong>
+        <img id="imagen-producto-precio" alt="Imagen del medicamento" hidden>
+        <strong id="producto-seleccionado-precio"></strong>
 
         <label for="precio-publico-editar">Precio público</label>
         <input type="number" id="precio-publico-editar" min="0" step="0.01" placeholder="0.00">
 
-        <label for="precio-codmar-editar">Precio CODMAR</label>
+        <label for="precio-codmar-editar">Precio</label>
         <input type="number" id="precio-codmar-editar" min="0" step="0.01" placeholder="0.00">
     </div>
 
     <p id="mensaje-actualizar-precios" role="status" aria-live="polite"></p>
 
     <div class="acciones-actualizar-precios">
-        <button type="button" id="guardar-precios-producto">GUARDAR PRECIOS</button>
+        <button type="button" id="guardar-precios-producto">GUARDAR</button>
         <button type="button" id="cerrar-actualizar-precios">CERRAR</button>
     </div>
 </div>
@@ -1173,6 +1174,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
-<script src="script.js?v=20261110-actualizar-precios-8"></script>
+<script src="script.js?v=20261110-doble-toque-1"></script>
 
 
