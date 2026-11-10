@@ -4234,6 +4234,13 @@ function cambiarAnchoBuscador(direccion) {
     );
 
     aplicarTamanoBuscador();
+
+    // Guarda también el tamaño para que la Tienda lo reciba sin pulsar ACEPTAR.
+    window.clearTimeout(temporizadorGuardarPosicionBuscador);
+    temporizadorGuardarPosicionBuscador = window.setTimeout(
+        guardarPosicionBuscadorAutomatica,
+        450
+    );
 }
 
 
@@ -4345,11 +4352,15 @@ async function guardarPosicionBuscadorAutomatica() {
         const datosPosicion = esMovilActual
             ? {
                 ajuste_buscador_x_movil: ajusteBuscadorX,
-                ajuste_buscador_y_movil: ajusteBuscadorY
+                ajuste_buscador_y_movil: ajusteBuscadorY,
+                ancho_buscador_movil: anchoBuscadorSeleccionado,
+                alto_buscador_movil: altoBuscadorSeleccionado
             }
             : {
                 ajuste_buscador_x_escritorio: ajusteBuscadorX,
-                ajuste_buscador_y_escritorio: ajusteBuscadorY
+                ajuste_buscador_y_escritorio: ajusteBuscadorY,
+                ancho_buscador_escritorio: anchoBuscadorSeleccionado,
+                alto_buscador_escritorio: altoBuscadorSeleccionado
             };
 
         const { data, error } = await clienteSupabase
