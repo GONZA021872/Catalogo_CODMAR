@@ -21,7 +21,7 @@
   let categoriaActiva = "";
   let termino = "";
   let pagina = 0;
-  const TAMANO_PAGINA = 48;
+  const TAMANO_PAGINA = 1000;
   let cargando = false;
   let hayMas = true;
   let observador = null;
@@ -252,7 +252,7 @@
     try {
       let consulta = supabase.from("catalogo_codmar_publico")
         .select("id,nombre,presentacion,categoria,precio_publico,precio,imagen_url")
-        .order("id", { ascending: false })
+        .order("nombre", { ascending: true })
         .range(pagina * TAMANO_PAGINA, (pagina + 1) * TAMANO_PAGINA - 1);
 
       if (categoriaActiva) consulta = consulta.ilike("categoria", categoriaActiva);
