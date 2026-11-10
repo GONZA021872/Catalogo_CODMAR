@@ -1454,20 +1454,40 @@ function detenerMovimientoLogotipo() {
                 })
                 .eq("id", productoPrecioSeleccionado.id)
                 .eq("cliente_id", clienteId)
-                .select("id,nombre,precio_publico,precio_codmar")
-                .single();
+                .eq("activo", true)
+                .select("id,nombre,presentacion,precio_publico,precio_codmar")
+                .maybeSingle();
 
             if (error) throw error;
+
+            if (!data) {
+                throw new Error("No se actualizó ningún producto. Verifica que siga activo y pertenezca a este negocio.");
+            }
 
             productoPrecioSeleccionado = { ...productoPrecioSeleccionado, ...data };
             campoPrecioPublicoEditar.value = Number(data.precio_publico).toFixed(2);
             campoPrecioCodmarEditar.value = Number(data.precio_codmar).toFixed(2);
-            productoSeleccionadoPrecio.textContent = data.nombre + " · Precios actualizados";
+            productoSeleccionadoPrecio.textContent = data.nombre +
+                (data.presentacion ? " · " + data.presentacion : "") +
+                " · Precios actualizados";
+
+            // Actualiza también el resultado seleccionado sin volver a buscar.
+            const resultadoSeleccionado = resultadosBuscarPrecio.querySelector(".resultado-producto-precio.seleccionado");
+            if (resultadoSeleccionado) {
+                const detalle = resultadoSeleccionado.querySelector("span");
+                if (detalle) {
+                    detalle.textContent = (data.presentacion || "") +
+                        " · Público: " + formatoPrecio.format(Number(data.precio_publico)) +
+                        " · CODMAR: " + formatoPrecio.format(Number(data.precio_codmar));
+                }
+            }
+
             mensajeActualizarPrecios.textContent = "¡Precios actualizados correctamente!";
             await cargarMedicamentosCatalogo();
         } catch (error) {
             console.error("Error al actualizar precios:", error);
-            mensajeActualizarPrecios.textContent = "No se pudieron guardar los precios. " + (error.message || "");
+            const detalleError = error?.hint || error?.details || error?.message || "Error desconocido.";
+            mensajeActualizarPrecios.textContent = "No se pudieron guardar los precios. " + detalleError;
         } finally {
             botonGuardarPrecios.disabled = false;
         }
