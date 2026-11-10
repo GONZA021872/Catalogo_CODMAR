@@ -3,14 +3,7 @@
 html{min-height:100%;scroll-behavior:smooth}
 body{margin:0;background:var(--fondo);color:var(--texto);font-family:Arial,Helvetica,sans-serif}
 button,input{font:inherit}
-.encabezado-tienda{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:minmax(150px,1fr) minmax(220px,2fr) auto;align-items:center;gap:24px;padding:14px clamp(16px,4vw,54px);background:var(--color-marca);box-shadow:0 3px 14px #172b3d24}
-.marca-tienda{display:flex;align-items:center;gap:12px;min-width:0;color:white;text-decoration:none;font-weight:800;font-size:clamp(19px,2vw,28px);letter-spacing:.04em}
-.marca-tienda img{max-width:125px;max-height:48px;object-fit:contain}
-.busqueda-tienda{display:flex;align-items:center;gap:10px;max-width:620px;width:100%;height:44px;padding:0 14px;background:white;border-radius:9px;color:#657587}
-.busqueda-tienda span{font-size:25px}
-.busqueda-tienda input{width:100%;border:0;outline:0;background:transparent;color:#263746}
-.boton-carrito-tienda{display:flex;align-items:center;gap:8px;padding:11px 15px;border:1px solid #ffffff55;border-radius:9px;background:#ffffff17;color:white;cursor:pointer}
-.boton-carrito-tienda b{display:grid;place-items:center;min-width:23px;height:23px;padding:0 5px;border-radius:50%;background:white;color:var(--color-marca);font-size:12px}
+/* El encabezado se define una sola vez en el bloque CODMAR de abajo. */
 .carrito-actualizado{transform:scale(1.04)}
 .contenido-tienda{width:min(1440px,100%);margin:auto;padding:28px clamp(14px,3vw,42px) 60px}
 .presentacion-tienda{padding:28px 4px 24px}
@@ -59,7 +52,7 @@ button,input{font:inherit}
 .pie-carrito small{display:block;margin-top:12px;color:#7b8794;line-height:1.4}
 .carrito-vacio{padding:28px 8px;text-align:center;color:#84909c}
 body.carrito-abierto{overflow:hidden}
-@media(max-width:700px){.encabezado-tienda{grid-template-columns:1fr auto;gap:12px;padding:12px 14px}.marca-tienda{grid-column:1;grid-row:1}.marca-tienda img{max-width:85px;max-height:36px}.boton-carrito-tienda{grid-column:2;grid-row:1}.boton-carrito-tienda .texto-carrito-tienda{display:none!important}.boton-carrito-tienda .bolsita-tienda:not([hidden]),.boton-carrito-tienda .icono-carrito-tienda:not([hidden]){display:block!important}.busqueda-tienda{grid-column:1/-1;grid-row:2;max-width:none}.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.producto-tienda{height:405px;min-height:405px;max-height:405px}.imagen-producto{height:145px;min-height:145px;max-height:145px;flex-basis:145px}.imagen-producto img{width:min(100%,121px);height:121px;max-width:121px;max-height:121px}.datos-producto{grid-template-rows:37px 32px 28px 38px 38px;gap:4px;padding:11px}.datos-producto h2{height:37px;min-height:37px;font-size:13px}.precio-referencia{height:28px;font-size:11px;line-height:1.15}.precio-producto{height:38px;font-size:clamp(14px,3.5vw,17px);line-height:1.15}.boton-agregar{height:38px;font-size:12px;padding:10px 6px}}
+@media(max-width:700px){.contenido-tienda{padding-top:18px}.presentacion-tienda{padding-top:15px}.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.producto-tienda{height:405px;min-height:405px;max-height:405px}.imagen-producto{height:145px;min-height:145px;max-height:145px;flex-basis:145px}.imagen-producto img{width:min(100%,121px);height:121px;max-width:121px;max-height:121px}.datos-producto{grid-template-rows:37px 32px 28px 38px 38px;gap:4px;padding:11px}.datos-producto h2{height:37px;min-height:37px;font-size:13px}.precio-referencia{height:28px;font-size:11px;line-height:1.15}.precio-producto{height:38px;font-size:clamp(14px,3.5vw,17px);line-height:1.15}.boton-agregar{height:38px;font-size:12px;padding:10px 6px}}
 @media(max-width:360px){.rejilla-productos{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 
 .precio-producto.precio-tachado{text-decoration:line-through;color:#89939d;font-weight:500}
