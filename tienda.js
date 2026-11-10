@@ -338,34 +338,52 @@
     items.innerHTML = "";
     let total = 0;
     let piezas = 0;
-    carrito.forEach(item => {
-      const fila = document.createElement("article");
-      fila.className = "item-carrito";
-      const descripcion = document.createElement("div");
-      const titulo = document.createElement("strong");
-      titulo.textContent = item.nombre;
-      const presentacion = document.createElement("small");
-      presentacion.textContent = item.presentacion;
-      const precio = document.createElement("span");
-      precio.textContent = formatoPrecio.format(item.precio) + " c/u";
-      descripcion.append(titulo, presentacion, precio);
 
+    const encabezados = document.createElement("div");
+    encabezados.className = "encabezados-nota-tienda";
+    encabezados.innerHTML = "<span>CANTIDAD</span><span>PRODUCTO</span><span>PRECIO</span><span>IMPORTE</span>";
+    items.appendChild(encabezados);
+
+    carrito.forEach(item => {
+      const importe = item.precio * item.cantidad;
+      const fila = document.createElement("div");
+      fila.className = "fila-nota-tienda";
+
+      const cantidadColumna = document.createElement("div");
+      cantidadColumna.className = "cantidad-nota-tienda";
+      const cantidad = document.createElement("b");
+      cantidad.textContent = String(item.cantidad);
       const controles = document.createElement("div");
       controles.className = "controles-cantidad";
       const menos = document.createElement("button");
-      menos.type = "button"; menos.textContent = "−"; menos.setAttribute("aria-label", "Quitar una unidad");
+      menos.type = "button";
+      menos.textContent = "−";
+      menos.setAttribute("aria-label", "Quitar una unidad");
       menos.addEventListener("click", () => cambiarCantidad(item.id, -1));
-      const cantidad = document.createElement("b");
-      cantidad.textContent = String(item.cantidad);
       const mas = document.createElement("button");
-      mas.type = "button"; mas.textContent = "+"; mas.setAttribute("aria-label", "Agregar una unidad");
+      mas.type = "button";
+      mas.textContent = "+";
+      mas.setAttribute("aria-label", "Agregar una unidad");
       mas.addEventListener("click", () => cambiarCantidad(item.id, 1));
-      controles.append(menos, cantidad, mas);
-      fila.append(descripcion, controles);
+      controles.append(menos, mas);
+      cantidadColumna.append(cantidad, controles);
+
+      const productoColumna = document.createElement("span");
+      productoColumna.className = "producto-nota-tienda";
+      productoColumna.textContent = item.nombre + (item.presentacion ? " " + item.presentacion : "");
+
+      const precioColumna = document.createElement("span");
+      precioColumna.textContent = formatoPrecio.format(item.precio);
+
+      const importeColumna = document.createElement("span");
+      importeColumna.textContent = formatoPrecio.format(importe);
+
+      fila.append(cantidadColumna, productoColumna, precioColumna, importeColumna);
       items.appendChild(fila);
-      total += item.precio * item.cantidad;
+      total += importe;
       piezas += item.cantidad;
     });
+
     if (!carrito.length) {
       const vacio = document.createElement("p");
       vacio.className = "carrito-vacio";
