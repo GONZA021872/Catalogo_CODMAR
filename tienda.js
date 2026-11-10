@@ -221,7 +221,7 @@
     raiz.setProperty("--ajuste-carrito-x", valorNumerico(config, "ajuste_carrito_x_movil", "ajuste_carrito_x_escritorio", "ajuste_carrito_x", 0, movil) + "px");
     raiz.setProperty("--ajuste-carrito-y", valorNumerico(config, "ajuste_carrito_y_movil", "ajuste_carrito_y_escritorio", "ajuste_carrito_y", 0, movil) + "px");
 
-    if (encabezado) encabezado.style.backgroundColor = color;
+    // Se conserva background-color con prioridad !important, aplicado arriba.
   }
 
   window.addEventListener("resize", () => {
