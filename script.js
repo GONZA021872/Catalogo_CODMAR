@@ -4340,33 +4340,37 @@ function aplicarAjusteBuscador() {
 let temporizadorGuardarPosicionBuscador = null;
 
 async function guardarPosicionBuscadorAutomatica() {
-    const esMovilActual = window.matchMedia("(max-width: 768px)").matches;
-    const datosPosicion = esMovilActual
-        ? {
-            ajuste_buscador_x_movil: ajusteBuscadorX,
-            ajuste_buscador_y_movil: ajusteBuscadorY
+    try {
+        const esMovilActual = window.matchMedia("(max-width: 768px)").matches;
+        const datosPosicion = esMovilActual
+            ? {
+                ajuste_buscador_x_movil: ajusteBuscadorX,
+                ajuste_buscador_y_movil: ajusteBuscadorY
+            }
+            : {
+                ajuste_buscador_x_escritorio: ajusteBuscadorX,
+                ajuste_buscador_y_escritorio: ajusteBuscadorY
+            };
+
+        const { data, error } = await clienteSupabase
+            .from("configuracion_inicio")
+            .update(datosPosicion)
+            .eq("cliente_id", clienteId)
+            .select("cliente_id");
+
+        if (error || !data || data.length === 0) {
+            console.error(
+                "No se pudo guardar automáticamente la posición del buscador:",
+                error || "No se encontró la configuración del negocio."
+            );
+            return;
         }
-        : {
-            ajuste_buscador_x_escritorio: ajusteBuscadorX,
-            ajuste_buscador_y_escritorio: ajusteBuscadorY
-        };
 
-    const { data, error } = await clienteSupabase
-        .from("configuracion_inicio")
-        .update(datosPosicion)
-        .eq("cliente_id", clienteId)
-        .select("cliente_id");
-
-    if (error || !data || data.length === 0) {
-        console.error(
-            "No se pudo guardar automáticamente la posición del buscador:",
-            error || "No se encontró la configuración del negocio."
-        );
-        return;
-    }
-
-    if (configuracionGuardada) {
-        Object.assign(configuracionGuardada, datosPosicion);
+        if (configuracionGuardada) {
+            Object.assign(configuracionGuardada, datosPosicion);
+        }
+    } catch (error) {
+        console.error("Error inesperado al guardar la posición del buscador:", error);
     }
 }
 
