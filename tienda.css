@@ -318,3 +318,21 @@ body.carrito-abierto{overflow:hidden}
   opacity:1 !important;
   z-index:3003 !important;
 }
+
+
+/* FORZAR DOS COLUMNAS EN TODAS LAS PANTALLAS MOVILES */
+@media screen and (max-width: 768px) {
+  #productos-tienda.rejilla-productos {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 10px !important;
+    row-gap: 10px !important;
+    width: 100% !important;
+  }
+  #productos-tienda .producto-tienda {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
