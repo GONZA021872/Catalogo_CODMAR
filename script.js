@@ -1360,9 +1360,7 @@ function detenerMovimientoLogotipo() {
                 .select("id,nombre,presentacion,categoria,precio_publico,precio_codmar")
                 .eq("cliente_id", clienteId)
                 .eq("activo", true)
-                .ilike("nombre", "%" + termino.replace(/[%_]/g, "\\    const clienteId = usuarioCliente.cliente_id;
-
-    console.log("CLIENTE ACTUAL:", clienteId);") + "%")
+                .ilike("nombre", "%" + termino.replace(/[%_]/g, " ").trim() + "%")
                 .order("nombre", { ascending: true })
                 .limit(30);
 
