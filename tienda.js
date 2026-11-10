@@ -438,7 +438,21 @@
       prepararCargaAutomatica();
       await cargarProductos();
 
-      // Refleja los cambios visuales sin recargar los productos.
+      // Actualiza la tienda en cuanto Administración guarda un cambio.
+      // Se conserva la consulta periódica como respaldo si Realtime no está disponible.
+      supabase
+        .channel("sincronizacion-configuracion-tienda")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "configuracion_inicio"
+          },
+          () => actualizarConfiguracionTienda()
+        )
+        .subscribe();
+
       window.setInterval(actualizarConfiguracionTienda, 2000);
       document.addEventListener("visibilitychange", () => {
         if (!document.hidden) actualizarConfiguracionTienda();
