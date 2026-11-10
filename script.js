@@ -1462,7 +1462,6 @@ function detenerMovimientoLogotipo() {
             productoSeleccionadoPrecio.textContent = data.nombre + " · Precios actualizados";
             mensajeActualizarPrecios.textContent = "¡Precios actualizados correctamente!";
             await cargarMedicamentosCatalogo();
-            await buscarProductosParaActualizarPrecios();
         } catch (error) {
             console.error("Error al actualizar precios:", error);
             mensajeActualizarPrecios.textContent = "No se pudieron guardar los precios. " + (error.message || "");
@@ -5825,4 +5824,9 @@ hacerVentanaMovible(
 hacerVentanaMovible(
     document.getElementById("formulario-categorias"),
     document.querySelector("#formulario-categorias h2")
+);
+
+hacerVentanaMovible(
+    document.getElementById("formulario-actualizar-precios"),
+    document.querySelector("#formulario-actualizar-precios h2")
 );
