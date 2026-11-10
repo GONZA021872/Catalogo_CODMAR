@@ -1536,6 +1536,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             const botonActualizarPreciosPrincipal = document.createElement("button");
             botonActualizarPreciosPrincipal.textContent = "ACTUALIZAR PRECIOS";
             botonActualizarPreciosPrincipal.type = "button";
+            botonActualizarPreciosPrincipal.classList.add("modo-activo");
             botonActualizarPreciosPrincipal.addEventListener(
                 "click",
                 abrirVentanaActualizarPrecios
