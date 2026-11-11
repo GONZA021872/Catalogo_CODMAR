@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#ffffff">
   <title>CODMAR | Tienda</title>
-  <link rel="stylesheet" href="tienda.css?v=29">
+  <link rel="stylesheet" href="tienda.css?v=30">
 </head>
 <body>
   <header class="encabezado-tienda" id="encabezado-tienda">
@@ -45,6 +45,28 @@
     <div id="observador-tienda" class="observador-tienda" aria-hidden="true"></div>
   </main>
 
+  <div id="fondo-selector-producto" class="fondo-selector-producto" hidden>
+    <section class="panel-selector-producto" role="dialog" aria-modal="true" aria-labelledby="titulo-selector-producto">
+      <button id="cerrar-selector-producto" class="cerrar-selector-producto" type="button" aria-label="Cerrar">×</button>
+      <div class="contenido-selector-producto">
+        <div class="imagen-selector-producto"><img id="imagen-selector-producto" alt=""></div>
+        <div class="datos-selector-producto">
+          <h2 id="titulo-selector-producto">Producto</h2>
+          <p id="presentacion-selector-producto"></p>
+          <p class="precio-unitario-selector">Precio: <strong id="precio-selector-producto">$0.00</strong></p>
+          <label class="etiqueta-cantidad-selector">Cantidad</label>
+          <div class="controles-selector-producto">
+            <button id="menos-selector-producto" type="button" aria-label="Disminuir cantidad">−</button>
+            <output id="cantidad-selector-producto">1</output>
+            <button id="mas-selector-producto" type="button" aria-label="Aumentar cantidad">+</button>
+          </div>
+          <p class="importe-selector-producto">Importe: <strong id="importe-selector-producto">$0.00</strong></p>
+          <button id="confirmar-agregar-producto" class="boton-agregar-selector" type="button">AGREGAR AL CARRITO</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <div id="fondo-carrito" class="fondo-carrito" hidden>
     <section class="panel-carrito" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
       <div class="distribucion-compra-tienda">
@@ -78,6 +100,6 @@
   </div>
   <footer class="pie-tienda">CODMAR · Catálogo en línea</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="tienda.js?v=21"></script>
+  <script src="tienda.js?v=22"></script>
 </body>
 </html>
