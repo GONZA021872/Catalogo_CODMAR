@@ -448,22 +448,38 @@
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
-    const lineas = carrito.map(item => [
-      item.cantidad + " x " + item.nombre,
-      item.presentacion ? "   " + item.presentacion : "",
-      "   P. unitario: " + formatoPrecio.format(item.precio),
-      "   Importe: " + formatoPrecio.format(item.precio * item.cantidad)
-    ].filter(Boolean).join("\\n"));
-    const separador = "--------------------------------";
+    const productos = carrito.map(item => ({
+      cantidad: String(item.cantidad),
+      producto: item.nombre + (item.presentacion ? " " + item.presentacion : ""),
+      precio: formatoPrecio.format(item.precio),
+      importe: formatoPrecio.format(item.precio * item.cantidad)
+    }));
+    // El bloque monoespaciado de WhatsApp mantiene las cuatro columnas alineadas.
+    const anchoCantidad = Math.max("CANTIDAD".length, ...productos.map(p => p.cantidad.length));
+    const anchoProducto = Math.max("PRODUCTO".length, ...productos.map(p => p.producto.length));
+    const anchoPrecio = Math.max("PRECIO".length, ...productos.map(p => p.precio.length));
+    const anchoImporte = Math.max("IMPORTE".length, ...productos.map(p => p.importe.length));
+    const fila = (cantidad, producto, precio, importe) =>
+      cantidad.padStart(anchoCantidad) + "   " +
+      producto.padEnd(anchoProducto) + "   " +
+      precio.padStart(anchoPrecio) + "   " +
+      importe.padStart(anchoImporte);
+    const separador = "-".repeat(anchoCantidad + anchoProducto + anchoPrecio + anchoImporte + 9);
+    const tabla = [
+      fila("CANTIDAD", "PRODUCTO", "PRECIO", "IMPORTE"),
+      separador,
+      ...productos.map(p => fila(p.cantidad, p.producto, p.precio, p.importe))
+    ];
     const mensaje = [
-      "          CODMAR",
-      "       TICKET DE PEDIDO",
-      separador,
+      "CODMAR",
+      "TICKET DE PEDIDO",
       "Fecha: " + fecha,
-      separador,
-      ...lineas.flatMap(linea => [linea, separador]),
+      "",
+      "```",
+      ...tabla,
+      "```",
       "TOTAL: " + formatoPrecio.format(total),
-      separador,
+      "--------------------------------",
       "Gracias por tu preferencia.",
       "",
       "Favor de confirmar disponibilidad y entrega."
