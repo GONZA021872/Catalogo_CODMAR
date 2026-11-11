@@ -402,20 +402,7 @@
       cantidadColumna.className = "cantidad-nota-tienda";
       const cantidad = document.createElement("b");
       cantidad.textContent = String(item.cantidad);
-      const controles = document.createElement("div");
-      controles.className = "controles-cantidad";
-      const menos = document.createElement("button");
-      menos.type = "button";
-      menos.textContent = "−";
-      menos.setAttribute("aria-label", "Quitar una unidad");
-      menos.addEventListener("click", () => cambiarCantidad(item.id, -1));
-      const mas = document.createElement("button");
-      mas.type = "button";
-      mas.textContent = "+";
-      mas.setAttribute("aria-label", "Agregar una unidad");
-      mas.addEventListener("click", () => cambiarCantidad(item.id, 1));
-      controles.append(menos, mas);
-      cantidadColumna.append(cantidad, controles);
+      cantidadColumna.append(cantidad);
 
       const productoColumna = document.createElement("span");
       productoColumna.className = "producto-nota-tienda";
@@ -442,14 +429,6 @@
     porId("total-carrito").textContent = formatoPrecio.format(total);
     porId("contador-carrito").textContent = String(piezas);
     porId("enviar-pedido").disabled = !carrito.length;
-  }
-
-  function cambiarCantidad(id, cambio) {
-    const item = carrito.find(producto => producto.id === id);
-    if (!item) return;
-    item.cantidad += cambio;
-    if (item.cantidad <= 0) carrito = carrito.filter(producto => producto.id !== id);
-    actualizarCarrito();
   }
 
   function abrirCarrito() {
