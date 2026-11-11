@@ -443,15 +443,31 @@
 
   function enviarPedido() {
     if (!carrito.length) return;
-    const lineas = carrito.map(item =>
-      "- " + item.cantidad + " x " + item.nombre +
-      (item.presentacion ? " (" + item.presentacion + ")" : "") +
-      " = " + formatoPrecio.format(item.precio * item.cantidad)
-    );
     const total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
-    const mensaje = "Hola, quiero realizar este pedido en CODMAR:\n\n" +
-      lineas.join("\n") + "\n\nTotal estimado: " + formatoPrecio.format(total) +
-      "\n\n¿Me confirman disponibilidad y entrega?";
+    const fecha = new Date().toLocaleString("es-MX", {
+      day: "2-digit", month: "2-digit", year: "numeric",
+      hour: "2-digit", minute: "2-digit"
+    });
+    const lineas = carrito.map(item => [
+      item.cantidad + " x " + item.nombre,
+      item.presentacion ? "   " + item.presentacion : "",
+      "   P. unitario: " + formatoPrecio.format(item.precio),
+      "   Importe: " + formatoPrecio.format(item.precio * item.cantidad)
+    ].filter(Boolean).join("\\n"));
+    const separador = "--------------------------------";
+    const mensaje = [
+      "          CODMAR",
+      "       TICKET DE PEDIDO",
+      separador,
+      "Fecha: " + fecha,
+      separador,
+      ...lineas.flatMap(linea => [linea, separador]),
+      "TOTAL: " + formatoPrecio.format(total),
+      separador,
+      "Gracias por tu preferencia.",
+      "",
+      "Favor de confirmar disponibilidad y entrega."
+    ].join("\\n");
     window.open("https://wa.me/" + TELEFONO_PEDIDOS + "?text=" + encodeURIComponent(mensaje), "_blank", "noopener");
   }
 
