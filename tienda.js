@@ -82,7 +82,7 @@
     agregar.type = "button";
     agregar.className = "boton-agregar";
     agregar.textContent = "Agregar al carrito";
-    agregar.addEventListener("click", () => agregarAlCarrito(producto));
+    agregar.addEventListener("click", () => abrirSelectorProducto(producto));
     datos.appendChild(agregar);
 
     tarjeta.append(zonaImagen, datos);
@@ -318,20 +318,69 @@
     observador.observe(sentinel);
   }
 
-  function agregarAlCarrito(producto) {
+  let productoSeleccionado = null;
+  let cantidadSeleccionada = 1;
+
+  function abrirSelectorProducto(producto) {
+    productoSeleccionado = producto;
+    cantidadSeleccionada = 1;
+    const urlImagen = textoSeguro(producto.imagen_url);
+    const imagen = porId("imagen-selector-producto");
+    imagen.removeAttribute("src");
+    if (urlImagen) imagen.src = urlImagen;
+    imagen.alt = textoSeguro(producto.nombre) || "Producto CODMAR";
+    porId("titulo-selector-producto").textContent = textoSeguro(producto.nombre) || "Producto sin nombre";
+    porId("presentacion-selector-producto").textContent = textoSeguro(producto.presentacion);
+    porId("precio-selector-producto").textContent = formatoPrecio.format(Number(producto.precio) || 0);
+    actualizarSelectorProducto();
+    porId("fondo-selector-producto").hidden = false;
+    document.body.classList.add("selector-producto-abierto");
+  }
+
+  function actualizarSelectorProducto() {
+    const precio = Number(productoSeleccionado && productoSeleccionado.precio) || 0;
+    porId("cantidad-selector-producto").textContent = String(cantidadSeleccionada);
+    porId("importe-selector-producto").textContent = formatoPrecio.format(precio * cantidadSeleccionada);
+  }
+
+  function cerrarSelectorProducto() {
+    porId("fondo-selector-producto").hidden = true;
+    document.body.classList.remove("selector-producto-abierto");
+    productoSeleccionado = null;
+  }
+
+  function agregarAlCarrito(producto, cantidadAgregar) {
     const existente = carrito.find(item => item.id === producto.id);
-    if (existente) existente.cantidad += 1;
+    if (existente) existente.cantidad += cantidadAgregar;
     else carrito.push({
       id: producto.id,
       nombre: textoSeguro(producto.nombre),
       presentacion: textoSeguro(producto.presentacion),
       precio: Number(producto.precio) || 0,
-      cantidad: 1
+      cantidad: cantidadAgregar
     });
     actualizarCarrito();
     porId("abrir-carrito").classList.add("carrito-actualizado");
     window.setTimeout(() => porId("abrir-carrito").classList.remove("carrito-actualizado"), 450);
   }
+
+  porId("menos-selector-producto").addEventListener("click", () => {
+    cantidadSeleccionada = Math.max(1, cantidadSeleccionada - 1);
+    actualizarSelectorProducto();
+  });
+  porId("mas-selector-producto").addEventListener("click", () => {
+    cantidadSeleccionada += 1;
+    actualizarSelectorProducto();
+  });
+  porId("cerrar-selector-producto").addEventListener("click", cerrarSelectorProducto);
+  porId("fondo-selector-producto").addEventListener("click", evento => {
+    if (evento.target === porId("fondo-selector-producto")) cerrarSelectorProducto();
+  });
+  porId("confirmar-agregar-producto").addEventListener("click", () => {
+    if (!productoSeleccionado) return;
+    agregarAlCarrito(productoSeleccionado, cantidadSeleccionada);
+    cerrarSelectorProducto();
+  });
 
   function actualizarCarrito() {
     const items = porId("items-carrito");
