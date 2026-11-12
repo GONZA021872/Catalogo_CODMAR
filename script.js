@@ -2190,7 +2190,7 @@ async function eliminarMedicamentoCatalogo(medicamento, tarjeta) {
 
     if (botonGuardarTelefonoPedidos && campoTelefonoPedidos) {
         botonGuardarTelefonoPedidos.addEventListener("click", async function () {
-            const telefono = campoTelefonoPedidos.value.replace(/\\D/g, "");
+            const telefono = campoTelefonoPedidos.value.replace(/\D/g, "");
             if (telefono.length < 10 || telefono.length > 15) {
                 alert("Escribe un número de WhatsApp válido con código de país.");
                 campoTelefonoPedidos.focus();
