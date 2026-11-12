@@ -1815,10 +1815,26 @@ function normalizarClaveLote(valor) {
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .toLocaleLowerCase()
-        .replace(/\.(jpg|jpeg|png|webp|gif|bmp)$/i, "")
+        .replace(/\.(jpg|jpeg|png|webp|gif|bmp|avif|heic|heif)$/i, "")
         .replace(/[^a-z0-9]+/g, " ")
         .trim()
         .replace(/\s+/g, " ");
+}
+
+function esArchivoImagenLote(archivo) {
+    return !!archivo && (
+        (archivo.type || "").startsWith("image/") ||
+        /\.(jpe?g|png|webp|gif|bmp|avif|heic|heif)$/i.test(archivo.name || "")
+    );
+}
+
+function clavesPosiblesFotoLote(nombreArchivo) {
+    const sinExtension = String(nombreArchivo || "").replace(/\.[^.]+$/, "");
+    const claves = [normalizarClaveLote(sinExtension)];
+    const sinId = sinExtension.replace(/^\s*\d{1,8}[_\-\s]+/, "");
+    const claveSinId = normalizarClaveLote(sinId);
+    if (claveSinId && !claves.includes(claveSinId)) claves.push(claveSinId);
+    return claves.filter(Boolean);
 }
 
 function abrirCargaMasivaProductos() {
@@ -2038,9 +2054,10 @@ function abrirCargaMasivaProductos() {
         selectorLote.value = String(Math.min(loteAnterior, Math.max(0, numeroLotes - 1)));
         if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre, precio público y precio CODMAR.");
         mapaImagenes = new Map();
-        Array.from(archivoFotos.files).filter(f => f.type.startsWith("image/")).forEach(f => {
-            const clave = normalizarClaveLote(f.name.replace(/\.[^.]+$/, ""));
-            if (!mapaImagenes.has(clave)) mapaImagenes.set(clave, f);
+        Array.from(archivoFotos.files).filter(esArchivoImagenLote).forEach(f => {
+            clavesPosiblesFotoLote(f.name).forEach(clave => {
+                if (!mapaImagenes.has(clave)) mapaImagenes.set(clave, f);
+            });
         });
         const inicioLote = Number(selectorLote.value || 0) * 100;
         const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + 100);
@@ -2094,7 +2111,7 @@ function abrirCargaMasivaProductos() {
     archivoFotos.addEventListener("change", () => {
         revisionCompleta = false;
         botonSubir.disabled = true;
-        const cantidad = Array.from(archivoFotos.files || []).filter(f => f.type.startsWith("image/")).length;
+        const cantidad = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote).length;
         estado.textContent = cantidad
             ? "Fotografías seleccionadas: " + cantidad + ". Ahora valida el lote."
             : "No se encontraron fotografías en la selección.";
@@ -2136,7 +2153,8 @@ function abrirCargaMasivaProductos() {
                 const extension = (fila.foto.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
                 const nombreArchivo = normalizarClaveLote(fila.nombre).replace(/\s+/g, "_").slice(0, 80) || "producto";
                 const rutaImagen = "productos/" + clienteId + "/" + normalizarClaveLote(fila.categoria).replace(/\s+/g, "_") + "/lote_" + Date.now() + "_" + i + "_" + nombreArchivo + "." + extension;
-                const subida = await clienteSupabase.storage.from("imagenes").upload(rutaImagen, fila.foto, { upsert: false, contentType: fila.foto.type });
+                const tipoImagen = fila.foto.type || ({ jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", bmp: "image/bmp", avif: "image/avif", heic: "image/heic", heif: "image/heif" }[extension] || "application/octet-stream");
+                const subida = await clienteSupabase.storage.from("imagenes").upload(rutaImagen, fila.foto, { upsert: false, contentType: tipoImagen });
                 if (subida.error) throw subida.error;
                 fotoActual = rutaImagen;
                 const url = clienteSupabase.storage.from("imagenes").getPublicUrl(rutaImagen).data.publicUrl;
