@@ -459,8 +459,19 @@
       "PRECIO".padStart(anchoPrecio) +
       "IMPORTE".padStart(9);
     const separadorPunteado = "................................";
+    const anchoNombre = 26;
+    const ajustarNombreTicket = texto => {
+      const nombre = String(texto || "").replace(/\\s+/g, " ").trim();
+      if (nombre.length <= anchoNombre) return nombre;
+      const espacioRestante = anchoNombre - 1;
+      const caracteresInicio = Math.ceil(espacioRestante / 2);
+      const caracteresFinal = Math.floor(espacioRestante / 2);
+      return nombre.slice(0, caracteresInicio) + "…" +
+        nombre.slice(-caracteresFinal);
+    };
     const lineasProductos = carrito.flatMap(item => {
-      const nombre = (item.nombre + (item.presentacion ? " " + item.presentacion : "")).trim();
+      const nombreCompleto = (item.nombre + (item.presentacion ? " " + item.presentacion : "")).trim();
+      const nombre = ajustarNombreTicket(nombreCompleto);
       const valores = String(item.cantidad).padStart(3).padEnd(anchoCantidad) +
         monedaTicket(item.precio).padStart(anchoPrecio) +
         monedaTicket(item.precio * item.cantidad).padStart(9);
