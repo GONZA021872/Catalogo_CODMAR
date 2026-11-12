@@ -3360,14 +3360,11 @@ tachar_precio_publico: tacharPrecioPublico.checked,
         const nombreNormalizado = categoria
             .trim()
             .normalize("NFD")
-            .replace(/[\\u0300-\\u036f]/g, "")
+            .replace(/[\u0300-\u036f]/g, "")
             .toLocaleLowerCase()
-            .replace(/\\s+/g, " ");
+            .replace(/\s+/g, " ");
 
-        if (
-            nombreNormalizado.includes("material") &&
-            nombreNormalizado.includes("curacion")
-        ) {
+        if (nombreNormalizado === "material de curacion") {
             const enlaceTiendaPublica =
                 document.getElementById("boton-abrir-tienda");
 
