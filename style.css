@@ -3558,3 +3558,51 @@ transform: translateY(-25px);
         overflow-wrap: break-word;
     }
 }
+
+
+/* Corregir alineación del contenido de nombre comercial en celular */
+@media (max-width: 768px) {
+    #formulario-nombre-comercial {
+        box-sizing: border-box;
+        width: calc(100vw - 32px);
+        max-width: 420px;
+        min-width: 0;
+        padding: 16px 18px 14px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #formulario-nombre-comercial h2 {
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    #formulario-nombre-comercial .opcion-encabezado {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        margin: 12px 0;
+    }
+
+    #formulario-nombre-comercial .opcion-encabezado label {
+        position: static !important;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        left: auto !important;
+        margin: 0 0 5px;
+        text-align: left;
+    }
+
+    #formulario-nombre-comercial input,
+    #formulario-nombre-comercial select {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        margin: 0;
+    }
+}
