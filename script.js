@@ -1844,9 +1844,6 @@ function abrirCargaMasivaProductos() {
     cerrar.textContent = "CERRAR";
     cerrar.addEventListener("click", () => fondo.remove());
     panel.appendChild(cerrar);
-    const ayuda = document.createElement("p");
-    ayuda.textContent = "Elige el Excel y la carpeta con las fotos. Cada foto debe tener el nombre del producto. Primero revisaremos que todo coincida; después se cargarán los productos y las imágenes a Supabase.";
-    panel.appendChild(ayuda);
     function crearCampo(etiquetaTexto, tipo) {
         const etiqueta = document.createElement("label");
         etiqueta.className = "campo-carga-masiva-codmar";
@@ -1864,13 +1861,18 @@ function abrirCargaMasivaProductos() {
         panel.appendChild(etiqueta);
         return entrada;
     }
-    const archivoExcel = crearCampo("1. Selecciona el archivo de Excel", "excel");
-    const archivoFotos = crearCampo("2. Selecciona la carpeta de imágenes", "carpeta");
+    const archivoExcel = crearCampo("1. Archivo Excel (.xls o .xlsx)", "excel");
+    const archivoFotos = crearCampo("2. Carpeta con las fotografías", "carpeta");
     const campoLote = document.createElement("label");
     campoLote.className = "campo-carga-masiva-codmar";
     const textoLote = document.createElement("span");
-    textoLote.textContent = "Bloque de importación (máximo 100 productos)";
+    textoLote.textContent = "Lote que deseas cargar (máximo 100 productos)";
     const selectorLote = document.createElement("select");
+    const opcionLoteInicial = document.createElement("option");
+    opcionLoteInicial.value = "";
+    opcionLoteInicial.textContent = "Primero selecciona y lee el Excel";
+    selectorLote.appendChild(opcionLoteInicial);
+    selectorLote.disabled = true;
     campoLote.append(textoLote, selectorLote);
     panel.appendChild(campoLote);
     const campoCategoria = document.createElement("label");
@@ -1903,7 +1905,7 @@ function abrirCargaMasivaProductos() {
     panel.appendChild(estado);
     const botonRevisar = document.createElement("button");
     botonRevisar.type = "button";
-    botonRevisar.textContent = "REVISAR ARCHIVOS";
+    botonRevisar.textContent = "LEER EXCEL";
     botonRevisar.className = "boton-accion-carga-masiva-codmar";
     panel.appendChild(botonRevisar);
     const botonSubir = document.createElement("button");
@@ -2000,10 +2002,23 @@ function abrirCargaMasivaProductos() {
                     break;
                 }
             }
+            const filasDetectadas = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0)
+                .filter(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
+            const numeroLotesDetectados = Math.ceil(filasDetectadas.length / 100);
+            selectorLote.innerHTML = "";
+            for (let lote = 0; lote < numeroLotesDetectados; lote++) {
+                const desde = lote * 100 + 1;
+                const hasta = Math.min((lote + 1) * 100, filasDetectadas.length);
+                const opcion = document.createElement("option");
+                opcion.value = String(lote);
+                opcion.textContent = "Lote " + (lote + 1) + ": productos " + desde + " al " + hasta;
+                selectorLote.appendChild(opcion);
+            }
+            selectorLote.disabled = numeroLotesDetectados === 0;
             mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
             botonRevisar.textContent = "VALIDAR LOTE";
             zonaColumnas.addEventListener("change", function () { revisionCompleta = false; botonSubir.disabled = true; });
-            estado.textContent = "Revisa los campos de columnas que aparecieron y confirma que cada uno apunte al dato correcto. Luego pulsa VALIDAR LOTE.";
+            estado.textContent = "Excel leído: " + filasDetectadas.length + " productos. Selecciona el lote, confirma las columnas y pulsa VALIDAR LOTE.";
             return;
         }
         const filasDatos = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0);
@@ -2060,8 +2075,30 @@ function abrirCargaMasivaProductos() {
         revisionCompleta = invalidas.length === 0;
         botonSubir.disabled = !revisionCompleta;
     }
-    archivoExcel.addEventListener("change", () => { matrizExcel = null; mapaColumnas = null; zonaColumnas.innerHTML = ""; botonSubir.disabled = true; botonRevisar.textContent = "REVISAR ARCHIVOS"; });
-    archivoFotos.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+    archivoExcel.addEventListener("change", () => {
+        matrizExcel = null;
+        mapaColumnas = null;
+        zonaColumnas.innerHTML = "";
+        selectorLote.innerHTML = "";
+        const opcion = document.createElement("option");
+        opcion.value = "";
+        opcion.textContent = "Primero lee el Excel";
+        selectorLote.appendChild(opcion);
+        selectorLote.disabled = true;
+        filasPreparadas = [];
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+        botonRevisar.textContent = "LEER EXCEL";
+        estado.textContent = archivoExcel.files[0] ? "Archivo seleccionado: " + archivoExcel.files[0].name : "";
+    });
+    archivoFotos.addEventListener("change", () => {
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+        const cantidad = Array.from(archivoFotos.files || []).filter(f => f.type.startsWith("image/")).length;
+        estado.textContent = cantidad
+            ? "Fotografías seleccionadas: " + cantidad + ". Ahora valida el lote."
+            : "No se encontraron fotografías en la selección.";
+    });
     selectorCategoria.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
     selectorLote.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
     botonRevisar.addEventListener("click", async function () {
