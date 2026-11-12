@@ -3618,3 +3618,70 @@ transform: translateY(-25px);
         transform: translate(-50%, -50%);
     }
 }
+
+
+/* Ventana compacta de importación masiva en celulares */
+@media (max-width: 600px) {
+    .fondo-carga-masiva-codmar {
+        align-items: flex-start;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+
+    .panel-carga-masiva-codmar {
+        width: 100%;
+        max-height: calc(100dvh - 20px);
+        box-sizing: border-box;
+        padding: 14px 12px;
+        border-radius: 10px;
+    }
+
+    .panel-carga-masiva-codmar h2 {
+        margin: 0 78px 10px 0;
+        font-size: 17px;
+        line-height: 1.2;
+    }
+
+    .panel-carga-masiva-codmar p {
+        margin: 8px 0;
+        font-size: 13px;
+    }
+
+    .campo-carga-masiva-codmar {
+        margin: 8px 0;
+        font-size: 13px;
+    }
+
+    .campo-carga-masiva-codmar span {
+        margin-bottom: 4px;
+    }
+
+    .campo-carga-masiva-codmar input[type=file],
+    .campo-carga-masiva-codmar select {
+        padding: 7px;
+        font-size: 13px;
+    }
+
+    .columnas-carga-masiva-codmar {
+        margin-top: 6px;
+    }
+
+    .estado-carga-masiva-codmar {
+        padding: 8px;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .boton-accion-carga-masiva-codmar {
+        margin: 5px 5px 0 0;
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    .cerrar-carga-masiva-codmar {
+        top: 12px;
+        right: 12px;
+        padding: 7px 9px;
+        font-size: 11px;
+    }
+}
