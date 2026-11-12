@@ -486,7 +486,7 @@
       "Gracias por tu preferencia.",
       "",
       "Favor de confirmar disponibilidad y entrega."
-    ].join("\\n");
+    ].join("\n");
     window.open("https://wa.me/" + TELEFONO_PEDIDOS + "?text=" + encodeURIComponent(mensaje), "_blank", "noopener");
   }
 
