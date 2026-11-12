@@ -404,7 +404,23 @@ const mensajeNuevaPassword =
 /* ABRIR VENTANA DE RECUPERACIÓN */
 
 if (botonMostrarRecuperacion && pantallaRecuperacion) {
-    botonMostrarRecuperacion.addEventListener("click", function () {
+    botonMostrarRecuperacion.addEventListener("click", async function () {
+
+        const parametrosVistaRecuperacion = new URLSearchParams(window.location.search);
+        const slugVistaRecuperacion = parametrosVistaRecuperacion.get("negocio");
+        if (slugVistaRecuperacion) {
+            const { data: identidadVistaRecuperacion } = await clienteSupabase
+                .from("configuracion_tienda_codmar_publica")
+                .select("nombre_comercial")
+                .eq("negocio_slug", slugVistaRecuperacion)
+                .maybeSingle();
+
+            if (identidadVistaRecuperacion?.nombre_comercial) {
+                const tituloRecuperacion = document.getElementById("nombre-plataforma-recuperacion");
+                tituloRecuperacion.textContent = identidadVistaRecuperacion.nombre_comercial;
+                document.title = identidadVistaRecuperacion.nombre_comercial + " | Recuperar cuenta";
+            }
+        }
 
         pantallaLogin.style.setProperty("display", "none", "important");
 
@@ -459,21 +475,36 @@ if (botonEnviarRecuperacion && correoRecuperacion) {
         botonEnviarRecuperacion.disabled = true;
 
         try {
-            const { error } =
-                const parametrosRecuperacion = new URLSearchParams();
-                if (negocioSlugAcceso) {
-                    parametrosRecuperacion.set("negocio", negocioSlugAcceso);
-                }
-                const destinoRecuperacion =
-                    "https://gonza021872.github.io/Catalogo_CODMAR/" +
-                    (parametrosRecuperacion.toString()
-                        ? "?" + parametrosRecuperacion.toString()
-                        : "");
+            const parametrosRecuperacion = new URLSearchParams(window.location.search);
+            const negocioSlugRecuperacion = parametrosRecuperacion.get("negocio");
 
-                const { error } =
-                    await clienteSupabase.auth.resetPasswordForEmail(email, {
-                        redirectTo: destinoRecuperacion
-                    });
+            if (negocioSlugRecuperacion) {
+                const { data: identidadRecuperacion, error: errorIdentidadRecuperacion } =
+                    await clienteSupabase
+                        .from("configuracion_tienda_codmar_publica")
+                        .select("nombre_comercial")
+                        .eq("negocio_slug", negocioSlugRecuperacion)
+                        .maybeSingle();
+
+                if (!errorIdentidadRecuperacion && identidadRecuperacion?.nombre_comercial) {
+                    const tituloRecuperacion = document.getElementById("nombre-plataforma-recuperacion");
+                    if (tituloRecuperacion) {
+                        tituloRecuperacion.textContent = identidadRecuperacion.nombre_comercial;
+                    }
+                    document.title = identidadRecuperacion.nombre_comercial + " | Recuperar cuenta";
+                }
+            }
+
+            const destinoRecuperacion =
+                "https://gonza021872.github.io/Catalogo_CODMAR/" +
+                (negocioSlugRecuperacion
+                    ? "?negocio=" + encodeURIComponent(negocioSlugRecuperacion)
+                    : "");
+
+            const { error } =
+                await clienteSupabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: destinoRecuperacion
+                });
 
             if (error) {
                 console.error("Error al solicitar recuperación:", error);
