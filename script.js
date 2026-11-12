@@ -121,6 +121,57 @@ if (campoPassword && botonMostrarPassword) {
         console.error("Error al obtener la sesión:", errorSesion);
     }
 
+    const parametrosAcceso = new URLSearchParams(window.location.search);
+    const negocioSlugAcceso = parametrosAcceso.get("negocio");
+    let sesionValidaParaNegocio = true;
+
+    if (negocioSlugAcceso) {
+        const { data: identidadAcceso, error: errorIdentidadAcceso } =
+            await clienteSupabase
+                .from("configuracion_tienda_codmar_publica")
+                .select("nombre_comercial, negocio_slug")
+                .eq("negocio_slug", negocioSlugAcceso)
+                .maybeSingle();
+
+        if (errorIdentidadAcceso) {
+            console.error("No se pudo identificar el negocio de este acceso:", errorIdentidadAcceso);
+        }
+
+        if (identidadAcceso) {
+            const nombreAcceso = (identidadAcceso.nombre_comercial || "").trim() || "CODMAR";
+            const tituloLogin = document.getElementById("nombre-plataforma-login");
+            const tituloRegistro = document.getElementById("nombre-plataforma-registro");
+            if (tituloLogin) tituloLogin.textContent = nombreAcceso;
+            if (tituloRegistro) tituloRegistro.textContent = nombreAcceso;
+            document.title = nombreAcceso + " | Acceso";
+        }
+
+        if (session) {
+            const { data: usuarioAcceso } = await clienteSupabase
+                .from("usuarios")
+                .select("cliente_id")
+                .eq("auth_user_id", session.user.id)
+                .maybeSingle();
+
+            const { data: clienteAcceso } = usuarioAcceso
+                ? await clienteSupabase
+                    .from("clientes")
+                    .select("slug")
+                    .eq("id", usuarioAcceso.cliente_id)
+                    .maybeSingle()
+                : { data: null };
+
+            if (!clienteAcceso || clienteAcceso.slug !== negocioSlugAcceso) {
+                sesionValidaParaNegocio = false;
+                await clienteSupabase.auth.signOut();
+                const avisoAcceso = document.getElementById("mensaje-login");
+                if (avisoAcceso) {
+                    avisoAcceso.textContent = "Esta dirección corresponde a otro negocio. Inicia sesión con la cuenta correcta.";
+                }
+            }
+        }
+    }
+
     // Comprobar si la URL contiene información del enlace de recuperación.
     const hashActual = window.location.hash;
     const parametrosActuales = new URLSearchParams(
@@ -182,7 +233,7 @@ if (campoPassword && botonMostrarPassword) {
 
     if (modoRecuperacion) {
         mostrarFormularioNuevaPassword();
-    } else if (session) {
+    } else if (session && sesionValidaParaNegocio) {
         console.log("Usuario autenticado:", session.user.id);
 
         pantallaLogin.style.setProperty("display", "none", "important");
@@ -679,7 +730,7 @@ if (
     /*       DETENER CARGA SI NO HAY SESIÓN              */
     /* ================================================= */
 
-    if (!session) {
+    if (!session || !sesionValidaParaNegocio) {
         return;
     }
 
