@@ -29,6 +29,8 @@
   let observador = null;
   let temporizadorBusqueda = null;
   let carrito = [];
+  let telefonoPedidosTienda = "";
+  let nombreTiendaActiva = "CODMAR";
 
   function textoSeguro(valor) {
     return String(valor ?? "").trim();
@@ -158,6 +160,8 @@
   function aplicarIdentidad(config) {
     if (!config) return;
     configuracionTiendaActiva = config;
+    telefonoPedidosTienda = String(config.telefono_pedidos || "").replace(/\\D/g, "");
+    nombreTiendaActiva = textoSeguro(config.nombre_comercial) || "CODMAR";
 
     // Administración trabaja con un ajuste distinto para computadora y celular.
     const movil = window.matchMedia("(max-width: 768px)").matches;
@@ -451,6 +455,10 @@
 
   function enviarPedido() {
     if (!carrito.length) return;
+    if (!telefonoPedidosTienda) {
+      mostrarEstado("Esta tienda aún no ha configurado su WhatsApp para recibir pedidos.", "error");
+      return;
+    }
     const total = carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0);
     const fecha = new Date().toLocaleString("es-MX", {
       day: "2-digit", month: "2-digit", year: "numeric",
@@ -487,7 +495,7 @@
     });
     const totalTexto = "TOTAL".padEnd(17) + monedaTicket(total).padStart(9);
     const mensaje = [
-      "CODMAR",
+      nombreTiendaActiva,
       "TICKET DE PEDIDO",
       "Fecha: " + fecha,
       "",
@@ -499,7 +507,7 @@
       totalTexto,
       "```",
     ].join("\n");
-    window.open("https://wa.me/" + TELEFONO_PEDIDOS + "?text=" + encodeURIComponent(mensaje), "_blank", "noopener");
+    window.open("https://wa.me/" + telefonoPedidosTienda + "?text=" + encodeURIComponent(mensaje), "_blank", "noopener");
   }
 
   buscador.addEventListener("input", () => {
