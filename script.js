@@ -143,6 +143,8 @@ if (campoPassword && botonMostrarPassword) {
             const tituloRegistro = document.getElementById("nombre-plataforma-registro");
             if (tituloLogin) tituloLogin.textContent = nombreAcceso;
             if (tituloRegistro) tituloRegistro.textContent = nombreAcceso;
+            const tituloRecuperacion = document.getElementById("nombre-plataforma-recuperacion");
+            if (tituloRecuperacion) tituloRecuperacion.textContent = nombreAcceso;
             document.title = nombreAcceso + " | Acceso";
         }
 
@@ -187,7 +189,7 @@ if (campoPassword && botonMostrarPassword) {
     }
 
     // Escuchar el evento de recuperación de Supabase.
-    clienteSupabase.auth.onAuthStateChange(function (evento) {
+    clienteSupabase.auth.onAuthStateChange(function (evento, sesionEvento) {
         if (evento === "PASSWORD_RECOVERY") {
             modoRecuperacion = true;
             mostrarFormularioNuevaPassword();
@@ -458,10 +460,20 @@ if (botonEnviarRecuperacion && correoRecuperacion) {
 
         try {
             const { error } =
-                await clienteSupabase.auth.resetPasswordForEmail(email, {
-                    redirectTo:
-                        "https://gonza021872.github.io/Catalogo_CODMAR/"
-                });
+                const parametrosRecuperacion = new URLSearchParams();
+                if (negocioSlugAcceso) {
+                    parametrosRecuperacion.set("negocio", negocioSlugAcceso);
+                }
+                const destinoRecuperacion =
+                    "https://gonza021872.github.io/Catalogo_CODMAR/" +
+                    (parametrosRecuperacion.toString()
+                        ? "?" + parametrosRecuperacion.toString()
+                        : "");
+
+                const { error } =
+                    await clienteSupabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: destinoRecuperacion
+                    });
 
             if (error) {
                 console.error("Error al solicitar recuperación:", error);
