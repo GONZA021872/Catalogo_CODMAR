@@ -160,7 +160,7 @@
   function aplicarIdentidad(config) {
     if (!config) return;
     configuracionTiendaActiva = config;
-    telefonoPedidosTienda = String(config.telefono_pedidos || "").replace(/\\D/g, "");
+    telefonoPedidosTienda = String(config.telefono_pedidos || "").replace(/\D/g, "");
     nombreTiendaActiva = textoSeguro(config.nombre_comercial) || "CODMAR";
 
     // Administración trabaja con un ajuste distinto para computadora y celular.
