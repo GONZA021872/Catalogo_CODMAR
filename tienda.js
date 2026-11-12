@@ -448,25 +448,37 @@
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
+    // Ticket compacto: ancho máximo pensado para la pantalla de un celular.
+    // Se usan importes sin centavos para que las cuatro columnas no se desborden.
+    const monedaTicket = valor => "$" + (Number(valor) || 0).toLocaleString("es-MX", {
+      maximumFractionDigits: 0
+    });
     const productos = carrito.map(item => ({
       cantidad: String(item.cantidad),
       producto: item.nombre + (item.presentacion ? " " + item.presentacion : ""),
-      precio: formatoPrecio.format(item.precio),
-      importe: formatoPrecio.format(item.precio * item.cantidad)
+      precio: monedaTicket(item.precio),
+      importe: monedaTicket(item.precio * item.cantidad)
     }));
-    // El bloque monoespaciado de WhatsApp mantiene las cuatro columnas alineadas.
-    const anchoCantidad = Math.max("CANTIDAD".length, ...productos.map(p => p.cantidad.length));
-    const anchoProducto = Math.max("PRODUCTO".length, ...productos.map(p => p.producto.length));
+    const anchoMaximo = 34;
+    const anchoCantidad = Math.max(3, ...productos.map(p => p.cantidad.length));
     const anchoPrecio = Math.max("PRECIO".length, ...productos.map(p => p.precio.length));
     const anchoImporte = Math.max("IMPORTE".length, ...productos.map(p => p.importe.length));
+    const anchoProducto = Math.max(5, anchoMaximo - anchoCantidad - anchoPrecio - anchoImporte - 9);
+    const ajustarProducto = valor => {
+      const limpio = String(valor).replace(/\\s+/g, " ").trim();
+      return limpio.length > anchoProducto
+        ? limpio.slice(0, Math.max(1, anchoProducto - 1)) + "…"
+        : limpio;
+    };
     const fila = (cantidad, producto, precio, importe) =>
-      cantidad.padStart(anchoCantidad) + "   " +
-      producto.padEnd(anchoProducto) + "   " +
-      precio.padStart(anchoPrecio) + "   " +
+      cantidad.padStart(anchoCantidad) + " | " +
+      ajustarProducto(producto).padEnd(anchoProducto) + " | " +
+      precio.padStart(anchoPrecio) + " | " +
       importe.padStart(anchoImporte);
-    const separador = "-".repeat(anchoCantidad + anchoProducto + anchoPrecio + anchoImporte + 9);
+    const anchoReal = anchoCantidad + anchoProducto + anchoPrecio + anchoImporte + 9;
+    const separador = "-".repeat(anchoReal);
     const tabla = [
-      fila("CANTIDAD", "PRODUCTO", "PRECIO", "IMPORTE"),
+      fila("CANT.", "PRODUCTO", "PRECIO", "IMPORTE"),
       separador,
       ...productos.map(p => fila(p.cantidad, p.producto, p.precio, p.importe))
     ];
