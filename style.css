@@ -3524,3 +3524,9 @@ transform: translateY(-25px);
         padding: 9px 10px !important;
     }
 }
+
+/* Mantener Tienda pública del mismo color que las demás opciones del menú */
+.panel-menu .opcion-menu-enlace,
+.panel-menu .opcion-menu-enlace:visited {
+    color: #333;
+}
