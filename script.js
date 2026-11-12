@@ -3355,6 +3355,28 @@ tachar_precio_publico: tacharPrecioPublico.checked,
             botonConfiguracion
         );
     });
+
+    // Colocar el acceso a la tienda pública justo después de
+    // la categoría Material de curación, aunque las categorías sean dinámicas.
+    const enlaceTiendaPublica =
+        document.getElementById("boton-abrir-tienda");
+
+    const opcionMaterialCuracion = Array.from(
+        listaCategorias.querySelectorAll(".opcion-categoria")
+    ).find(function (elemento) {
+        return elemento.textContent
+            .trim()
+            .normalize("NFD")
+            .replace(/[\\u0300-\\u036f]/g, "")
+            .toLocaleLowerCase() === "material de curacion";
+    });
+
+    if (enlaceTiendaPublica && opcionMaterialCuracion) {
+        opcionMaterialCuracion.insertAdjacentElement(
+            "afterend",
+            enlaceTiendaPublica
+        );
+    }
 }
 
 
