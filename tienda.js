@@ -448,28 +448,25 @@
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
-    // Ticket compacto: encabezados una sola vez y cada producto en dos renglones.
+    // Ticket para celular: encabezado único, producto en su renglón
+    // y cantidad, precio e importe alineados debajo en una sola línea.
     const monedaTicket = valor => "$" + (Number(valor) || 0).toLocaleString("es-MX", {
       maximumFractionDigits: 0
     });
-    const anchoColumna = 13;
-    const encabezado = [
-      "CANTIDAD".padEnd(anchoColumna),
-      "PRECIO".padEnd(anchoColumna),
-      "IMPORTE"
-    ].join("");
-    const separadorPunteado = ".......................................";
-    const lineasProductos = carrito.flatMap((item, indice) => {
+    const anchoCantidad = 8;
+    const anchoPrecio = 9;
+    const encabezado = "CANTIDAD".padEnd(anchoCantidad) +
+      "PRECIO".padStart(anchoPrecio) +
+      "IMPORTE".padStart(9);
+    const separadorPunteado = "................................";
+    const lineasProductos = carrito.flatMap(item => {
       const nombre = (item.nombre + (item.presentacion ? " " + item.presentacion : "")).trim();
-      const valores = [
-        String(item.cantidad).padStart(3).padEnd(anchoColumna),
-        monedaTicket(item.precio).padEnd(anchoColumna),
-        monedaTicket(item.precio * item.cantidad)
-      ].join("");
-      return indice === 0
-        ? [nombre, valores, ""]
-        : [separadorPunteado, nombre, valores, ""];
+      const valores = String(item.cantidad).padStart(3).padEnd(anchoCantidad) +
+        monedaTicket(item.precio).padStart(anchoPrecio) +
+        monedaTicket(item.precio * item.cantidad).padStart(9);
+      return [nombre, valores, ""];
     });
+    const totalTexto = "TOTAL".padEnd(17) + monedaTicket(total).padStart(9);
     const mensaje = [
       "CODMAR",
       "TICKET DE PEDIDO",
@@ -480,7 +477,7 @@
       "",
       ...lineasProductos,
       separadorPunteado,
-      "TOTAL".padEnd(29) + monedaTicket(total),
+      totalTexto,
       "```",
       "Gracias por tu preferencia.",
       "",
