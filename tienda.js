@@ -17,6 +17,8 @@
   const categoriasEl = porId("categorias-tienda");
   const buscador = porId("buscar-productos");
   const formatoPrecio = new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" });
+  const parametrosTienda = new URLSearchParams(window.location.search);
+  const negocioSlugTienda = (parametrosTienda.get("negocio") || "co-d-mar-1").trim();
 
   let categoriaActiva = "";
   let termino = "";
@@ -100,6 +102,7 @@
     const respuestaConfigPromise = supabase
       .from("configuracion_tienda_codmar_publica")
       .select("*")
+      .eq("negocio_slug", negocioSlugTienda)
       .maybeSingle()
       .then(respuesta => {
         if (respuesta.error) {
@@ -114,6 +117,7 @@
     const respuestaCategorias = await supabase
       .from("catalogo_codmar_publico")
       .select("categoria")
+      .eq("negocio_slug", negocioSlugTienda)
       .order("categoria");
 
     if (respuestaCategorias.error) throw respuestaCategorias.error;
@@ -170,6 +174,9 @@
       ? config.nombre_comercial_movil
       : config.nombre_comercial_escritorio) || config.nombre_comercial || "CODMAR";
     nombreEl.textContent = textoSeguro(nombre) || "CODMAR";
+    document.title = (textoSeguro(nombre) || "CODMAR") + " | Tienda";
+    const pieTienda = document.querySelector(".pie-tienda");
+    if (pieTienda) pieTienda.textContent = (textoSeguro(nombre) || "CODMAR") + " · Catálogo en línea";
     nombreEl.hidden = config.mostrar_nombre_comercial === false;
 
     const fuente = textoSeguro(config.fuente_nombre_comercial) || "Arial";
@@ -270,6 +277,7 @@
     try {
       let consulta = supabase.from("catalogo_codmar_publico")
         .select("id,nombre,presentacion,categoria,precio_publico,precio,imagen_url")
+        .eq("negocio_slug", negocioSlugTienda)
         .order("nombre", { ascending: true })
         .range(pagina * TAMANO_PAGINA, (pagina + 1) * TAMANO_PAGINA - 1);
 
@@ -524,6 +532,7 @@
       const { data, error } = await supabase
         .from("configuracion_tienda_codmar_publica")
         .select("*")
+        .eq("negocio_slug", negocioSlugTienda)
         .maybeSingle();
 
       if (error) throw error;
