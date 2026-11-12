@@ -3530,3 +3530,11 @@ transform: translateY(-25px);
 .panel-menu .opcion-menu-enlace:visited {
     color: #333;
 }
+
+
+/* En celular, ocultar el campo de WhatsApp de pedidos; conservarlo en computadora */
+@media (max-width: 768px) {
+    .config-whatsapp-pedidos {
+        display: none !important;
+    }
+}
