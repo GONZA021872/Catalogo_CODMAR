@@ -606,3 +606,31 @@ body.selector-producto-abierto{overflow:hidden}
  .controles-selector-producto{justify-content:center}
  .boton-agregar-selector{margin-top:5px}
 }
+
+
+/* NOMBRES COMPLETOS EN TARJETAS MOVILES: evitar que se recorten */
+@media screen and (max-width: 768px) {
+  #productos-tienda .datos-producto {
+    grid-template-rows: auto 17px 18px 27px 32px !important;
+    align-items: center !important;
+  }
+
+  #productos-tienda .datos-producto h2 {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 3px 6px !important;
+    overflow: visible !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: initial !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    font-size: 12px !important;
+    line-height: 15px !important;
+    text-align: center !important;
+  }
+}
