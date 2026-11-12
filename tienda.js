@@ -448,54 +448,45 @@
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
-    // Ticket compacto: ancho máximo pensado para la pantalla de un celular.
-    // Se usan importes sin centavos para que las cuatro columnas no se desborden.
+    // Ticket para celular: nombre del producto en su propio renglón y debajo
+    // cantidad, precio e importe en tres columnas que aprovechan el ancho.
     const monedaTicket = valor => "$" + (Number(valor) || 0).toLocaleString("es-MX", {
       maximumFractionDigits: 0
     });
-    const productos = carrito.map(item => ({
-      cantidad: String(item.cantidad),
-      producto: item.nombre + (item.presentacion ? " " + item.presentacion : ""),
-      precio: monedaTicket(item.precio),
-      importe: monedaTicket(item.precio * item.cantidad)
-    }));
-    const anchoMaximo = 34;
-    const anchoCantidad = Math.max(3, ...productos.map(p => p.cantidad.length));
-    const anchoPrecio = Math.max("PRECIO".length, ...productos.map(p => p.precio.length));
-    const anchoImporte = Math.max("IMPORTE".length, ...productos.map(p => p.importe.length));
-    const anchoProducto = Math.max(5, anchoMaximo - anchoCantidad - anchoPrecio - anchoImporte - 9);
-    const ajustarProducto = valor => {
-      const limpio = String(valor).replace(/\\s+/g, " ").trim();
-      return limpio.length > anchoProducto
-        ? limpio.slice(0, Math.max(1, anchoProducto - 1)) + "…"
-        : limpio;
-    };
-    const fila = (cantidad, producto, precio, importe) =>
-      cantidad.padStart(anchoCantidad) + " | " +
-      ajustarProducto(producto).padEnd(anchoProducto) + " | " +
-      precio.padStart(anchoPrecio) + " | " +
-      importe.padStart(anchoImporte);
-    const anchoReal = anchoCantidad + anchoProducto + anchoPrecio + anchoImporte + 9;
-    const separador = "-".repeat(anchoReal);
-    const tabla = [
-      fila("CANT.", "PRODUCTO", "PRECIO", "IMPORTE"),
-      separador,
-      ...productos.map(p => fila(p.cantidad, p.producto, p.precio, p.importe))
-    ];
+    const anchoColumna = 13;
+    const encabezado = [
+      "CANTIDAD".padEnd(anchoColumna),
+      "PRECIO".padEnd(anchoColumna),
+      "IMPORTE"
+    ].join("");
+    const lineasProductos = carrito.flatMap(item => {
+      const nombre = (item.nombre + (item.presentacion ? " " + item.presentacion : "")).trim();
+      const valores = [
+        String(item.cantidad).padEnd(anchoColumna),
+        monedaTicket(item.precio).padEnd(anchoColumna),
+        monedaTicket(item.precio * item.cantidad)
+      ].join("");
+      return [
+        nombre,
+        encabezado,
+        valores,
+        ""
+      ];
+    });
     const mensaje = [
       "CODMAR",
       "TICKET DE PEDIDO",
       "Fecha: " + fecha,
       "",
       "```",
-      ...tabla,
+      ...lineasProductos,
       "```",
       "TOTAL: " + formatoPrecio.format(total),
       "--------------------------------",
       "Gracias por tu preferencia.",
       "",
       "Favor de confirmar disponibilidad y entrega."
-    ].join("\n");
+    ].join("\\n");
     window.open("https://wa.me/" + TELEFONO_PEDIDOS + "?text=" + encodeURIComponent(mensaje), "_blank", "noopener");
   }
 
