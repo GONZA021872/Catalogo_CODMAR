@@ -448,8 +448,7 @@
       day: "2-digit", month: "2-digit", year: "numeric",
       hour: "2-digit", minute: "2-digit"
     });
-    // Ticket para celular: nombre del producto en su propio renglón y debajo
-    // cantidad, precio e importe en tres columnas que aprovechan el ancho.
+    // Ticket compacto: encabezados una sola vez y cada producto en dos renglones.
     const monedaTicket = valor => "$" + (Number(valor) || 0).toLocaleString("es-MX", {
       maximumFractionDigits: 0
     });
@@ -459,19 +458,17 @@
       "PRECIO".padEnd(anchoColumna),
       "IMPORTE"
     ].join("");
-    const lineasProductos = carrito.flatMap(item => {
+    const separadorPunteado = ".......................................";
+    const lineasProductos = carrito.flatMap((item, indice) => {
       const nombre = (item.nombre + (item.presentacion ? " " + item.presentacion : "")).trim();
       const valores = [
-        String(item.cantidad).padEnd(anchoColumna),
+        String(item.cantidad).padStart(3).padEnd(anchoColumna),
         monedaTicket(item.precio).padEnd(anchoColumna),
         monedaTicket(item.precio * item.cantidad)
       ].join("");
-      return [
-        nombre,
-        encabezado,
-        valores,
-        ""
-      ];
+      return indice === 0
+        ? [nombre, valores, ""]
+        : [separadorPunteado, nombre, valores, ""];
     });
     const mensaje = [
       "CODMAR",
@@ -479,10 +476,12 @@
       "Fecha: " + fecha,
       "",
       "```",
+      encabezado,
+      "",
       ...lineasProductos,
+      separadorPunteado,
+      "TOTAL".padEnd(29) + monedaTicket(total),
       "```",
-      "TOTAL: " + formatoPrecio.format(total),
-      "--------------------------------",
       "Gracias por tu preferencia.",
       "",
       "Favor de confirmar disponibilidad y entrega."
