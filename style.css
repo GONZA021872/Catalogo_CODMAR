@@ -3606,3 +3606,14 @@ transform: translateY(-25px);
         margin: 0;
     }
 }
+
+
+/* Mantener completa y elevada la ventana sobre la franja inferior del celular */
+@media (max-width: 768px) {
+    #formulario-nombre-comercial {
+        top: calc((100dvh - 120px) / 2);
+        max-height: calc(100dvh - 140px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+}
