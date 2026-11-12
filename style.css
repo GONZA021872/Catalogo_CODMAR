@@ -3608,12 +3608,13 @@ transform: translateY(-25px);
 }
 
 
-/* Mantener completa y elevada la ventana sobre la franja inferior del celular */
+/* Centrar la ventana de nombre comercial en el espacio entre ambas franjas */
 @media (max-width: 768px) {
     #formulario-nombre-comercial {
-        top: calc((100dvh - 120px) / 2);
-        max-height: calc(100dvh - 140px);
+        top: calc((100dvh + 31px) / 2);
+        max-height: calc(100dvh - 191px);
         overflow-y: auto;
         overscroll-behavior: contain;
+        transform: translate(-50%, -50%);
     }
 }
