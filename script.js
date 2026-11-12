@@ -2181,9 +2181,40 @@ async function eliminarMedicamentoCatalogo(medicamento, tarjeta) {
         .eq("cliente_id", clienteId)
         .maybeSingle();
 
+    const campoTelefonoPedidos = document.getElementById("telefono-pedidos");
+    const botonGuardarTelefonoPedidos = document.getElementById("guardar-whatsapp-pedidos");
+
+    if (campoTelefonoPedidos) {
+        campoTelefonoPedidos.value = configuracionGuardada?.telefono_pedidos || "";
+    }
+
+    if (botonGuardarTelefonoPedidos && campoTelefonoPedidos) {
+        botonGuardarTelefonoPedidos.addEventListener("click", async function () {
+            const telefono = campoTelefonoPedidos.value.replace(/\\D/g, "");
+            if (telefono.length < 10 || telefono.length > 15) {
+                alert("Escribe un número de WhatsApp válido con código de país.");
+                campoTelefonoPedidos.focus();
+                return;
+            }
+
+            botonGuardarTelefonoPedidos.disabled = true;
+            const { error: errorTelefono } = await clienteSupabase
+                .from("configuracion_inicio")
+                .update({ telefono_pedidos: telefono })
+                .eq("cliente_id", clienteId);
+
+            if (errorTelefono) {
+                console.error("No se pudo guardar el WhatsApp de pedidos:", errorTelefono);
+                alert("No se pudo guardar el número de WhatsApp.");
+            } else {
+                if (configuracionGuardada) configuracionGuardada.telefono_pedidos = telefono;
+                alert("WhatsApp de pedidos guardado correctamente.");
+            }
+            botonGuardarTelefonoPedidos.disabled = false;
+        });
+    }
 
 
-   
 /* ================================================= */
 /*          RECUPERAR CONFIGURACIÓN DEL BUSCADOR      */
 /* ================================================= */
