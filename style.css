@@ -3538,3 +3538,23 @@ transform: translateY(-25px);
         display: none !important;
     }
 }
+
+
+/* Compactar la ventana de nombre comercial en celular */
+@media (max-width: 768px) {
+    #formulario-nombre-comercial {
+        box-sizing: border-box;
+        width: calc(100vw - 32px);
+        max-height: calc(100dvh - 100px);
+        overflow-y: auto;
+        padding: 16px 14px 12px;
+    }
+
+    #formulario-nombre-comercial h2 {
+        font-size: 14px;
+        line-height: 1.2;
+        margin: 0 0 12px;
+        max-width: 100%;
+        overflow-wrap: break-word;
+    }
+}
