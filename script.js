@@ -1348,6 +1348,24 @@ function detenerMovimientoLogotipo() {
 
     const clienteId = usuarioCliente.cliente_id;
 
+    const { data: datosNegocioActual, error: errorDatosNegocio } = await clienteSupabase
+        .from("clientes")
+        .select("slug,nombre_comercial")
+        .eq("id", clienteId)
+        .maybeSingle();
+
+    if (errorDatosNegocio) {
+        console.error("No se pudo cargar la identidad del negocio:", errorDatosNegocio);
+    }
+
+    const enlaceTiendaNegocio = document.getElementById("boton-abrir-tienda");
+    if (datosNegocioActual?.slug && enlaceTiendaNegocio) {
+        enlaceTiendaNegocio.href = "tienda.html?negocio=" + encodeURIComponent(datosNegocioActual.slug);
+        enlaceTiendaNegocio.textContent = "Mi tienda pública";
+        enlaceTiendaNegocio.title = "Abrir y compartir la tienda pública de este negocio";
+        enlaceTiendaNegocio.setAttribute("aria-label", "Abrir tienda pública de " + (datosNegocioActual.nombre_comercial || "este negocio"));
+    }
+
     console.log("CLIENTE ACTUAL:", clienteId);
 
     // =============================================
@@ -5573,6 +5591,17 @@ aceptarNombreComercial.addEventListener(
             );
         }
 
+        // Mantener el nombre general de la cuenta sincronizado con el encabezado.
+        const { error: errorActualizarNombreCuenta } = await clienteSupabase
+            .from("clientes")
+            .update({ nombre_comercial: nombreComercial.value.trim() })
+            .eq("id", clienteId);
+
+        if (errorActualizarNombreCuenta) {
+            console.error("No se pudo sincronizar el nombre comercial de la cuenta:", errorActualizarNombreCuenta);
+        } else if (datosNegocioActual) {
+            datosNegocioActual.nombre_comercial = nombreComercial.value.trim();
+        }
 
         formularioNombreComercial.classList.remove(
             "formulario-abierto"
