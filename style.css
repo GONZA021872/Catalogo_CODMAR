@@ -2282,6 +2282,33 @@ transform: translateY(-25px);
     color: white;
 }
 
+/* Acceso directo a la tienda pública, separado de los controles administrativos. */
+.controles-modo-catalogo .boton-tienda-publica-principal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    border: 1px solid #159c96;
+    border-radius: 7px;
+    background: #159c96;
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+}
+.controles-modo-catalogo .boton-tienda-publica-principal:hover {
+    background: #117f7a;
+    color: #ffffff;
+}
+
+/* El nombre comercial es texto, no un campo editable ni un recuadro. */
+#nombre-comercial-encabezado {
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
 
 /* ============================================= */
 /* DISEÑO DE CAPTURA DE PRODUCTOS CODMAR         */
