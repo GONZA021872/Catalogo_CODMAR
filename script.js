@@ -5087,6 +5087,16 @@ tamanoNombreComercial.addEventListener(
 );
 
 
+function obtenerRutaLogotipoPropio(url) {
+    if (!url) return null;
+    const marcador = "/storage/v1/object/public/imagenes/";
+    const posicion = url.indexOf(marcador);
+    if (posicion === -1) return null;
+    let ruta = url.slice(posicion + marcador.length).split("?")[0];
+    try { ruta = decodeURIComponent(ruta); } catch (_) {}
+    return ruta.startsWith(`negocios/${clienteId}/logotipo/`) ? ruta : null;
+}
+
 /* ================================================= */
 /*         ACEPTAR CONFIGURACIÓN DEL LOGOTIPO         */
 /* ================================================= */
@@ -5108,17 +5118,20 @@ aceptarLogotipo.addEventListener(
             ? configuracionGuardada?.logotipo_url_movil || null
             : configuracionGuardada?.logotipo_url_escritorio || null;
 
+        const urlLogotipoAnterior = logotipoUrl;
+        let rutaLogotipoNueva = null;
 
-        
-/* SUBIR IMAGEN SI SE SELECCIONÓ UN ARCHIVO */
+        /* SUBIR IMAGEN SI SE SELECCIONÓ UN ARCHIVO */
 
-if (archivo) {
+        if (archivo) {
 
     const nombreArchivo =
         `logotipo_${Date.now()}_${archivo.name}`;
 
     const rutaLogotipo =
         `negocios/${clienteId}/logotipo/${nombreArchivo}`;
+
+    rutaLogotipoNueva = rutaLogotipo;
 
     const { error: errorSubida } = await clienteSupabase
         .storage
@@ -5189,9 +5202,21 @@ const datosLogo = {
                 error
             );
 
+            if (rutaLogotipoNueva) {
+                await clienteSupabase.storage.from("imagenes").remove([rutaLogotipoNueva]);
+            }
             return;
         }
 
+        const rutaLogotipoAnterior = obtenerRutaLogotipoPropio(urlLogotipoAnterior);
+        if (rutaLogotipoAnterior && rutaLogotipoAnterior !== rutaLogotipoNueva) {
+            const { error: errorEliminar } = await clienteSupabase.storage
+                .from("imagenes")
+                .remove([rutaLogotipoAnterior]);
+            if (errorEliminar) {
+                console.error("El nuevo logotipo quedó guardado, pero no se pudo borrar el anterior:", errorEliminar);
+            }
+        }
 
         /* ACTUALIZAR CONFIGURACIÓN EN MEMORIA */
 
@@ -5757,6 +5782,8 @@ aceptarInicio.addEventListener(
         let logotipoUrl =
             configuracionGuardada?.logotipo_url || null;
 
+        const urlLogotipoAnteriorInicio = logotipoUrl;
+        let rutaLogotipoNuevaInicio = null;
 
         /* SUBIR LOGOTIPO SI SE SELECCIONÓ */
 
@@ -5767,6 +5794,8 @@ aceptarInicio.addEventListener(
 
             const rutaLogotipo =
                 `negocios/${clienteId}/logotipo/${nombreArchivo}`;
+
+            rutaLogotipoNuevaInicio = rutaLogotipo;
 
             const { error: errorSubida } = await clienteSupabase
                 .storage
@@ -5870,7 +5899,20 @@ aceptarInicio.addEventListener(
                 error
             );
 
+            if (rutaLogotipoNuevaInicio) {
+                await clienteSupabase.storage.from("imagenes").remove([rutaLogotipoNuevaInicio]);
+            }
             return;
+        }
+
+        const rutaLogotipoAnteriorInicio = obtenerRutaLogotipoPropio(urlLogotipoAnteriorInicio);
+        if (rutaLogotipoAnteriorInicio && rutaLogotipoAnteriorInicio !== rutaLogotipoNuevaInicio) {
+            const { error: errorEliminarInicio } = await clienteSupabase.storage
+                .from("imagenes")
+                .remove([rutaLogotipoAnteriorInicio]);
+            if (errorEliminarInicio) {
+                console.error("El nuevo logotipo quedó guardado, pero no se pudo borrar el anterior:", errorEliminarInicio);
+            }
         }
 
         if (configuracionGuardada) {
