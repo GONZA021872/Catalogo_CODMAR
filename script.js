@@ -5209,7 +5209,7 @@ const datosLogo = {
         }
 
         const rutaLogotipoAnterior = obtenerRutaLogotipoPropio(urlLogotipoAnterior);
-        if (rutaLogotipoAnterior && rutaLogotipoAnterior !== rutaLogotipoNueva) {
+        if (rutaLogotipoNueva && rutaLogotipoAnterior && rutaLogotipoAnterior !== rutaLogotipoNueva) {
             const { error: errorEliminar } = await clienteSupabase.storage
                 .from("imagenes")
                 .remove([rutaLogotipoAnterior]);
@@ -5906,7 +5906,7 @@ aceptarInicio.addEventListener(
         }
 
         const rutaLogotipoAnteriorInicio = obtenerRutaLogotipoPropio(urlLogotipoAnteriorInicio);
-        if (rutaLogotipoAnteriorInicio && rutaLogotipoAnteriorInicio !== rutaLogotipoNuevaInicio) {
+        if (rutaLogotipoNuevaInicio && rutaLogotipoAnteriorInicio && rutaLogotipoAnteriorInicio !== rutaLogotipoNuevaInicio) {
             const { error: errorEliminarInicio } = await clienteSupabase.storage
                 .from("imagenes")
                 .remove([rutaLogotipoAnteriorInicio]);
