@@ -1570,6 +1570,19 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
 
             controlesModo.appendChild(botonAdministracion);
 
+            // Acceso visible a la tienda pública del negocio que inició sesión.
+            // El slug procede del registro del cliente actual, nunca de CODMAR fijo.
+            if (datosNegocioActual?.slug) {
+                const enlaceTiendaPrincipal = document.createElement("a");
+                enlaceTiendaPrincipal.href = "tienda.html?negocio=" + encodeURIComponent(datosNegocioActual.slug);
+                enlaceTiendaPrincipal.textContent = "TIENDA PÚBLICA";
+                enlaceTiendaPrincipal.className = "boton-tienda-publica-principal";
+                enlaceTiendaPrincipal.target = "_blank";
+                enlaceTiendaPrincipal.rel = "noopener";
+                enlaceTiendaPrincipal.setAttribute("aria-label", "Abrir tienda pública de " + (datosNegocioActual.nombre_comercial || "este negocio"));
+                controlesModo.appendChild(enlaceTiendaPrincipal);
+            }
+
             const botonActualizarPreciosPrincipal = document.createElement("button");
             botonActualizarPreciosPrincipal.textContent = "ACTUALIZAR PRECIOS";
             botonActualizarPreciosPrincipal.type = "button";
