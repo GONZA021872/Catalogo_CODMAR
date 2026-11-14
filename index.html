@@ -596,33 +596,50 @@
 
     <h2>CONFIGURACIÓN DE CATEGORÍAS</h2>
 
-    <p id="titulo-accion-categoria">
-        Escribe el nombre de la categoría:
-    </p>
+    <section class="seccion-crear-categoria">
+        <p id="titulo-accion-categoria">
+            Escribe el nombre de la categoría:
+        </p>
 
-    <input
-        type="text"
-        id="nombre-categoria"
-        placeholder=""
-        maxlength="60"
-        autocomplete="off"
-    >
+        <input
+            type="text"
+            id="nombre-categoria"
+            placeholder=""
+            maxlength="60"
+            autocomplete="off"
+        >
 
-    <div class="botones-categorias">
+        <div class="botones-categorias">
+            <button id="aceptar-categoria" type="button">
+                ACEPTAR
+            </button>
+        </div>
+    </section>
 
-        <button id="aceptar-categoria" type="button">
-            ACEPTAR
-        </button>
+    <hr class="separador-categorias">
 
-        <button id="editar-categoria" type="button">
-            EDITAR
-        </button>
+    <section class="seccion-borrar-categoria">
+        <p id="titulo-borrar-categoria">
+            Escribe el nombre de la categoría que deseas borrar:
+        </p>
 
-        <button id="cerrar-categorias" type="button">
-            CERRAR
-        </button>
+        <input
+            type="text"
+            id="nombre-categoria-borrar"
+            placeholder="Nombre exacto de la categoría"
+            maxlength="60"
+            autocomplete="off"
+        >
 
-    </div>
+        <div class="botones-categorias">
+            <button id="borrar-categoria" type="button">
+                BORRAR
+            </button>
+            <button id="cerrar-categorias" type="button">
+                CERRAR
+            </button>
+        </div>
+    </section>
 
     <p id="mensaje-categorias" aria-live="polite"></p>
 
