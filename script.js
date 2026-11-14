@@ -2961,8 +2961,11 @@ const nombreCategoria =
 const aceptarCategoria =
     document.getElementById("aceptar-categoria");
 
-const editarCategoria =
-    document.getElementById("editar-categoria");
+const nombreCategoriaBorrar =
+    document.getElementById("nombre-categoria-borrar");
+
+const borrarCategoria =
+    document.getElementById("borrar-categoria");
 
 const mensajeCategorias =
     document.getElementById("mensaje-categorias");
@@ -3591,6 +3594,7 @@ function prepararNuevaCategoria() {
     aceptarCategoria.textContent = "ACEPTAR";
 
     mensajeCategorias.textContent = "";
+    if (nombreCategoriaBorrar) nombreCategoriaBorrar.value = "";
 }
 
 /* ============================================= */
@@ -3611,7 +3615,8 @@ if (
     formularioCategorias &&
     nombreCategoria &&
     aceptarCategoria &&
-    editarCategoria &&
+    nombreCategoriaBorrar &&
+    borrarCategoria &&
     cerrarCategorias &&
     mensajeCategorias &&
     tituloAccionCategoria &&
@@ -3714,243 +3719,56 @@ if (
 
 
 
-/* BOTÓN EDITAR */
+/* BORRAR CATEGORÍA DESDE LA MISMA VENTANA */
 
-editarCategoria.addEventListener("click", function () {
-
-    const ventanaAnterior = document.getElementById(
-        "ventana-seleccionar-categoria"
-    );
-
-    if (ventanaAnterior) {
-        ventanaAnterior.remove();
-    }
-
-    let indiceSeleccionado = null;
-
-    const ventana = document.createElement("div");
-
-    ventana.id = "ventana-seleccionar-categoria";
-    ventana.className = "formulario-inicio formulario-abierto";
-
-    const titulo = document.createElement("h2");
-    titulo.textContent = "¿QUÉ CATEGORÍA QUIERES EDITAR?";
-    titulo.style.marginBottom = "25px";
-
-    const campoCategoria = document.createElement("input");
-
-    campoCategoria.type = "text";
-    campoCategoria.id = "campo-categoria-editar";
-    campoCategoria.placeholder = "Nombre de la categoría";
-    campoCategoria.maxLength = 60;
-    campoCategoria.autocomplete = "off";
-
-    Object.assign(campoCategoria.style, {
-        display: "block",
-        width: "100%",
-        boxSizing: "border-box",
-        margin: "0 0 25px 0",
-        padding: "12px",
-        fontSize: "16px"
-    });
-
-    const mensaje = document.createElement("p");
-    mensaje.setAttribute("aria-live", "polite");
-
-    const contenedorBotones = document.createElement("div");
-    contenedorBotones.className = "botones-categorias";
-
-    Object.assign(contenedorBotones.style, {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexWrap: "wrap",
-        gap: "12px",
-        marginTop: "10px"
-    });
-
-     function crearBoton(texto) {
-    const boton = document.createElement("button");
-    boton.type = "button";
-    boton.textContent = texto;
-    return boton;
-}
-
-const botonEditar = crearBoton("EDITAR");
-const botonBorrar = crearBoton("BORRAR");
-const botonAceptar = crearBoton("ACEPTAR");
-const botonCerrar = crearBoton("CERRAR");
-
-botonCerrar.addEventListener("click", function () {
-    ventana.remove();
-    formularioCategorias.classList.add("formulario-abierto");
-});
-
-
-function buscarCategoria(nombre) {
-
-
-        const nombreBuscado = nombre.trim().toLocaleLowerCase();
-
-        return categorias.findIndex(function (categoria) {
-            return categoria.toLocaleLowerCase() === nombreBuscado;
-        });
-    }
-         async function guardarYActualizar() {
-    
-          if (!(await guardarCategorias())) {
-            return false;
-        }
-
-        mostrarCategorias();
-        mostrarCategoriasParaAdministrar();
-
-        return true;
-    }
-
-    /* EDITAR: SELECCIONAR LA CATEGORÍA EXISTENTE */
-
-    botonEditar.addEventListener("click", async function () {
-
-        const nombre = campoCategoria.value.trim();
-
-        if (!nombre) {
-            mensaje.textContent = "Escribe el nombre de la categoría.";
-            campoCategoria.focus();
-            return;
-        }
-
-        const indice = buscarCategoria(nombre);
-
-        if (indice === -1) {
-            mensaje.textContent = "No se encontró esa categoría.";
-            return;
-        }
-
-        indiceSeleccionado = indice;
-        campoCategoria.value = categorias[indice];
-
-        mensaje.textContent =
-            "Categoría seleccionada. Cambia el nombre y pulsa ACEPTAR.";
-
-        campoCategoria.focus();
-        campoCategoria.select();
-    });
-
-    
-/* BORRAR: ELIMINAR LA CATEGORÍA DEL MENÚ */
-
-botonBorrar.addEventListener("click", async function () {
-
-    const nombre = campoCategoria.value.trim();
+borrarCategoria.addEventListener("click", async function () {
+    const nombre = nombreCategoriaBorrar.value.trim();
 
     if (!nombre) {
-        mensaje.textContent = "Escribe el nombre de la categoría que quieres borrar.";
-        campoCategoria.focus();
+        mensajeCategorias.textContent =
+            "Escribe el nombre de la categoría que deseas borrar.";
+        nombreCategoriaBorrar.focus();
         return;
     }
 
-    const indice = buscarCategoria(nombre);
+    const normalizar = valor => valor
+        .normalize("NFD")
+        .replace(/[\\u0300-\\u036f]/g, "")
+        .trim()
+        .toLocaleLowerCase();
+
+    const indice = categorias.findIndex(
+        categoria => normalizar(categoria) === normalizar(nombre)
+    );
 
     if (indice === -1) {
-        mensaje.textContent = "No se encontró esa categoría.";
+        mensajeCategorias.textContent =
+            "No se encontró esa categoría en la lista guardada.";
+        nombreCategoriaBorrar.focus();
         return;
     }
 
-    const categoriaEliminada = categorias[indice];
+    const confirmar = window.confirm(
+        '¿Deseas borrar la categoría "' + categorias[indice] +
+        '" del menú? Los productos y sus fotografías se conservarán.'
+    );
 
+    if (!confirmar) return;
+
+    const categoriasAnteriores = [...categorias];
     categorias.splice(indice, 1);
 
-   if (!(await guardarYActualizar())) {
-    categorias.splice(indice, 0, categoriaEliminada);
-    return;
-}
+    if (!(await guardarCategorias())) {
+        categorias = categoriasAnteriores;
+        return;
+    }
 
-    indiceSeleccionado = null;
-    campoCategoria.value = "";
-
-    ventana.remove();
-
-    formularioCategorias.classList.add("formulario-abierto");
-
+    mostrarCategorias();
+    mostrarCategoriasParaAdministrar();
+    nombreCategoriaBorrar.value = "";
+    mensajeCategorias.textContent =
+        "Categoría borrada del menú. Los productos y las fotografías se conservaron.";
 });
-
-
-
-    /* ACEPTAR: GUARDAR EL NOMBRE NUEVO */
-
-    botonAceptar.addEventListener("click", async function () {
-
-        const nombreNuevo = campoCategoria.value.trim();
-
-        if (!nombreNuevo) {
-            mensaje.textContent = "Escribe el nombre de la categoría.";
-            campoCategoria.focus();
-            return;
-        }
-
-        let indice = indiceSeleccionado;
-
-        if (indice === null) {
-            indice = buscarCategoria(nombreNuevo);
-        }
-
-        if (indice === -1 || indice === null) {
-            mensaje.textContent =
-                "No se encontró la categoría. Pulsa EDITAR primero para seleccionar una existente.";
-            return;
-        }
-
-        const repetida = categorias.some(function (categoria, i) {
-            return i !== indice &&
-                categoria.toLocaleLowerCase() === nombreNuevo.toLocaleLowerCase();
-        });
-
-        if (repetida) {
-            mensaje.textContent =
-                "Ya existe otra categoría con ese nombre.";
-            return;
-        }
-
-        const nombreAnterior = categorias[indice];
-
-        categorias[indice] = nombreNuevo;
-
-        if (!(await guardarYActualizar())) {
-    categorias[indice] = nombreAnterior;
-    return;
-}
-
-        indiceSeleccionado = null;
-        campoCategoria.value = nombreNuevo;
-
-        mensaje.textContent =
-            "Categoría guardada y menú actualizado correctamente.";
-   
-
-        ventana.remove();
-
-      formularioCategorias.classList.add("formulario-abierto");
-
- });
-
-    contenedorBotones.appendChild(botonEditar);
-    contenedorBotones.appendChild(botonBorrar);
-    contenedorBotones.appendChild(botonAceptar);
-    contenedorBotones.appendChild(botonCerrar);
-    
-   
-
-    ventana.appendChild(titulo);
-    ventana.appendChild(campoCategoria);
-    ventana.appendChild(contenedorBotones);
-    ventana.appendChild(mensaje);
-
-    document.body.appendChild(ventana);
-
-    campoCategoria.focus();
-});
-
 
     /* CERRAR VENTANA */
 
