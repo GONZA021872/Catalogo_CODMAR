@@ -3974,3 +3974,42 @@ transform: translateY(-25px);
         gap: 7px;
     }
 }
+
+
+/* CIERRE DE CONFIGURACIÓN: ACCIÓN FINAL, SEPARADA DE BORRAR */
+#formulario-categorias .acciones-cerrar-categorias {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 14px 0 2px;
+    padding-top: 11px;
+    border-top: 1px solid #e1e5e9;
+}
+
+#formulario-categorias #cerrar-categorias {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    min-width: 112px;
+    min-height: 40px;
+    margin: 0 auto;
+    padding: 9px 20px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    #formulario-categorias .acciones-cerrar-categorias {
+        margin-top: 9px;
+        padding-top: 8px;
+    }
+
+    #formulario-categorias #cerrar-categorias {
+        min-width: 100px;
+        min-height: 37px;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}
