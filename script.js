@@ -1853,7 +1853,7 @@ function clavesPosiblesFotoLote(nombreArchivo) {
     return claves.filter(Boolean);
 }
 
-function abrirCargaMasivaProductos() {
+function abrirCargaMasivaProductos(categoriaFija = null) {
     if (!window.XLSX) {
         alert("No se pudo abrir el lector de Excel. Revisa que tengas internet y actualiza la página.");
         return;
@@ -1918,16 +1918,28 @@ function abrirCargaMasivaProductos() {
         opcion.textContent = categoria;
         selectorCategoria.appendChild(opcion);
     });
-    if (!selectorCategoria.options.length) {
-        const opcion = document.createElement("option");
-        opcion.value = "medicamentos";
-        opcion.textContent = "medicamentos";
-        selectorCategoria.appendChild(opcion);
+    if (categoriaFija) {
+        if (!Array.from(selectorCategoria.options).some(o => o.value === categoriaFija)) {
+            const opcion = document.createElement("option");
+            opcion.value = categoriaFija;
+            opcion.textContent = categoriaFija;
+            selectorCategoria.appendChild(opcion);
+        }
+        selectorCategoria.value = categoriaFija;
+        selectorCategoria.disabled = true;
+        campoCategoria.hidden = true;
+    } else {
+        if (!selectorCategoria.options.length) {
+            const opcion = document.createElement("option");
+            opcion.value = "medicamentos";
+            opcion.textContent = "medicamentos";
+            selectorCategoria.appendChild(opcion);
+        }
+        const categoriaMedicamentos = Array.from(selectorCategoria.options).find(o => /medicamento/i.test(o.value));
+        if (categoriaMedicamentos) selectorCategoria.value = categoriaMedicamentos.value;
+        campoCategoria.append(textoCategoria, selectorCategoria);
+        panel.appendChild(campoCategoria);
     }
-    const categoriaMedicamentos = Array.from(selectorCategoria.options).find(o => /medicamento/i.test(o.value));
-    if (categoriaMedicamentos) selectorCategoria.value = categoriaMedicamentos.value;
-    campoCategoria.append(textoCategoria, selectorCategoria);
-    panel.appendChild(campoCategoria);
     const zonaColumnas = document.createElement("div");
     zonaColumnas.className = "columnas-carga-masiva-codmar";
     panel.appendChild(zonaColumnas);
@@ -2083,7 +2095,7 @@ function abrirCargaMasivaProductos() {
             const precioPublico = numeroPrecio(obtener(mapaColumnas.colPublico));
             const precioCodmar = numeroPrecio(obtener(mapaColumnas.colCodmar));
             const presentacion = String(obtener(mapaColumnas.colPresentacion)).trim();
-            const categoria = String(obtener(mapaColumnas.colCategoria)).trim() || selectorCategoria.value;
+            const categoria = categoriaFija || String(obtener(mapaColumnas.colCategoria)).trim() || selectorCategoria.value;
             const archivoDeclarado = String(obtener(mapaColumnas.colImagen)).trim();
             const clavesFoto = archivoDeclarado ? [normalizarClaveLote(archivoDeclarado)] : [normalizarClaveLote(nombre), normalizarClaveLote(nombre + " " + presentacion)];
             const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) || null;
@@ -2976,17 +2988,6 @@ const tituloAccionCategoria =
 const listaCategoriasGestion =
     document.getElementById("lista-categorias-gestion");
 
-// La importación se inicia desde la administración de categorías.
-const botonImportarProductosCategoria =
-    document.getElementById("boton-importar-productos-categoria");
-
-if (botonImportarProductosCategoria) {
-    botonImportarProductosCategoria.addEventListener(
-        "click",
-        abrirCargaMasivaProductos
-    );
-}
-
 const botonConfiguracion =
     document.getElementById("boton-configuracion");
 
@@ -3200,6 +3201,17 @@ botones.appendChild(cancelar);
 // =============================================
 
 ventana.appendChild(titulo);
+
+// El importador se abre desde la categoría actual y queda limitado a ella.
+const botonImportarCategoria = document.createElement("button");
+botonImportarCategoria.type = "button";
+botonImportarCategoria.textContent = "IMPORTAR PRODUCTOS";
+botonImportarCategoria.className = "boton-importar-productos-categoria";
+botonImportarCategoria.addEventListener("click", function () {
+    abrirCargaMasivaProductos(categoriaActual);
+});
+ventana.appendChild(botonImportarCategoria);
+
 ventana.appendChild(nombre);
 ventana.appendChild(filaFotografia);
 ventana.appendChild(mensaje);
