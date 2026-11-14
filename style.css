@@ -4194,3 +4194,35 @@ transform: translateY(-25px);
         font-size: 11px !important;
     }
 }
+
+
+/* Menú desplegable: mantener todas las opciones dentro del panel
+   y permitir desplazamiento con rueda del ratón o gesto táctil,
+   sin mostrar una barra de desplazamiento. */
+.panel-menu {
+    top: 101px;
+    bottom: 70px;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.panel-menu::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+@media (max-width: 768px) {
+    .panel-menu {
+        top: 101px;
+        bottom: 0;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+}
