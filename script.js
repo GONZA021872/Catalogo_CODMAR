@@ -2994,7 +2994,6 @@ const listaCategorias =
     document.getElementById("panel-menu");
 
 let categorias = [];
-let indiceCategoriaEditando = null;
 
 
 /* ============================================= */
@@ -3579,12 +3578,10 @@ tachar_precio_publico: tacharPrecioPublico.checked,
 
 
 /* ============================================= */
-/* PREPARAR UNA CATEGORÍA NUEVA                   */
+/* PREPARAR EL FORMULARIO DE CATEGORÍAS           */
 /* ============================================= */
 
 function prepararNuevaCategoria() {
-
-    indiceCategoriaEditando = null;
 
     nombreCategoria.value = "";
 
@@ -3598,7 +3595,7 @@ function prepararNuevaCategoria() {
 }
 
 /* ============================================= */
-/* MOSTRAR LISTA PARA EDITAR                      */
+/* CONTENEDOR DE ADMINISTRACIÓN DE CATEGORÍAS     */
 /* ============================================= */
 
 function mostrarCategoriasParaAdministrar() {
@@ -3666,14 +3663,9 @@ if (
             }
 
             const repetida = categorias.some(
-                function (categoria, indice) {
-
-                    if (indice === indiceCategoriaEditando) {
-                        return false;
-                    }
-
-                    return categoria.toLowerCase() ===
-                        nombre.toLowerCase();
+                function (categoria) {
+                    return categoria.toLocaleLowerCase() ===
+                        nombre.toLocaleLowerCase();
                 }
             );
 
@@ -3688,14 +3680,7 @@ if (
 
             const categoriasAnteriores = [...categorias];
 
-            if (indiceCategoriaEditando === null) {
-
-                categorias.push(nombre);
-
-            } else {
-
-                categorias[indiceCategoriaEditando] = nombre;
-            }
+            categorias.push(nombre);
      
 
              if (!(await guardarCategorias())) {
