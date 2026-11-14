@@ -4220,10 +4220,11 @@ transform: translateY(-25px);
 @media (max-width: 768px) {
     .panel-menu {
         top: 101px;
-        /* Dejar libre la franja inferior para que no tape la última opción. */
-        bottom: 76px;
+        /* El panel llega hasta el borde inferior; conserva espacio
+           desplazable para mostrar la última opción completa. */
+        bottom: 0;
         height: auto;
-        padding-bottom: 12px;
+        padding-bottom: 76px;
         box-sizing: border-box;
         overflow-x: hidden;
         overflow-y: auto;
