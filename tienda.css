@@ -634,3 +634,22 @@ body.selector-producto-abierto{overflow:hidden}
     text-align: center !important;
   }
 }
+
+
+/* ALINEAR BOTONES EN TARJETAS MOVILES SIN RECORTAR NOMBRES */
+@media screen and (max-width: 768px) {
+  #productos-tienda .producto-tienda {
+    height: 100% !important;
+  }
+
+  #productos-tienda .datos-producto {
+    flex: 1 1 auto !important;
+    grid-template-rows: minmax(min-content, 1fr) 17px 18px 27px 32px !important;
+    align-content: stretch !important;
+  }
+
+  #productos-tienda .boton-agregar {
+    align-self: stretch !important;
+    margin-top: 0 !important;
+  }
+}
