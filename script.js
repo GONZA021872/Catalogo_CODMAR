@@ -3733,7 +3733,7 @@ borrarCategoria.addEventListener("click", async function () {
 
     const normalizar = valor => valor
         .normalize("NFD")
-        .replace(/[\\u0300-\\u036f]/g, "")
+        .replace(/[\u0300-\u036f]/g, "")
         .trim()
         .toLocaleLowerCase();
 
