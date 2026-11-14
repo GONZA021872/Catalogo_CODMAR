@@ -3569,26 +3569,8 @@ tachar_precio_publico: tacharPrecioPublico.checked,
             botonConfiguracion
         );
 
-        // Insertar Tienda pública inmediatamente después de
-        // Material de curación al construir la lista dinámica.
-        const nombreNormalizado = categoria
-            .trim()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .toLocaleLowerCase()
-            .replace(/\s+/g, " ");
-
-        if (nombreNormalizado === "material de curacion") {
-            const enlaceTiendaPublica =
-                document.getElementById("boton-abrir-tienda");
-
-            if (enlaceTiendaPublica) {
-                opcion.insertAdjacentElement(
-                    "afterend",
-                    enlaceTiendaPublica
-                );
-            }
-        }
+        // Las categorías dinámicas se mantienen juntas, antes de
+        // Configuración. Tienda pública permanece antes de Salir.
     });
 }
 
