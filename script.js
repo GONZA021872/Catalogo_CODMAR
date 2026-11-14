@@ -1538,7 +1538,13 @@ console.log("CLIENTE ACTUAL:", clienteId);
 /*       CARGAR MEDICAMENTOS DEL NEGOCIO ACTUAL       */
 /* ================================================= */
 
-async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
+let terminoBusquedaCatalogo = "";
+let temporizadorBusquedaCatalogo = null;
+let secuenciaCargaCatalogo = 0;
+
+async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBusqueda = terminoBusquedaCatalogo) {
+    const idSolicitudCatalogo = ++secuenciaCargaCatalogo;
+    terminoBusquedaCatalogo = String(terminoBusqueda || "").trim();
 
     const contenedor = document.querySelector(".contenido-inicio");
 
@@ -1605,13 +1611,27 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             contenedor.appendChild(seccion);
         }
 
-        const { data: medicamentos, error } = await clienteSupabase
+        let consultaCatalogo = clienteSupabase
             .from("catalogo_codmar")
             .select("id,nombre,presentacion,categoria,precio_publico,precio_codmar,tachar_precio_publico,imagen_url,imagen_path")
             .eq("cliente_id", clienteId)
-            .eq("activo", true)
+            .eq("activo", true);
+
+        if (terminoBusquedaCatalogo) {
+            const terminoSeguro = terminoBusquedaCatalogo.replace(/[,%()\\]/g, " ").replace(/\s+/g, " ").trim();
+            if (terminoSeguro) {
+                const patronBusqueda = `%${terminoSeguro}%`;
+                consultaCatalogo = consultaCatalogo.or(
+                    `nombre.ilike.${patronBusqueda},presentacion.ilike.${patronBusqueda},categoria.ilike.${patronBusqueda}`
+                );
+            }
+        }
+
+        const { data: medicamentos, error } = await consultaCatalogo
             .order("nombre", { ascending: true })
             .range(offset, offset + tamanoPagina - 1);
+
+        if (idSolicitudCatalogo !== secuenciaCargaCatalogo) return;
 
         if (error) {
             throw error;
@@ -1629,7 +1649,9 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             if (offset === 0) {
                 const aviso = document.createElement("p");
                 aviso.className = "mensaje-catalogo-medicamentos";
-                aviso.textContent = "Todavía no hay productos registrados en esta categoría.";
+                aviso.textContent = terminoBusquedaCatalogo
+                    ? "No se encontraron productos que coincidan con: " + terminoBusquedaCatalogo
+                    : "Todavía no hay productos registrados en esta categoría.";
                 seccion.appendChild(aviso);
             }
             return;
@@ -1791,7 +1813,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false) {
             botonCargarMas.addEventListener("click", async function () {
                 botonCargarMas.disabled = true;
                 botonCargarMas.textContent = "Cargando…";
-                await cargarMedicamentosCatalogo(offset + tamanoPagina, true);
+                await cargarMedicamentosCatalogo(offset + tamanoPagina, true, terminoBusquedaCatalogo);
             });
             seccion.appendChild(botonCargarMas);
 
@@ -5787,14 +5809,42 @@ aceptarInicio.addEventListener(
 /* ================================================= */
 
 if (botonBusqueda && buscador) {
+    const campoBusqueda = document.getElementById("campo-busqueda");
 
-    botonBusqueda.addEventListener(
-        "click",
-        function () {
+    botonBusqueda.addEventListener("click", function () {
+        buscador.classList.toggle("expandido");
+        campoBusqueda?.focus();
+    });
 
-            buscador.classList.toggle("expandido");
-        }
-    );
+    if (campoBusqueda) {
+        const ejecutarBusquedaCatalogo = function () {
+            terminoBusquedaCatalogo = campoBusqueda.value.trim();
+            clearTimeout(temporizadorBusquedaCatalogo);
+            temporizadorBusquedaCatalogo = setTimeout(function () {
+                cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+            }, 300);
+        };
+
+        campoBusqueda.addEventListener("input", ejecutarBusquedaCatalogo);
+
+        campoBusqueda.addEventListener("keydown", function (evento) {
+            if (evento.key === "Enter") {
+                evento.preventDefault();
+                clearTimeout(temporizadorBusquedaCatalogo);
+                terminoBusquedaCatalogo = campoBusqueda.value.trim();
+                cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+                campoBusqueda.blur();
+            }
+
+            if (evento.key === "Escape") {
+                campoBusqueda.value = "";
+                terminoBusquedaCatalogo = "";
+                clearTimeout(temporizadorBusquedaCatalogo);
+                cargarMedicamentosCatalogo(0, false, "");
+                campoBusqueda.blur();
+            }
+        });
+    }
 }
 
 
