@@ -1401,6 +1401,22 @@ function detenerMovimientoLogotipo() {
         console.error("No se pudo cargar la identidad del negocio:", errorDatosNegocio);
     }
 
+    // El ejemplo de categoría es exclusivo de CODMAR.
+    // Los demás negocios conservan el campo vacío para escribir su propio giro.
+    const campoNombreCategoria = document.getElementById("nombre-categoria");
+    const nombreNegocioNormalizado = (datosNegocioActual?.nombre_comercial || "")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+    const slugNegocioNormalizado = (datosNegocioActual?.slug || "").toLowerCase();
+
+    if (campoNombreCategoria) {
+        const esCodmar = nombreNegocioNormalizado === "codmar" ||
+            slugNegocioNormalizado.startsWith("codmar");
+        campoNombreCategoria.placeholder = esCodmar ? "Ej. Medicamentos" : "";
+    }
+
     const enlaceTiendaNegocio = document.getElementById("boton-abrir-tienda");
     if (datosNegocioActual?.slug && enlaceTiendaNegocio) {
         enlaceTiendaNegocio.href = "tienda.html?negocio=" + encodeURIComponent(datosNegocioActual.slug);
