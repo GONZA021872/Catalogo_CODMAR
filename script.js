@@ -3206,7 +3206,7 @@ ventana.appendChild(titulo);
 const botonImportarCategoria = document.createElement("button");
 botonImportarCategoria.type = "button";
 botonImportarCategoria.textContent = "IMPORTAR PRODUCTOS";
-botonImportarCategoria.className = "boton-importar-productos-categoria";
+botonImportarCategoria.className = "boton-accion-carga-masiva-codmar boton-importar-productos-categoria";
 botonImportarCategoria.addEventListener("click", function () {
     abrirCargaMasivaProductos(categoriaActual);
 });
