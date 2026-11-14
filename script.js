@@ -3203,6 +3203,13 @@ botones.appendChild(cancelar);
 ventana.appendChild(titulo);
 
 // El importador se abre desde la categoría actual y queda limitado a ella.
+const bloqueImportarCategoria = document.createElement("div");
+bloqueImportarCategoria.className = "bloque-importar-productos-categoria";
+
+const etiquetaImportarCategoria = document.createElement("span");
+etiquetaImportarCategoria.className = "etiqueta-importar-productos-categoria";
+etiquetaImportarCategoria.textContent = "CARGA MASIVA";
+
 const botonImportarCategoria = document.createElement("button");
 botonImportarCategoria.type = "button";
 botonImportarCategoria.textContent = "IMPORTAR PRODUCTOS";
@@ -3210,7 +3217,10 @@ botonImportarCategoria.className = "boton-accion-carga-masiva-codmar boton-impor
 botonImportarCategoria.addEventListener("click", function () {
     abrirCargaMasivaProductos(categoriaActual);
 });
-ventana.appendChild(botonImportarCategoria);
+
+bloqueImportarCategoria.appendChild(etiquetaImportarCategoria);
+bloqueImportarCategoria.appendChild(botonImportarCategoria);
+ventana.appendChild(bloqueImportarCategoria);
 
 ventana.appendChild(nombre);
 ventana.appendChild(filaFotografia);
