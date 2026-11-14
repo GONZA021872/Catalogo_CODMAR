@@ -3840,7 +3840,7 @@ function buscarCategoria(nombre) {
     
 /* BORRAR: ELIMINAR LA CATEGORÍA DEL MENÚ */
 
-botonEditar.addEventListener("click", async function () {
+botonBorrar.addEventListener("click", async function () {
 
     const nombre = campoCategoria.value.trim();
 
