@@ -4013,3 +4013,184 @@ transform: translateY(-25px);
         font-size: 12px;
     }
 }
+
+
+/* =====================================================
+   AJUSTE VISUAL DE REGISTRO E IMPORTACIÓN DE PRODUCTOS
+   ===================================================== */
+#ventana-captura-medicamento {
+    background: #ffffff !important;
+    color: #111111 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    overscroll-behavior: contain;
+    padding: 22px 24px 20px !important;
+}
+
+#ventana-captura-medicamento input[type="text"] {
+    background: #ffffff !important;
+    color: #111111 !important;
+    border: 1px solid #333333 !important;
+    border-radius: 7px !important;
+}
+
+#ventana-captura-medicamento .fila-fotografia-producto {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap;
+    gap: 12px !important;
+    width: 100%;
+    margin: 8px 0 12px !important;
+    padding: 0 !important;
+}
+
+#ventana-captura-medicamento .boton-seleccionar-fotografia {
+    position: static !important;
+    left: auto !important;
+    min-height: 38px !important;
+    padding: 8px 12px !important;
+    border: 1px solid #222222 !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 12px !important;
+}
+
+#ventana-captura-medicamento .contenedor-vista-previa-producto {
+    width: 76px !important;
+    height: 82px !important;
+    flex: 0 0 76px !important;
+    margin: 0 !important;
+    border: 1px dashed #777777 !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+}
+
+#ventana-captura-medicamento .contenedor-vista-previa-producto img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    margin: 0 !important;
+    object-fit: contain !important;
+}
+
+#ventana-captura-medicamento .bloque-importar-productos-categoria {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    margin: 2px 0 14px !important;
+    padding: 10px 12px !important;
+    border: 1px solid #333333 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    text-align: center !important;
+}
+
+#ventana-captura-medicamento .etiqueta-importar-productos-categoria {
+    display: block !important;
+    margin: 0 !important;
+    color: #111111 !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: .06em;
+}
+
+#ventana-captura-medicamento .bloque-importar-productos-categoria button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: center !important;
+    width: 100% !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+    padding: 8px 12px !important;
+    border: 1px solid #222222 !important;
+    border-radius: 7px !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+}
+
+#ventana-captura-medicamento .contenedor-botones-captura {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 12px 0 7px !important;
+    padding-top: 12px !important;
+    border-top: 1px solid #dddddd !important;
+    transform: none !important;
+}
+
+#ventana-captura-medicamento button.boton-guardar-captura,
+#ventana-captura-medicamento button.boton-cancelar-captura {
+    min-width: 112px !important;
+    min-height: 39px !important;
+    height: auto !important;
+    padding: 8px 16px !important;
+    border: 1px solid #222222 !important;
+    border-radius: 8px !important;
+    background: #ffffff !important;
+    color: #111111 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+}
+
+@media (max-width: 768px) {
+    #ventana-captura-medicamento {
+        max-height: calc(100dvh - 191px) !important;
+        padding: 13px 14px 12px !important;
+    }
+
+    #ventana-captura-medicamento .fila-fotografia-producto {
+        gap: 9px !important;
+        margin: 6px 0 9px !important;
+    }
+
+    #ventana-captura-medicamento .boton-seleccionar-fotografia {
+        min-height: 36px !important;
+        padding: 7px 9px !important;
+        font-size: 11px !important;
+    }
+
+    #ventana-captura-medicamento .contenedor-vista-previa-producto {
+        width: 66px !important;
+        height: 72px !important;
+        flex-basis: 66px !important;
+    }
+
+    #ventana-captura-medicamento .bloque-importar-productos-categoria {
+        gap: 5px !important;
+        margin: 1px 0 10px !important;
+        padding: 8px 10px !important;
+    }
+
+    #ventana-captura-medicamento .etiqueta-importar-productos-categoria {
+        font-size: 10px !important;
+    }
+
+    #ventana-captura-medicamento .bloque-importar-productos-categoria button {
+        min-height: 37px !important;
+        font-size: 11px !important;
+    }
+
+    #ventana-captura-medicamento .contenedor-botones-captura {
+        gap: 9px !important;
+        margin: 9px 0 6px !important;
+        padding-top: 9px !important;
+    }
+
+    #ventana-captura-medicamento button.boton-guardar-captura,
+    #ventana-captura-medicamento button.boton-cancelar-captura {
+        min-width: 100px !important;
+        min-height: 36px !important;
+        padding: 7px 12px !important;
+        font-size: 11px !important;
+    }
+}
