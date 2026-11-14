@@ -3198,11 +3198,13 @@ botones.appendChild(cancelar);
 
            // =============================================
 // AGREGAR ELEMENTOS A LA VENTANA
-// =============================================
 
 ventana.appendChild(titulo);
+ventana.appendChild(nombre);
+ventana.appendChild(filaFotografia);
 
-// El importador se abre desde la categoría actual y queda limitado a ella.
+// CARGA MASIVA debajo del selector de fotografía,
+// limitada a la categoría desde la que se abrió.
 const bloqueImportarCategoria = document.createElement("div");
 bloqueImportarCategoria.className = "bloque-importar-productos-categoria";
 
@@ -3222,8 +3224,6 @@ bloqueImportarCategoria.appendChild(etiquetaImportarCategoria);
 bloqueImportarCategoria.appendChild(botonImportarCategoria);
 ventana.appendChild(bloqueImportarCategoria);
 
-ventana.appendChild(nombre);
-ventana.appendChild(filaFotografia);
 ventana.appendChild(mensaje);
 ventana.appendChild(botones);
 
