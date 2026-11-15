@@ -2049,38 +2049,49 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const etiquetas = (encabezado || []).map(normalizarEncabezado);
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
-        const indiceClave = encontrar(["clave"]);
+        const indiceClaveDetectado = encontrar(["clave", "claveproducto", "codigoproducto"]);
+        const indiceClave = indiceClaveDetectado >= 0 ? indiceClaveDetectado : 0;
         const indiceNombreComercial = encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]);
+        const indiceNombreParaClaves = indiceNombreComercial >= 0 ? indiceNombreComercial : 1;
 
-        // Claves del Excel en un desplegable compacto, igual al de fotografías.
+        // Desplegable visible con las claves de los primeros 13 productos válidos del Excel.
         const campoClaves = document.createElement("label");
         campoClaves.className = "campo-carga-masiva-codmar";
         const tituloClaves = document.createElement("span");
         tituloClaves.textContent = "Clave del producto";
         const listaClaves = document.createElement("select");
+        listaClaves.setAttribute("aria-label", "Claves de los 13 productos seleccionados");
+        listaClaves.style.display = "block";
+        listaClaves.style.width = "100%";
+        listaClaves.style.boxSizing = "border-box";
+        listaClaves.style.minHeight = "42px";
+        listaClaves.style.padding = "9px 12px";
+        listaClaves.style.border = "1px solid #b8c7c9";
+        listaClaves.style.borderRadius = "8px";
+        listaClaves.style.backgroundColor = "#ffffff";
+        listaClaves.style.color = "#222222";
         const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
         const clavesLeidas = filasClaves
             .filter(fila => Array.isArray(fila) &&
-                indiceClave >= 0 &&
-                indiceNombreComercial >= 0 &&
                 String(fila[indiceClave] || "").trim() &&
-                String(fila[indiceNombreComercial] || "").trim())
+                String(fila[indiceNombreParaClaves] || "").trim())
             .slice(0, 13)
             .map(fila => String(fila[indiceClave]).trim());
-        if (clavesLeidas.length) {
-            clavesLeidas.forEach(clave => {
-                const opcion = document.createElement("option");
-                opcion.value = clave;
-                opcion.textContent = clave;
-                listaClaves.appendChild(opcion);
-            });
-        } else {
+        const opcionInicialClave = document.createElement("option");
+        opcionInicialClave.value = "";
+        opcionInicialClave.textContent = clavesLeidas.length
+            ? "Selecciona una clave (" + clavesLeidas.length + " productos)"
+            : "No se encontraron claves en el Excel";
+        opcionInicialClave.disabled = clavesLeidas.length > 0;
+        opcionInicialClave.selected = true;
+        listaClaves.appendChild(opcionInicialClave);
+        clavesLeidas.forEach(clave => {
             const opcion = document.createElement("option");
-            opcion.value = "";
-            opcion.textContent = "No se encontraron claves en el Excel";
+            opcion.value = clave;
+            opcion.textContent = clave;
             listaClaves.appendChild(opcion);
-            listaClaves.disabled = true;
-        }
+        });
+        listaClaves.disabled = clavesLeidas.length === 0;
         listaClaves.size = 1;
         campoClaves.append(tituloClaves, listaClaves);
         zonaColumnas.appendChild(campoClaves);
