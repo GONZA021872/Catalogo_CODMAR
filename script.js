@@ -1999,6 +1999,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
     document.body.appendChild(fondo);
     let filasPreparadas = [];
     let mapaImagenes = new Map();
+    let fotosOrdenadasImportacion = [];
     let revisionCompleta = false;
     function selectorColumna(nombre, opciones, sugerida, opcional) {
         const etiqueta = document.createElement("label");
@@ -2160,7 +2161,14 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             return;
         }
         const filasDatos = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0);
-        const filasConDatos = filasDatos.map((fila, i) => ({ fila, indice: i })).filter(item => item.fila.some(c => String(c || "").trim()));
+        const indiceClaveDatos = Number(mapaColumnas.colClave.value);
+        const indiceNombreDatos = Number(mapaColumnas.colNombre.value);
+        const filasConDatos = filasDatos
+            .map((fila, i) => ({ fila, indice: 0 }))
+            .filter(item => Array.isArray(item.fila) &&
+                String(item.fila[indiceClaveDatos] || "").trim() &&
+                String(item.fila[indiceNombreDatos] || "").trim())
+            .map((item, indice) => ({ ...item, indice }));
         if (!filasConDatos.length) throw new Error("No encontré productos en el Excel.");
         const numeroLotes = Math.ceil(filasConDatos.length / 100);
         const loteAnterior = Number(selectorLote.value || 0);
@@ -2179,6 +2187,10 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             throw new Error("Selecciona las columnas de clave, nombre comercial, código de barras, sales, stock, precio máximo al público y precio neto.");
         }
         mapaImagenes = new Map();
+        fotosOrdenadasImportacion = Array.from(archivoFotos.files || [])
+            .filter(esArchivoImagenLote)
+            .filter(foto => /^(?:[1-9]|1[0-3])\.png$/i.test(foto.name))
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
         Array.from(archivoFotos.files).filter(esArchivoImagenLote).forEach(f => {
             clavesPosiblesFotoLote(f.name).forEach(clave => {
                 if (!mapaImagenes.has(clave)) mapaImagenes.set(clave, f);
@@ -2199,7 +2211,8 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             const presentacion = "";
             const categoria = categoriaFija || selectorCategoria.value;
             const clavesFoto = [normalizarClaveLote(nombre), normalizarClaveLote(claveProducto)];
-            const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) || null;
+            const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) ||
+                (indice < fotosOrdenadasImportacion.length ? fotosOrdenadasImportacion[indice] : null);
             const problemas = [];
             if (!claveProducto) problemas.push("falta clave del producto");
             if (!nombre) problemas.push("falta nombre");
