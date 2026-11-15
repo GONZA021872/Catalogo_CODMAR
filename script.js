@@ -2034,9 +2034,43 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const etiquetas = (encabezado || []).map(normalizarEncabezado);
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
-        const colNombre = selectorColumna("Clave del producto", opciones, encontrar(["clave"]), null);
+        const indiceClave = encontrar(["clave"]);
+        const indiceNombreComercial = encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]);
+
+        // Mostrar las claves reales del Excel; no se pide elegir una columna para ellas.
+        const campoClaves = document.createElement("div");
+        campoClaves.className = "campo-carga-masiva-codmar";
+        const tituloClaves = document.createElement("span");
+        tituloClaves.textContent = "Clave del producto";
+        const listaClaves = document.createElement("div");
+        listaClaves.style.maxHeight = "180px";
+        listaClaves.style.overflowY = "auto";
+        listaClaves.style.border = "1px solid #cbd5d8";
+        listaClaves.style.borderRadius = "8px";
+        listaClaves.style.padding = "8px";
+        listaClaves.style.background = "#fff";
+        listaClaves.style.color = "#222";
+        const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
+        const clavesLeidas = filasClaves
+            .filter(fila => Array.isArray(fila) && indiceClave >= 0 && String(fila[indiceClave] || "").trim())
+            .map(fila => String(fila[indiceClave]).trim());
+        if (clavesLeidas.length) {
+            clavesLeidas.forEach(clave => {
+                const renglon = document.createElement("div");
+                renglon.textContent = clave;
+                renglon.style.padding = "4px 2px";
+                renglon.style.borderBottom = "1px solid #edf0f1";
+                listaClaves.appendChild(renglon);
+            });
+        } else {
+            listaClaves.textContent = "No se encontraron claves en el Excel.";
+        }
+        campoClaves.append(tituloClaves, listaClaves);
+        zonaColumnas.appendChild(campoClaves);
+
+        const colNombre = selectorColumna("Nombre comercial del producto", opciones, indiceNombreComercial, null);
         const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
-        const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta"]), null);
+        const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta", "neto"]), null);
         const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
         const colCategoria = selectorColumna("Categoría (si viene en Excel)", opciones, encontrar(["categoria", "seccion", "familia"]), "Usar categoría seleccionada arriba");
         const colImagen = selectorColumna("Nombre de archivo de foto (si viene en Excel)", opciones, encontrar(["imagen", "foto", "archivoimagen", "nombreimagen"]), "Buscar foto por nombre del producto");
@@ -2062,8 +2096,8 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             indiceEncabezadoActual = -1;
             for (let i = 0; i < Math.min(20, matrizExcel.length); i++) {
                 const valores = (matrizExcel[i] || []).map(normalizarEncabezado);
-                if (valores.some(v => ["producto", "nombre", "medicamento", "descripcion"].includes(v)) &&
-                    valores.some(v => ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico", "preciomaximo", "maximo", "precio"].includes(v))) {
+                if (valores.some(v => ["clave", "producto", "nombre", "nombrecomercial", "medicamento", "descripcion"].includes(v)) &&
+                    valores.some(v => ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico", "preciomaximo", "maximo", "precio", "neto"].includes(v))) {
                     indiceEncabezadoActual = i;
                     break;
                 }
@@ -2105,7 +2139,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             selectorLote.appendChild(opcion);
         }
         selectorLote.value = String(Math.min(loteAnterior, Math.max(0, numeroLotes - 1)));
-        if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre, precio público y precio CODMAR.");
+        if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre comercial, precio público y precio CODMAR.");
         mapaImagenes = new Map();
         Array.from(archivoFotos.files).filter(esArchivoImagenLote).forEach(f => {
             clavesPosiblesFotoLote(f.name).forEach(clave => {
