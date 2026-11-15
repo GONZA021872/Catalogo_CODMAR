@@ -2043,22 +2043,28 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         const tituloClaves = document.createElement("span");
         tituloClaves.textContent = "Clave del producto";
         const listaClaves = document.createElement("div");
-        listaClaves.style.maxHeight = "180px";
+        listaClaves.style.maxHeight = "112px";
+        listaClaves.style.fontSize = "12px";
         listaClaves.style.overflowY = "auto";
         listaClaves.style.border = "1px solid #cbd5d8";
         listaClaves.style.borderRadius = "8px";
-        listaClaves.style.padding = "8px";
+        listaClaves.style.padding = "4px 6px";
         listaClaves.style.background = "#fff";
         listaClaves.style.color = "#222";
         const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
         const clavesLeidas = filasClaves
-            .filter(fila => Array.isArray(fila) && indiceClave >= 0 && String(fila[indiceClave] || "").trim())
+            .filter(fila => Array.isArray(fila) &&
+                indiceClave >= 0 &&
+                indiceNombreComercial >= 0 &&
+                String(fila[indiceClave] || "").trim() &&
+                String(fila[indiceNombreComercial] || "").trim())
+            .slice(0, 13)
             .map(fila => String(fila[indiceClave]).trim());
         if (clavesLeidas.length) {
             clavesLeidas.forEach(clave => {
                 const renglon = document.createElement("div");
                 renglon.textContent = clave;
-                renglon.style.padding = "4px 2px";
+                renglon.style.padding = "2px 2px";
                 renglon.style.borderBottom = "1px solid #edf0f1";
                 listaClaves.appendChild(renglon);
             });
@@ -2106,7 +2112,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 .filter(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
             const numeroLotesDetectados = Math.ceil(filasDetectadas.length / 100);
             selectorLote.innerHTML = "";
-            const fotosSeleccionadas = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote)
+            const fotosSeleccionadas = Array.from(archivoFotos.files || [])
+                .filter(esArchivoImagenLote)
+                .filter(foto => /^(?:[1-9]|1[0-3])\.png$/i.test(foto.name))
                 .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
             fotosSeleccionadas.forEach(foto => {
                 const opcion = document.createElement("option");
@@ -2114,9 +2122,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 opcion.textContent = foto.name;
                 selectorLote.appendChild(opcion);
             });
-            selectorLote.size = Math.min(9, Math.max(1, fotosSeleccionadas.length));
-            selectorLote.style.maxHeight = "220px";
-            selectorLote.style.overflowY = "auto";
+            selectorLote.size = 1;
+            selectorLote.style.removeProperty("max-height");
+            selectorLote.style.removeProperty("overflow-y");
             selectorLote.disabled = fotosSeleccionadas.length === 0;
             mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
             botonRevisar.textContent = "VALIDAR LOTE";
@@ -2213,9 +2221,15 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 }
                 const encabezadosPrevios = encabezadoPrevio >= 0 ? matrizPrevia[encabezadoPrevio] : [];
                 const indiceClavePrevio = encabezadosPrevios.findIndex(c => normalizarEncabezado(c) === "clave");
+                const indiceNombrePrevio = encabezadosPrevios.findIndex(c => ["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"].includes(normalizarEncabezado(c)));
                 const clavesPrevias = matrizPrevia
                     .slice(encabezadoPrevio >= 0 ? encabezadoPrevio + 1 : 0)
-                    .filter(fila => Array.isArray(fila) && indiceClavePrevio >= 0 && String(fila[indiceClavePrevio] || "").trim())
+                    .filter(fila => Array.isArray(fila) &&
+                        indiceClavePrevio >= 0 &&
+                        indiceNombrePrevio >= 0 &&
+                        String(fila[indiceClavePrevio] || "").trim() &&
+                        String(fila[indiceNombrePrevio] || "").trim())
+                    .slice(0, 13)
                     .map(fila => String(fila[indiceClavePrevio]).trim());
 
                 const campoVistaClaves = document.createElement("div");
@@ -2223,18 +2237,19 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 const tituloVistaClaves = document.createElement("span");
                 tituloVistaClaves.textContent = "Clave del producto";
                 const listaVistaClaves = document.createElement("div");
-                listaVistaClaves.style.maxHeight = "180px";
+                listaVistaClaves.style.maxHeight = "112px";
+        listaVistaClaves.style.fontSize = "12px";
                 listaVistaClaves.style.overflowY = "auto";
                 listaVistaClaves.style.border = "1px solid #cbd5d8";
                 listaVistaClaves.style.borderRadius = "8px";
-                listaVistaClaves.style.padding = "8px";
+                listaVistaClaves.style.padding = "4px 6px";
                 listaVistaClaves.style.background = "#fff";
                 listaVistaClaves.style.color = "#222";
                 if (clavesPrevias.length) {
                     clavesPrevias.forEach(clave => {
                         const renglon = document.createElement("div");
                         renglon.textContent = clave;
-                        renglon.style.padding = "4px 2px";
+                        renglon.style.padding = "2px 2px";
                         renglon.style.borderBottom = "1px solid #edf0f1";
                         listaVistaClaves.appendChild(renglon);
                     });
@@ -2253,7 +2268,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         revisionCompleta = false;
         botonSubir.disabled = true;
         selectorLote.innerHTML = "";
-        const fotos = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote)
+        const fotos = Array.from(archivoFotos.files || [])
+            .filter(esArchivoImagenLote)
+            .filter(foto => /^(?:[1-9]|1[0-3])\.png$/i.test(foto.name))
             .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
         fotos.forEach(foto => {
             const opcion = document.createElement("option");
@@ -2261,9 +2278,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             opcion.textContent = foto.name;
             selectorLote.appendChild(opcion);
         });
-        selectorLote.size = Math.min(9, Math.max(1, fotos.length));
-        selectorLote.style.maxHeight = "220px";
-        selectorLote.style.overflowY = "auto";
+        selectorLote.size = 1;
+        selectorLote.style.removeProperty("max-height");
+        selectorLote.style.removeProperty("overflow-y");
         selectorLote.disabled = fotos.length === 0;
         estado.textContent = fotos.length
             ? "Fotografías seleccionadas: " + fotos.length + ". Selecciona un archivo en la lista."
