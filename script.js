@@ -2052,10 +2052,16 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
         const indiceClave = Math.max(0, encontrar(["clave", "claveproducto", "codigoproducto"]));
         const indiceNombreComercial = Math.max(0, encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]));
+        const indiceCodigoBarras = encontrar(["codigobarras", "codigodebarras", "barcode", "ean", "upc"]);
+        const indiceSales = encontrar(["sales", "sal", "salesactivas"]);
+        const indiceStock = encontrar(["stock", "existencia", "existencias", "inventario"]);
+        const indicePublico = encontrar(["preciomaximoalpublico", "preciomaxalpublico", "preciomaximo", "preciopublico", "maximoalpublico"]);
+        const indiceNeto = encontrar(["precioneto", "neto"]);
         const filasProducto = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
             .filter(fila => Array.isArray(fila) &&
                 String(fila[indiceClave] || "").trim() &&
-                String(fila[indiceNombreComercial] || "").trim());
+                String(fila[indiceNombreComercial] || "").trim())
+            .slice(0, 13);
         const estiloDesplegable = {
             display: "block", width: "100%", minHeight: "42px", boxSizing: "border-box",
             padding: "9px 12px", border: "1px solid #222222", borderRadius: "7px",
@@ -2072,42 +2078,54 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             Object.assign(lista.style, estiloDesplegable);
             const inicial = document.createElement("option");
             inicial.value = "";
-            inicial.textContent = valores.length ? "Selecciona (" + valores.length + " productos)" : textoInicial;
+            inicial.textContent = valores.length ? "Ver datos de " + valores.length + " productos" : textoInicial;
             inicial.disabled = valores.length > 0;
             inicial.selected = true;
             lista.appendChild(inicial);
-            valores.forEach(valor => {
+            valores.forEach((valor, indice) => {
                 const opcion = document.createElement("option");
-                opcion.value = valor;
-                opcion.textContent = valor;
+                opcion.value = String(indice);
+                opcion.textContent = valor === "" || valor == null ? "(sin dato)" : String(valor);
                 lista.appendChild(opcion);
             });
             lista.disabled = valores.length === 0;
             campo.append(texto, lista);
             zonaColumnas.appendChild(campo);
         }
-        mostrarListaProductos("Clave del producto", "Claves de los 13 productos seleccionados",
-            filasProducto.slice(0, 13).map(f => String(f[indiceClave]).trim()), "No se encontraron claves en el Excel");
-        mostrarListaProductos("Nombre comercial del producto", "Nombres comerciales de los 13 productos seleccionados",
-            filasProducto.slice(0, 13).map(f => String(f[indiceNombreComercial]).trim()), "No se encontraron nombres en el Excel");
+        const mostrarValoresExcel = (indiceColumna) =>
+            indiceColumna < 0 ? [] : filasProducto.map(fila => fila[indiceColumna] ?? "");
 
-        // La clave y el nombre ya se muestran arriba. Estos selectores internos conservan su vínculo con el Excel.
+        // Cada flecha muestra los valores reales de los mismos 13 productos del Excel.
+        mostrarListaProductos("Clave del producto", "Claves de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceClave), "No se encontraron claves en el Excel");
+        mostrarListaProductos("Nombre comercial del producto", "Nombres comerciales de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceNombreComercial), "No se encontraron nombres en el Excel");
+        mostrarListaProductos("Código de barras", "Códigos de barras de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceCodigoBarras), "No se encontró la columna de códigos de barras");
+        mostrarListaProductos("Sales", "Sales de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceSales), "No se encontró la columna de sales");
+        mostrarListaProductos("Stock", "Stock de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceStock), "No se encontró la columna de stock");
+        mostrarListaProductos("Precio máximo al público", "Precios máximos al público de los 13 productos seleccionados",
+            mostrarValoresExcel(indicePublico), "No se encontró la columna de precio máximo al público");
+        mostrarListaProductos("Precio neto (precio de venta en tienda)", "Precios netos de los 13 productos seleccionados",
+            mostrarValoresExcel(indiceNeto), "No se encontró la columna de precio neto");
+
+        // Selectores internos: conservan el mapeo que utiliza la importación, sin mostrar letras de columnas.
         const colClave = selectorColumna("Clave del producto (interno)", opciones, indiceClave, null);
         colClave.parentElement.style.display = "none";
         const colNombre = selectorColumna("Nombre comercial (interno)", opciones, indiceNombreComercial, null);
         colNombre.parentElement.style.display = "none";
-
-        // Los cinco campos visibles corresponden a las columnas reales del archivo Excel.
-        const colCodigoBarras = selectorColumna("Columna del código de barras", opciones,
-            encontrar(["codigobarras", "codigodebarras", "barcode", "ean", "upc"]), null);
-        const colSales = selectorColumna("Columna de sales", opciones,
-            encontrar(["sales", "sal", "salesactivas"]), null);
-        const colStock = selectorColumna("Columna del stock", opciones,
-            encontrar(["stock", "existencia", "existencias", "inventario"]), null);
-        const colPublico = selectorColumna("Columna del precio máximo al público", opciones,
-            encontrar(["preciomaximoalpublico", "preciomaxalpublico", "preciomaximo", "preciopublico", "maximoalpublico"]), null);
-        const colNeto = selectorColumna("Columna del precio neto (precio de venta en tienda)", opciones,
-            encontrar(["precioneto", "neto"]), null);
+        const colCodigoBarras = selectorColumna("Código de barras (interno)", opciones, indiceCodigoBarras, null);
+        colCodigoBarras.parentElement.style.display = "none";
+        const colSales = selectorColumna("Sales (interno)", opciones, indiceSales, null);
+        colSales.parentElement.style.display = "none";
+        const colStock = selectorColumna("Stock (interno)", opciones, indiceStock, null);
+        colStock.parentElement.style.display = "none";
+        const colPublico = selectorColumna("Precio máximo al público (interno)", opciones, indicePublico, null);
+        colPublico.parentElement.style.display = "none";
+        const colNeto = selectorColumna("Precio neto (interno)", opciones, indiceNeto, null);
+        colNeto.parentElement.style.display = "none";
         return { colClave, colNombre, colCodigoBarras, colSales, colStock, colPublico, colNeto };
     }
     let mapaColumnas = null;
