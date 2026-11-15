@@ -1896,7 +1896,22 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
     cerrar.type = "button";
     cerrar.className = "cerrar-carga-masiva-codmar";
     cerrar.textContent = "CERRAR";
-    cerrar.addEventListener("click", () => fondo.remove());
+    cerrar.addEventListener("click", () => {
+        // Si estamos en la tercera pantalla, regresar a la selección sin perder archivos.
+        if (matrizExcel !== null) {
+            zonaColumnas.innerHTML = "";
+            matrizExcel = null;
+            mapaColumnas = null;
+            indiceEncabezadoActual = -1;
+            filasPreparadas = [];
+            revisionCompleta = false;
+            botonSubir.disabled = true;
+            botonRevisar.textContent = "LEER EXCEL";
+            estado.textContent = "Archivo Excel y fotografías conservados. Puedes volver a pulsar LEER EXCEL.";
+            return;
+        }
+        fondo.remove();
+    });
     panel.appendChild(cerrar);
     function crearCampo(etiquetaTexto, tipo) {
         const etiqueta = document.createElement("label");
@@ -2187,9 +2202,10 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         revisionCompleta = invalidas.length === 0;
         botonSubir.disabled = !revisionCompleta;
     }
-    archivoExcel.addEventListener("change", async () => {
+    archivoExcel.addEventListener("change", () => {
         matrizExcel = null;
         mapaColumnas = null;
+        indiceEncabezadoActual = -1;
         zonaColumnas.innerHTML = "";
         selectorLote.innerHTML = "";
         const opcion = document.createElement("option");
@@ -2201,68 +2217,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         revisionCompleta = false;
         botonSubir.disabled = true;
         botonRevisar.textContent = "LEER EXCEL";
-        estado.textContent = archivoExcel.files[0] ? "Archivo seleccionado: " + archivoExcel.files[0].name : "";
-
-        // Vista previa inmediata de las claves al elegir el archivo Excel.
-        if (archivoExcel.files[0]) {
-            try {
-                const datosPrevios = new Uint8Array(await archivoExcel.files[0].arrayBuffer());
-                const libroPrevio = window.XLSX.read(datosPrevios, { type: "array", cellDates: true });
-                const hojaPrevia = libroPrevio.SheetNames[0];
-                const matrizPrevia = window.XLSX.utils.sheet_to_json(libroPrevio.Sheets[hojaPrevia], { header: 1, defval: "", raw: false });
-                let encabezadoPrevio = -1;
-                for (let i = 0; i < Math.min(20, matrizPrevia.length); i++) {
-                    const valores = (matrizPrevia[i] || []).map(normalizarEncabezado);
-                    if (valores.includes("clave") &&
-                        valores.some(v => ["nombre", "nombrecomercial", "producto", "medicamento", "descripcion"].includes(v))) {
-                        encabezadoPrevio = i;
-                        break;
-                    }
-                }
-                const encabezadosPrevios = encabezadoPrevio >= 0 ? matrizPrevia[encabezadoPrevio] : [];
-                const indiceClavePrevio = encabezadosPrevios.findIndex(c => normalizarEncabezado(c) === "clave");
-                const indiceNombrePrevio = encabezadosPrevios.findIndex(c => ["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"].includes(normalizarEncabezado(c)));
-                const clavesPrevias = matrizPrevia
-                    .slice(encabezadoPrevio >= 0 ? encabezadoPrevio + 1 : 0)
-                    .filter(fila => Array.isArray(fila) &&
-                        indiceClavePrevio >= 0 &&
-                        indiceNombrePrevio >= 0 &&
-                        String(fila[indiceClavePrevio] || "").trim() &&
-                        String(fila[indiceNombrePrevio] || "").trim())
-                    .slice(0, 13)
-                    .map(fila => String(fila[indiceClavePrevio]).trim());
-
-                const campoVistaClaves = document.createElement("div");
-                campoVistaClaves.className = "campo-carga-masiva-codmar";
-                const tituloVistaClaves = document.createElement("span");
-                tituloVistaClaves.textContent = "Clave del producto";
-                const listaVistaClaves = document.createElement("div");
-                listaVistaClaves.style.maxHeight = "112px";
-        listaVistaClaves.style.fontSize = "12px";
-                listaVistaClaves.style.overflowY = "auto";
-                listaVistaClaves.style.border = "1px solid #cbd5d8";
-                listaVistaClaves.style.borderRadius = "8px";
-                listaVistaClaves.style.padding = "4px 6px";
-                listaVistaClaves.style.background = "#fff";
-                listaVistaClaves.style.color = "#222";
-                if (clavesPrevias.length) {
-                    clavesPrevias.forEach(clave => {
-                        const renglon = document.createElement("div");
-                        renglon.textContent = clave;
-                        renglon.style.padding = "2px 2px";
-                        renglon.style.borderBottom = "1px solid #edf0f1";
-                        listaVistaClaves.appendChild(renglon);
-                    });
-                    estado.textContent = "Excel seleccionado: " + clavesPrevias.length + " claves encontradas. Pulsa LEER EXCEL para continuar.";
-                } else {
-                    listaVistaClaves.textContent = "No se encontraron claves. Revisa que el Excel tenga un encabezado CLAVE.";
-                }
-                campoVistaClaves.append(tituloVistaClaves, listaVistaClaves);
-                zonaColumnas.appendChild(campoVistaClaves);
-            } catch (error) {
-                estado.textContent = "No pude leer la vista previa del Excel. Pulsa LEER EXCEL para intentarlo nuevamente.";
-            }
-        }
+        estado.textContent = archivoExcel.files[0]
+            ? "Archivo seleccionado: " + archivoExcel.files[0].name + ". Selecciona también la carpeta de fotografías y pulsa LEER EXCEL."
+            : "";
     });
     archivoFotos.addEventListener("change", () => {
         revisionCompleta = false;
