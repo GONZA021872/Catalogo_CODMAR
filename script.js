@@ -2061,15 +2061,6 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         tituloClaves.textContent = "Clave del producto";
         const listaClaves = document.createElement("select");
         listaClaves.setAttribute("aria-label", "Claves de los 13 productos seleccionados");
-        listaClaves.style.display = "block";
-        listaClaves.style.width = "100%";
-        listaClaves.style.boxSizing = "border-box";
-        listaClaves.style.minHeight = "42px";
-        listaClaves.style.padding = "9px 12px";
-        listaClaves.style.border = "1px solid #b8c7c9";
-        listaClaves.style.borderRadius = "8px";
-        listaClaves.style.backgroundColor = "#ffffff";
-        listaClaves.style.color = "#222222";
         const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
         const clavesLeidas = filasClaves
             .filter(fila => Array.isArray(fila) &&
