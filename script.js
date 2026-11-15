@@ -2050,13 +2050,16 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const etiquetas = (encabezado || []).map(normalizarEncabezado);
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
+        const encontrarPorTexto = claves => etiquetas.findIndex(h => claves.some(clave => h.includes(clave)));
         const indiceClave = Math.max(0, encontrar(["clave", "claveproducto", "codigoproducto"]));
         const indiceNombreComercial = Math.max(0, encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]));
-        const indiceCodigoBarras = encontrar(["codigobarras", "codigodebarras", "barcode", "ean", "upc"]);
+        // Aceptar los encabezados tal como vienen en el archivo: "COD. DE BARRAS",
+        // "SALES", "STOCK", "PRECIO MAX. AL PUBLICO" y "PRECIO NETO".
+        const indiceCodigoBarras = encontrar(["codigobarras", "codigodebarras", "coddebarras", "barcode", "ean", "upc"]);
         const indiceSales = encontrar(["sales", "sal", "salesactivas"]);
         const indiceStock = encontrar(["stock", "existencia", "existencias", "inventario"]);
-        const indicePublico = encontrar(["preciomaximoalpublico", "preciomaxalpublico", "preciomaximo", "preciopublico", "maximoalpublico"]);
-        const indiceNeto = encontrar(["precioneto", "neto"]);
+        const indicePublico = encontrarPorTexto(["preciomaxalpublico", "preciomaximoalpublico", "preciopublico", "maximoalpublico"]);
+        const indiceNeto = encontrarPorTexto(["precioneto"]);
         const filasProducto = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
             .filter(fila => Array.isArray(fila) &&
                 String(fila[indiceClave] || "").trim() &&
@@ -2148,8 +2151,13 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             indiceEncabezadoActual = -1;
             for (let i = 0; i < Math.min(20, matrizExcel.length); i++) {
                 const valores = (matrizExcel[i] || []).map(normalizarEncabezado);
-                if (valores.some(v => ["clave", "producto", "nombre", "nombrecomercial", "medicamento", "descripcion"].includes(v)) &&
-                    valores.some(v => ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico", "preciomaximo", "maximo", "precio", "neto"].includes(v))) {
+                const tieneNombre = valores.some(v =>
+                    ["clave", "producto", "nombre", "nombrecomercial", "medicamento", "descripcion"].includes(v));
+                const tienePrecio = valores.some(v =>
+                    ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico",
+                     "preciomaximo", "preciomaxalpublico", "maximo", "precio", "neto", "precioneto"].includes(v) ||
+                    v.includes("preciomaxalpublico") || v.includes("precioneto"));
+                if (tieneNombre && tienePrecio) {
                     indiceEncabezadoActual = i;
                     break;
                 }
