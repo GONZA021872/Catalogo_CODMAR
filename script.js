@@ -2317,7 +2317,8 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         } catch (error) {
             estado.textContent = error.message || "No pude revisar esos archivos.";
         } finally {
-            botonRevisar.disabled = false;
+            // Si ACEPTAR inició la carga, el manejador de subida libera el botón al terminar.
+            if (!revisionCompleta) botonRevisar.disabled = false;
         }
     });
     botonSubir.addEventListener("click", async function () {
