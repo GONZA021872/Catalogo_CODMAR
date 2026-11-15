@@ -2102,7 +2102,55 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         campoClaves.append(tituloClaves, listaClaves);
         zonaColumnas.appendChild(campoClaves);
 
-        const colNombre = selectorColumna("Nombre comercial del producto", opciones, indiceNombreComercial, null);
+        // Desplegable visible con los nombres comerciales de los mismos 13 productos.
+        const filasNombres = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
+            .filter(fila => Array.isArray(fila) &&
+                String(fila[indiceClave] || "").trim() &&
+                String(fila[indiceNombreParaClaves] || "").trim())
+            .slice(0, 13);
+        const campoNombres = document.createElement("label");
+        campoNombres.className = "campo-carga-masiva-codmar";
+        const tituloNombres = document.createElement("span");
+        tituloNombres.textContent = "Nombre comercial del producto";
+        const listaNombres = document.createElement("select");
+        listaNombres.setAttribute("aria-label", "Nombres comerciales de los 13 productos seleccionados");
+        Object.assign(listaNombres.style, {
+            display: "block",
+            width: "100%",
+            minHeight: "42px",
+            boxSizing: "border-box",
+            padding: "9px 12px",
+            border: "1px solid #222222",
+            borderRadius: "7px",
+            background: "#ffffff",
+            color: "#111111",
+            fontWeight: "700",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.22)",
+            appearance: "auto"
+        });
+        const opcionInicialNombre = document.createElement("option");
+        opcionInicialNombre.value = "";
+        opcionInicialNombre.textContent = filasNombres.length
+            ? "Selecciona un producto (" + filasNombres.length + " productos)"
+            : "No se encontraron nombres en el Excel";
+        opcionInicialNombre.disabled = filasNombres.length > 0;
+        opcionInicialNombre.selected = true;
+        listaNombres.appendChild(opcionInicialNombre);
+        filasNombres.forEach(fila => {
+            const nombre = String(fila[indiceNombreParaClaves]).trim();
+            const opcion = document.createElement("option");
+            opcion.value = nombre;
+            opcion.textContent = nombre;
+            listaNombres.appendChild(opcion);
+        });
+        listaNombres.disabled = filasNombres.length === 0;
+        listaNombres.size = 1;
+        campoNombres.append(tituloNombres, listaNombres);
+        zonaColumnas.appendChild(campoNombres);
+
+        // Se conserva el selector interno de columna para que la importación siga leyendo el Excel correctamente.
+        const colNombre = selectorColumna("Columna del nombre comercial (interno)", opciones, indiceNombreComercial, null);
+        colNombre.parentElement.style.display = "none";
         const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
         const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta", "neto"]), null);
         const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
