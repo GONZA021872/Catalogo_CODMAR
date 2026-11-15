@@ -2223,7 +2223,10 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             });
         });
         const inicioLote = Number(selectorLote.value || 0) * 100;
-        const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + 100);
+        // Cada lote procesa como máximo 100 productos y nunca más productos que fotografías seleccionadas.
+        // Así, si se eligieron 13 fotografías para la prueba, se preparan únicamente esos 13 productos.
+        const maxProductosPorLote = Math.min(100, fotosOrdenadasImportacion.length);
+        const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + maxProductosPorLote);
         filasPreparadas = filasDelLote.map(({ fila, indice }) => {
             const obtener = select => select.value === "" ? "" : fila[Number(select.value)] ?? "";
             const claveProducto = String(obtener(mapaColumnas.colClave)).trim();
@@ -2258,9 +2261,11 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const invalidas = filasPreparadas.filter(f => f.problemas.length);
         const resumen = invalidas.map(f => "Fila " + f.numero + ": " + (f.nombre || "sin nombre") + " — " + f.problemas.join(", ")).join("\n");
-        estado.textContent = "Encontré " + filasPreparadas.length + " productos en este lote. " + (invalidas.length ? invalidas.length + " necesitan corrección antes de subir.\n" + resumen : "Los nombres, precios e imágenes coinciden. Ya puedes subir el lote.");
         revisionCompleta = invalidas.length === 0;
         botonSubir.disabled = !revisionCompleta;
+        estado.textContent = invalidas.length
+            ? invalidas.length + " producto(s) necesitan corrección antes de continuar.\n" + resumen
+            : "Validación correcta: " + filasPreparadas.length + " productos. Iniciando la importación…";
     }
     archivoExcel.addEventListener("change", () => {
         matrizExcel = null;
