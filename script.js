@@ -1880,24 +1880,30 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         alert("No se pudo abrir el lector de Excel. Revisa que tengas internet y actualiza la página.");
         return;
     }
+
     const anterior = document.getElementById("ventana-carga-masiva-codmar");
     if (anterior) anterior.remove();
+
     const fondo = document.createElement("div");
     fondo.id = "ventana-carga-masiva-codmar";
     fondo.className = "fondo-carga-masiva-codmar";
+
     const panel = document.createElement("section");
     panel.className = "panel-carga-masiva-codmar";
     panel.setAttribute("role", "dialog");
     panel.setAttribute("aria-modal", "true");
+
     const titulo = document.createElement("h2");
     titulo.textContent = "IMPORTAR PRODUCTOS POR CATEGORÍA";
     panel.appendChild(titulo);
+
     const cerrar = document.createElement("button");
     cerrar.type = "button";
     cerrar.className = "cerrar-carga-masiva-codmar";
     cerrar.textContent = "CERRAR";
     cerrar.addEventListener("click", () => fondo.remove());
     panel.appendChild(cerrar);
+
     function crearCampo(etiquetaTexto, tipo) {
         const etiqueta = document.createElement("label");
         etiqueta.className = "campo-carga-masiva-codmar";
@@ -1915,20 +1921,23 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         panel.appendChild(etiqueta);
         return entrada;
     }
+
     const archivoExcel = crearCampo("1. Archivo Excel (.xls o .xlsx)", "excel");
     const archivoFotos = crearCampo("2. Carpeta con las fotografías", "carpeta");
+
     const campoLote = document.createElement("label");
     campoLote.className = "campo-carga-masiva-codmar";
     const textoLote = document.createElement("span");
-    textoLote.textContent = "Lote que deseas cargar (máximo 100 productos)";
+    textoLote.textContent = "Productos que deseas cargar (máximo 100 por lote)";
     const selectorLote = document.createElement("select");
     const opcionLoteInicial = document.createElement("option");
     opcionLoteInicial.value = "";
-    opcionLoteInicial.textContent = "Primero selecciona y lee el Excel";
+    opcionLoteInicial.textContent = "Primero selecciona los archivos y pulsa LEER EXCEL";
     selectorLote.appendChild(opcionLoteInicial);
     selectorLote.disabled = true;
     campoLote.append(textoLote, selectorLote);
     panel.appendChild(campoLote);
+
     const campoCategoria = document.createElement("label");
     campoCategoria.className = "campo-carga-masiva-codmar";
     const textoCategoria = document.createElement("span");
@@ -1940,6 +1949,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         opcion.textContent = categoria;
         selectorCategoria.appendChild(opcion);
     });
+
     if (categoriaFija) {
         if (!Array.from(selectorCategoria.options).some(o => o.value === categoriaFija)) {
             const opcion = document.createElement("option");
@@ -1962,56 +1972,45 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         campoCategoria.append(textoCategoria, selectorCategoria);
         panel.appendChild(campoCategoria);
     }
+
     const zonaColumnas = document.createElement("div");
     zonaColumnas.className = "columnas-carga-masiva-codmar";
     panel.appendChild(zonaColumnas);
+
     const estado = document.createElement("p");
     estado.className = "estado-carga-masiva-codmar";
     estado.setAttribute("aria-live", "polite");
     panel.appendChild(estado);
+
     const botonRevisar = document.createElement("button");
     botonRevisar.type = "button";
     botonRevisar.textContent = "LEER EXCEL";
     botonRevisar.className = "boton-accion-carga-masiva-codmar";
     panel.appendChild(botonRevisar);
+
     const botonSubir = document.createElement("button");
     botonSubir.type = "button";
     botonSubir.textContent = "SUBIR PRODUCTOS";
     botonSubir.className = "boton-accion-carga-masiva-codmar";
     botonSubir.disabled = true;
     panel.appendChild(botonSubir);
+
     fondo.appendChild(panel);
     document.body.appendChild(fondo);
+
     let filasPreparadas = [];
+    let filasConFoto = [];
     let mapaImagenes = new Map();
     let revisionCompleta = false;
-    function selectorColumna(nombre, opciones, sugerida, opcional) {
-        const etiqueta = document.createElement("label");
-        etiqueta.className = "campo-carga-masiva-codmar";
-        const texto = document.createElement("span");
-        texto.textContent = nombre;
-        const select = document.createElement("select");
-        if (!opcional && sugerida < 0) { const sinSeleccion = document.createElement("option"); sinSeleccion.value = ""; sinSeleccion.textContent = "Elige una columna"; select.appendChild(sinSeleccion); }
-        if (opcional) {
-            const o = document.createElement("option");
-            o.value = "";
-            o.textContent = opcional;
-            select.appendChild(o);
-        }
-        opciones.forEach((opcion, indice) => {
-            const o = document.createElement("option");
-            o.value = String(indice);
-            o.textContent = opcion;
-            select.appendChild(o);
-        });
-        if (sugerida >= 0) select.value = String(sugerida);
-        etiqueta.append(texto, select);
-        zonaColumnas.appendChild(etiqueta);
-        return select;
-    }
+    let matrizExcel = null;
+    let indiceEncabezadoActual = -1;
+    let indiceClave = 0;
+    let mapaColumnas = null;
+
     function normalizarEncabezado(valor) {
         return normalizarClaveLote(valor).replace(/ /g, "");
     }
+
     function numeroPrecio(valor) {
         if (typeof valor === "number") return valor;
         let texto = String(valor || "").trim().replace(/[$\s]/g, "");
@@ -2021,209 +2020,366 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         const numero = Number(texto);
         return Number.isFinite(numero) ? Math.round((numero + Number.EPSILON) * 100) / 100 : NaN;
     }
+
+    function selectorColumna(nombre, opciones, sugerida) {
+        const etiqueta = document.createElement("label");
+        etiqueta.className = "campo-carga-masiva-codmar";
+        const texto = document.createElement("span");
+        texto.textContent = nombre;
+        const select = document.createElement("select");
+        opciones.forEach((opcion, indice) => {
+            const o = document.createElement("option");
+            o.value = String(indice);
+            o.textContent = opcion;
+            select.appendChild(o);
+        });
+        if (sugerida >= 0 && sugerida < opciones.length) select.value = String(sugerida);
+        etiqueta.append(texto, select);
+        zonaColumnas.appendChild(etiqueta);
+        return select;
+    }
+
     function mostrarSelectorColumnas(matriz, indiceEncabezado) {
         zonaColumnas.innerHTML = "";
-        const encabezado = indiceEncabezado >= 0 ? matriz[indiceEncabezado] : null;
-        const muestra = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
+        const encabezado = matriz[indiceEncabezado] || [];
+        const muestra = matriz.slice(indiceEncabezado + 1)
             .find(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
-        const maxColumnas = Math.max((encabezado || []).length, (muestra || []).length);
+        const maxColumnas = Math.max(encabezado.length, (muestra || []).length);
         const opciones = Array.from({ length: maxColumnas }, (_, i) => {
-            const etiqueta = encabezado && encabezado[i] ? String(encabezado[i]).trim() : "";
+            const etiqueta = encabezado[i] ? String(encabezado[i]).trim() : "";
             const valor = muestra && muestra[i] !== undefined ? String(muestra[i]).trim() : "";
-            return String.fromCharCode(65 + i) + (etiqueta ? " — " + etiqueta : "") + (valor ? " (ej. " + valor.slice(0, 30) + ")" : "");
+            return String.fromCharCode(65 + i) + (etiqueta ? " — " + etiqueta : "") +
+                (valor ? " (ej. " + valor.slice(0, 30) + ")" : "");
         });
-        const etiquetas = (encabezado || []).map(normalizarEncabezado);
-        const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
-        const colNombre = selectorColumna("Columna del nombre del producto", opciones, encontrar(["producto", "nombre", "medicamento", "descripcion", "articulo"]), null);
-        const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
-        const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta"]), null);
-        const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
-        const colCategoria = selectorColumna("Categoría (si viene en Excel)", opciones, encontrar(["categoria", "seccion", "familia"]), "Usar categoría seleccionada arriba");
-        const colImagen = selectorColumna("Nombre de archivo de foto (si viene en Excel)", opciones, encontrar(["imagen", "foto", "archivoimagen", "nombreimagen"]), "Buscar foto por nombre del producto");
-        return { colNombre, colPublico, colCodmar, colPresentacion, colCategoria, colImagen };
+        const etiquetas = encabezado.map(normalizarEncabezado);
+        const encontrar = (prueba, respaldo) => {
+            const indice = etiquetas.findIndex(prueba);
+            return indice >= 0 ? indice : respaldo;
+        };
+
+        const colNombre = selectorColumna(
+            "Nombre comercial",
+            opciones,
+            encontrar(h => h.includes("nombrecomercial") || h === "nombre" || h.includes("producto"), 1)
+        );
+        const colPublico = selectorColumna(
+            "Precio máximo al público",
+            opciones,
+            encontrar(h => h.includes("preciomax") || h === "preciopublico", 5)
+        );
+        const colNeto = selectorColumna(
+            "Precio neto (precio de venta CODMAR)",
+            opciones,
+            encontrar(h => h.includes("precioneto"), 6)
+        );
+        return { colNombre, colPublico, colNeto };
     }
-    let mapaColumnas = null;
-    let matrizExcel = null;
-    let indiceEncabezadoActual = -1;
-    async function prepararRevision() {
+
+    function obtenerFilasConFotografia() {
+        mapaImagenes = new Map();
+        Array.from(archivoFotos.files || []).filter(esArchivoImagenLote).forEach(foto => {
+            const clave = normalizarClaveLote(foto.name);
+            if (clave && !mapaImagenes.has(clave)) mapaImagenes.set(clave, foto);
+        });
+
+        const filas = matrizExcel.slice(indiceEncabezadoActual + 1);
+        const encontradas = [];
+        filas.forEach((fila, indice) => {
+            if (!Array.isArray(fila)) return;
+            const clave = normalizarClaveLote(fila[indiceClave]);
+            const nombre = String(fila[Number(mapaColumnas.colNombre.value)] || "").trim();
+            if (!clave || !nombre) return;
+            const foto = mapaImagenes.get(clave);
+            if (foto) encontradas.push({ fila, indice, clave, foto });
+        });
+        return encontradas;
+    }
+
+    function actualizarLotes() {
+        selectorLote.innerHTML = "";
+        const cantidad = filasConFoto.length;
+        const numeroLotes = Math.ceil(cantidad / 100);
+        for (let lote = 0; lote < numeroLotes; lote++) {
+            const desde = lote * 100 + 1;
+            const hasta = Math.min((lote + 1) * 100, cantidad);
+            const opcion = document.createElement("option");
+            opcion.value = String(lote);
+            opcion.textContent = numeroLotes === 1
+                ? "Lote 1: " + cantidad + " productos"
+                : "Lote " + (lote + 1) + ": productos " + desde + " al " + hasta;
+            selectorLote.appendChild(opcion);
+        }
+        selectorLote.disabled = cantidad === 0;
+    }
+
+    async function leerExcelYPrepararLotes() {
         revisionCompleta = false;
         botonSubir.disabled = true;
         estado.textContent = "";
+
         if (!archivoExcel.files.length || !archivoFotos.files.length) {
-            estado.textContent = "Selecciona el Excel y la carpeta que contiene las imágenes.";
+            estado.textContent = "Selecciona el archivo Excel y la carpeta con fotografías.";
             return;
         }
-        if (!matrizExcel) {
-            const datos = new Uint8Array(await archivoExcel.files[0].arrayBuffer());
-            const libro = window.XLSX.read(datos, { type: "array", cellDates: true });
-            const nombreHoja = libro.SheetNames[0];
-            matrizExcel = window.XLSX.utils.sheet_to_json(libro.Sheets[nombreHoja], { header: 1, defval: "", raw: false });
-            if (!matrizExcel.length) throw new Error("El Excel no tiene filas de información.");
-            indiceEncabezadoActual = -1;
-            for (let i = 0; i < Math.min(20, matrizExcel.length); i++) {
-                const valores = (matrizExcel[i] || []).map(normalizarEncabezado);
-                if (valores.some(v => ["producto", "nombre", "medicamento", "descripcion"].includes(v)) &&
-                    valores.some(v => ["preciocodmar", "codmar", "preciocosto", "costo", "preciopublico", "publico", "preciomaximo", "maximo", "precio"].includes(v))) {
-                    indiceEncabezadoActual = i;
-                    break;
-                }
-            }
-            const filasDetectadas = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0)
-                .filter(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
-            const numeroLotesDetectados = Math.ceil(filasDetectadas.length / 100);
-            selectorLote.innerHTML = "";
-            for (let lote = 0; lote < numeroLotesDetectados; lote++) {
-                const desde = lote * 100 + 1;
-                const hasta = Math.min((lote + 1) * 100, filasDetectadas.length);
-                const opcion = document.createElement("option");
-                opcion.value = String(lote);
-                opcion.textContent = "Lote " + (lote + 1) + ": productos " + desde + " al " + hasta;
-                selectorLote.appendChild(opcion);
-            }
-            selectorLote.disabled = numeroLotesDetectados === 0;
-            mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
-            botonRevisar.textContent = "VALIDAR LOTE";
-            zonaColumnas.addEventListener("change", function () { revisionCompleta = false; botonSubir.disabled = true; });
-            estado.textContent = "Excel leído: " + filasDetectadas.length + " productos. Selecciona el lote, confirma las columnas y pulsa VALIDAR LOTE.";
-            return;
-        }
-        const filasDatos = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0);
-        const filasConDatos = filasDatos.map((fila, i) => ({ fila, indice: i })).filter(item => item.fila.some(c => String(c || "").trim()));
-        if (!filasConDatos.length) throw new Error("No encontré productos en el Excel.");
-        const numeroLotes = Math.ceil(filasConDatos.length / 100);
-        const loteAnterior = Number(selectorLote.value || 0);
-        selectorLote.innerHTML = "";
-        for (let lote = 0; lote < numeroLotes; lote++) {
-            const desde = lote * 100 + 1;
-            const hasta = Math.min((lote + 1) * 100, filasConDatos.length);
-            const opcion = document.createElement("option");
-            opcion.value = String(lote);
-            opcion.textContent = "Lote " + (lote + 1) + " — productos " + desde + " a " + hasta;
-            selectorLote.appendChild(opcion);
-        }
-        selectorLote.value = String(Math.min(loteAnterior, Math.max(0, numeroLotes - 1)));
-        if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre, precio público y precio CODMAR.");
-        mapaImagenes = new Map();
-        Array.from(archivoFotos.files).filter(esArchivoImagenLote).forEach(f => {
-            clavesPosiblesFotoLote(f.name).forEach(clave => {
-                if (!mapaImagenes.has(clave)) mapaImagenes.set(clave, f);
-            });
+
+        const datos = new Uint8Array(await archivoExcel.files[0].arrayBuffer());
+        const libro = window.XLSX.read(datos, { type: "array", cellDates: true });
+        const nombreHoja = libro.SheetNames[0];
+        matrizExcel = window.XLSX.utils.sheet_to_json(libro.Sheets[nombreHoja], {
+            header: 1, defval: "", raw: false
         });
+        if (!matrizExcel.length) throw new Error("El Excel no tiene filas de información.");
+
+        indiceEncabezadoActual = -1;
+        for (let i = 0; i < Math.min(30, matrizExcel.length); i++) {
+            const valores = (matrizExcel[i] || []).map(normalizarEncabezado);
+            const tieneClave = valores.some(v => v === "clave" || v.includes("claveproducto"));
+            const tieneNombre = valores.some(v => v.includes("nombrecomercial") || v === "nombre");
+            const tienePublico = valores.some(v => v.includes("preciomax") || v === "preciopublico");
+            const tieneNeto = valores.some(v => v.includes("precioneto"));
+            if (tieneClave && tieneNombre && tienePublico && tieneNeto) {
+                indiceEncabezadoActual = i;
+                indiceClave = valores.findIndex(v => v === "clave" || v.includes("claveproducto"));
+                break;
+            }
+        }
+
+        if (indiceEncabezadoActual < 0) {
+            throw new Error("No encontré los encabezados CLAVE, NOMBRE COMERCIAL, PRECIO MAX. AL PÚBLICO y PRECIO NETO en el Excel.");
+        }
+
+        mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
+        filasConFoto = obtenerFilasConFotografia();
+        actualizarLotes();
+        botonRevisar.textContent = "VALIDAR LOTE";
+
+        if (!filasConFoto.length) {
+            estado.textContent = "No encontré productos que coincidan con las fotografías. Revisa que los nombres de las fotos correspondan a la columna CLAVE.";
+            return;
+        }
+
+        const totalFotos = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote).length;
+        estado.textContent = "Excel leído. Fotografías seleccionadas: " + totalFotos +
+            ". Productos encontrados en el Excel: " + filasConFoto.length +
+            ". Solo estos productos aparecerán para importar.";
+    }
+
+    function validarLoteSeleccionado() {
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+
+        if (!matrizExcel || !mapaColumnas || !filasConFoto.length) {
+            estado.textContent = "Primero selecciona el Excel y la carpeta, y pulsa LEER EXCEL.";
+            return;
+        }
+
         const inicioLote = Number(selectorLote.value || 0) * 100;
-        const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + 100);
-        filasPreparadas = filasDelLote.map(({ fila, indice }) => {
-            const obtener = select => select.value === "" ? "" : fila[Number(select.value)] ?? "";
+        const filasDelLote = filasConFoto.slice(inicioLote, inicioLote + 100);
+        filasPreparadas = filasDelLote.map(item => {
+            const obtener = select => item.fila[Number(select.value)] ?? "";
             const nombre = String(obtener(mapaColumnas.colNombre)).trim();
             const precioPublico = numeroPrecio(obtener(mapaColumnas.colPublico));
-            const precioCodmar = numeroPrecio(obtener(mapaColumnas.colCodmar));
-            const presentacion = String(obtener(mapaColumnas.colPresentacion)).trim();
-            const categoria = categoriaFija || String(obtener(mapaColumnas.colCategoria)).trim() || selectorCategoria.value;
-            const archivoDeclarado = String(obtener(mapaColumnas.colImagen)).trim();
-            const clavesFoto = archivoDeclarado ? [normalizarClaveLote(archivoDeclarado)] : [normalizarClaveLote(nombre), normalizarClaveLote(nombre + " " + presentacion)];
-            const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) || null;
+            const precioCodmar = numeroPrecio(obtener(mapaColumnas.colNeto));
             const problemas = [];
-            if (!nombre) problemas.push("falta nombre");
-            if (!Number.isFinite(precioPublico) || precioPublico < 0) problemas.push("precio público inválido");
-            if (!Number.isFinite(precioCodmar) || precioCodmar < 0) problemas.push("precio CODMAR inválido");
-            if (Number.isFinite(precioPublico) && Number.isFinite(precioCodmar) && precioCodmar > precioPublico) problemas.push("CODMAR supera el público");
-            if (!foto) problemas.push("falta foto con nombre coincidente");
-            if (foto && foto.size > 8 * 1024 * 1024) problemas.push("foto mayor a 8 MB");
-            return { nombre, presentacion, categoria, precioPublico, precioCodmar, foto, problemas, numero: indice + 1 };
+
+            if (!nombre) problemas.push("falta nombre comercial");
+            if (!Number.isFinite(precioPublico) || precioPublico < 0) problemas.push("precio máximo al público inválido");
+            if (!Number.isFinite(precioCodmar) || precioCodmar < 0) problemas.push("precio neto inválido");
+            if (Number.isFinite(precioPublico) && Number.isFinite(precioCodmar) && precioCodmar > precioPublico) {
+                problemas.push("el precio neto supera el precio máximo al público");
+            }
+            if (!item.foto) problemas.push("falta fotografía");
+            if (item.foto && item.foto.size > 8 * 1024 * 1024) problemas.push("fotografía mayor a 8 MB");
+
+            return {
+                nombre,
+                presentacion: null,
+                categoria: categoriaFija || selectorCategoria.value,
+                precioPublico,
+                precioCodmar,
+                foto: item.foto,
+                problemas,
+                numero: item.indice + 1,
+                clave: item.clave
+            };
         });
+
         const vistosEnLote = new Set();
-        filasPreparadas.forEach(f => {
-            const clave = normalizarClaveLote(f.nombre);
-            if (clave && vistosEnLote.has(clave)) f.problemas.push("producto repetido dentro del Excel");
+        filasPreparadas.forEach(fila => {
+            const clave = normalizarClaveLote(fila.nombre);
+            if (clave && vistosEnLote.has(clave)) fila.problemas.push("producto repetido dentro del lote");
             if (clave) vistosEnLote.add(clave);
         });
-        const invalidas = filasPreparadas.filter(f => f.problemas.length);
-        const resumen = invalidas.map(f => "Fila " + f.numero + ": " + (f.nombre || "sin nombre") + " — " + f.problemas.join(", ")).join("\n");
-        estado.textContent = "Encontré " + filasPreparadas.length + " productos en este lote. " + (invalidas.length ? invalidas.length + " necesitan corrección antes de subir.\n" + resumen : "Los nombres, precios e imágenes coinciden. Ya puedes subir el lote.");
+
+        const invalidas = filasPreparadas.filter(fila => fila.problemas.length);
+        const resumen = invalidas.map(fila =>
+            "Fila " + (fila.numero + indiceEncabezadoActual + 1) + ": " +
+            (fila.nombre || "sin nombre") + " — " + fila.problemas.join(", ")
+        ).join("\n");
+
+        estado.textContent = "Encontré " + filasPreparadas.length + " productos con fotografía en este lote. " +
+            (invalidas.length
+                ? invalidas.length + " necesitan corrección antes de subir.\n" + resumen
+                : "Los nombres, precios e imágenes coinciden. Ya puedes subir el lote.");
         revisionCompleta = invalidas.length === 0;
         botonSubir.disabled = !revisionCompleta;
     }
+
     archivoExcel.addEventListener("change", () => {
         matrizExcel = null;
         mapaColumnas = null;
+        filasConFoto = [];
+        filasPreparadas = [];
         zonaColumnas.innerHTML = "";
         selectorLote.innerHTML = "";
         const opcion = document.createElement("option");
         opcion.value = "";
-        opcion.textContent = "Primero lee el Excel";
+        opcion.textContent = "Pulsa LEER EXCEL para detectar las fotografías";
         selectorLote.appendChild(opcion);
         selectorLote.disabled = true;
-        filasPreparadas = [];
         revisionCompleta = false;
         botonSubir.disabled = true;
         botonRevisar.textContent = "LEER EXCEL";
-        estado.textContent = archivoExcel.files[0] ? "Archivo seleccionado: " + archivoExcel.files[0].name : "";
+        estado.textContent = archivoExcel.files[0]
+            ? "Archivo seleccionado: " + archivoExcel.files[0].name
+            : "";
     });
+
     archivoFotos.addEventListener("change", () => {
+        matrizExcel = null;
+        filasConFoto = [];
+        filasPreparadas = [];
+        zonaColumnas.innerHTML = "";
+        selectorLote.innerHTML = "";
+        const opcion = document.createElement("option");
+        opcion.value = "";
+        opcion.textContent = "Pulsa LEER EXCEL para detectar los productos";
+        selectorLote.appendChild(opcion);
+        selectorLote.disabled = true;
         revisionCompleta = false;
         botonSubir.disabled = true;
+        botonRevisar.textContent = "LEER EXCEL";
         const cantidad = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote).length;
         estado.textContent = cantidad
-            ? "Fotografías seleccionadas: " + cantidad + ". Ahora valida el lote."
+            ? "Fotografías seleccionadas: " + cantidad + ". Pulsa LEER EXCEL para localizar sus productos."
             : "No se encontraron fotografías en la selección.";
     });
-    selectorCategoria.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
-    selectorLote.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+
+    selectorCategoria.addEventListener("change", () => {
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+    });
+    selectorLote.addEventListener("change", () => {
+        revisionCompleta = false;
+        botonSubir.disabled = true;
+    });
+
     botonRevisar.addEventListener("click", async function () {
         botonRevisar.disabled = true;
-        try { await prepararRevision(); }
-        catch (error) { estado.textContent = error.message || "No pude revisar esos archivos."; }
-        finally { botonRevisar.disabled = false; }
+        try {
+            if (!matrizExcel) await leerExcelYPrepararLotes();
+            else validarLoteSeleccionado();
+        } catch (error) {
+            estado.textContent = error.message || "No pude revisar esos archivos.";
+        } finally {
+            botonRevisar.disabled = false;
+        }
     });
+
     botonSubir.addEventListener("click", async function () {
         if (!revisionCompleta || !filasPreparadas.length) return;
+
         botonSubir.disabled = true;
         botonRevisar.disabled = true;
         archivoExcel.disabled = true;
         archivoFotos.disabled = true;
         selectorCategoria.disabled = true;
+
         let cargados = 0;
         let fotoActual = null;
         let loteTerminado = false;
+
         try {
             estado.textContent = "Revisando que no se repitan productos…";
             const existentes = new Set();
+
             for (let inicio = 0; ; inicio += 1000) {
-                const respuesta = await clienteSupabase.from("catalogo_codmar").select("id,nombre,presentacion").eq("cliente_id", clienteId).order("id", { ascending: true }).range(inicio, inicio + 999);
+                const respuesta = await clienteSupabase
+                    .from("catalogo_codmar")
+                    .select("id,nombre,presentacion")
+                    .eq("cliente_id", clienteId)
+                    .order("id", { ascending: true })
+                    .range(inicio, inicio + 999);
                 if (respuesta.error) throw respuesta.error;
-                (respuesta.data || []).forEach(p => existentes.add(normalizarClaveLote(p.nombre)));
+                (respuesta.data || []).forEach(producto => existentes.add(normalizarClaveLote(producto.nombre)));
                 if (!respuesta.data || respuesta.data.length < 1000) break;
             }
-            const repetidos = filasPreparadas.filter(f => existentes.has(normalizarClaveLote(f.nombre)));
-            filasPreparadas = filasPreparadas.filter(f => !existentes.has(normalizarClaveLote(f.nombre)));
-            if (!filasPreparadas.length) throw new Error("Los productos de este lote ya estaban en el catálogo; no se repitieron.");
-            if (repetidos.length) estado.textContent = "Omitiré " + repetidos.length + " producto(s) que ya existen y subiré los " + filasPreparadas.length + " nuevos.";
+
+            const repetidos = filasPreparadas.filter(fila => existentes.has(normalizarClaveLote(fila.nombre)));
+            filasPreparadas = filasPreparadas.filter(fila => !existentes.has(normalizarClaveLote(fila.nombre)));
+            if (!filasPreparadas.length) {
+                throw new Error("Los productos de este lote ya estaban en el catálogo; no se repitieron.");
+            }
+            if (repetidos.length) {
+                estado.textContent = "Omitiré " + repetidos.length + " producto(s) que ya existen y subiré los " +
+                    filasPreparadas.length + " nuevos.";
+            }
+
             for (let i = 0; i < filasPreparadas.length; i++) {
                 const fila = filasPreparadas[i];
                 estado.textContent = "Subiendo " + (i + 1) + " de " + filasPreparadas.length + ": " + fila.nombre;
-                const extension = (fila.foto.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-                const nombreArchivo = normalizarClaveLote(fila.nombre).replace(/\s+/g, "_").slice(0, 80) || "producto";
-                const rutaImagen = "productos/" + clienteId + "/" + normalizarClaveLote(fila.categoria).replace(/\s+/g, "_") + "/lote_" + Date.now() + "_" + i + "_" + nombreArchivo + "." + extension;
-                const tipoImagen = fila.foto.type || ({ jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif", bmp: "image/bmp", avif: "image/avif", heic: "image/heic", heif: "image/heif" }[extension] || "application/octet-stream");
-                const subida = await clienteSupabase.storage.from("imagenes").upload(rutaImagen, fila.foto, { upsert: false, contentType: tipoImagen });
+
+                const extension = (fila.foto.name.split(".").pop() || "jpg")
+                    .toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+                const nombreArchivo = normalizarClaveLote(fila.nombre)
+                    .replace(/\s+/g, "_").slice(0, 80) || "producto";
+                const rutaImagen = "productos/" + clienteId + "/" +
+                    normalizarClaveLote(fila.categoria).replace(/\s+/g, "_") +
+                    "/lote_" + Date.now() + "_" + i + "_" + nombreArchivo + "." + extension;
+                const tipoImagen = fila.foto.type || ({
+                    jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+                    webp: "image/webp", gif: "image/gif", bmp: "image/bmp",
+                    avif: "image/avif", heic: "image/heic", heif: "image/heif"
+                }[extension] || "application/octet-stream");
+
+                const subida = await clienteSupabase.storage.from("imagenes")
+                    .upload(rutaImagen, fila.foto, { upsert: false, contentType: tipoImagen });
                 if (subida.error) throw subida.error;
+
                 fotoActual = rutaImagen;
                 const url = clienteSupabase.storage.from("imagenes").getPublicUrl(rutaImagen).data.publicUrl;
-                const insercion = await clienteSupabase.from("catalogo_codmar").insert({ cliente_id: clienteId, nombre: fila.nombre, presentacion: fila.presentacion || null, categoria: fila.categoria, precio_publico: fila.precioPublico, precio_codmar: fila.precioCodmar, imagen_url: url, imagen_path: rutaImagen, activo: true });
+                const insercion = await clienteSupabase.from("catalogo_codmar").insert({
+                    cliente_id: clienteId,
+                    nombre: fila.nombre,
+                    presentacion: null,
+                    categoria: fila.categoria,
+                    precio_publico: fila.precioPublico,
+                    precio_codmar: fila.precioCodmar,
+                    imagen_url: url,
+                    imagen_path: rutaImagen,
+                    activo: true
+                });
+
                 if (insercion.error) {
                     await clienteSupabase.storage.from("imagenes").remove([rutaImagen]);
                     fotoActual = null;
                     throw insercion.error;
                 }
+
                 existentes.add(normalizarClaveLote(fila.nombre));
                 fotoActual = null;
                 cargados++;
             }
-            estado.textContent = "Listo: se cargaron " + cargados + " productos nuevos con sus imágenes. Los que ya existían se omitieron.";
+
+            estado.textContent = "Listo: se cargaron " + cargados +
+                " productos nuevos con sus imágenes. Los que ya existían se omitieron.";
             loteTerminado = true;
             await cargarMedicamentosCatalogo();
         } catch (error) {
             if (fotoActual) await clienteSupabase.storage.from("imagenes").remove([fotoActual]);
-            estado.textContent = (error.message || "Ocurrió un problema durante la carga.") + (cargados ? " Se alcanzaron a guardar " + cargados + " productos; quita esas filas para continuar con el resto." : "");
+            estado.textContent = (error.message || "Ocurrió un problema durante la carga.") +
+                (cargados ? " Se alcanzaron a guardar " + cargados +
+                    " productos; quita esas filas para continuar con el resto." : "");
         } finally {
             archivoExcel.disabled = false;
             archivoFotos.disabled = false;
