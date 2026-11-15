@@ -2365,9 +2365,16 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 fotoActual = null;
                 cargados++;
             }
-            estado.textContent = "Listo: se cargaron " + cargados + " productos nuevos con sus imágenes. Los que ya existían se omitieron.";
+            estado.textContent = "Importación completada. Abriendo la tienda pública…";
             loteTerminado = true;
             await cargarMedicamentosCatalogo();
+
+            // Al terminar la importación, abrir la tienda pública del negocio actual.
+            if (datosNegocioActual?.slug) {
+                window.location.href = "tienda.html?negocio=" + encodeURIComponent(datosNegocioActual.slug);
+            } else {
+                estado.textContent = "Los productos se importaron, pero no pude identificar el enlace de la tienda pública.";
+            }
         } catch (error) {
             if (fotoActual) await clienteSupabase.storage.from("imagenes").remove([fotoActual]);
             estado.textContent = (error.message || "Ocurrió un problema durante la carga.") + (cargados ? " Se alcanzaron a guardar " + cargados + " productos; quita esas filas para continuar con el resto." : "");
