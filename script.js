@@ -1541,6 +1541,8 @@ console.log("CLIENTE ACTUAL:", clienteId);
 let terminoBusquedaCatalogo = "";
 let temporizadorBusquedaCatalogo = null;
 let secuenciaCargaCatalogo = 0;
+let categoriaSeleccionadaAdministracion = "";
+let categoriasDisponiblesAdministracion = [];
 
 async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBusqueda = terminoBusquedaCatalogo) {
     const idSolicitudCatalogo = ++secuenciaCargaCatalogo;
@@ -1604,6 +1606,15 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
 
             seccion.appendChild(controlesModo);
 
+            const controlesCategoria = document.createElement("div");
+            controlesCategoria.className = "filtros-categoria-administracion";
+            controlesCategoria.style.display = "flex";
+            controlesCategoria.style.flexWrap = "wrap";
+            controlesCategoria.style.justifyContent = "center";
+            controlesCategoria.style.gap = "8px";
+            controlesCategoria.style.margin = "12px 0 16px";
+            seccion.appendChild(controlesCategoria);
+
             lista = document.createElement("div");
             lista.className = "lista-medicamentos-codmar";
             seccion.appendChild(titulo);
@@ -1616,6 +1627,10 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             .select("id,nombre,presentacion,categoria,precio_publico,precio_codmar,tachar_precio_publico,imagen_url,imagen_path")
             .eq("cliente_id", clienteId)
             .eq("activo", true);
+
+        if (categoriaSeleccionadaAdministracion) {
+            consultaCatalogo = consultaCatalogo.eq("categoria", categoriaSeleccionadaAdministracion);
+        }
 
         if (terminoBusquedaCatalogo) {
             const terminoSeguro = terminoBusquedaCatalogo.replace(/[,%()\\]/g, " ").replace(/\s+/g, " ").trim();
@@ -1661,6 +1676,43 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             style: "currency",
             currency: "MXN"
         });
+
+        if (!agregar) {
+            const categoriasConfiguradas = Array.isArray(categorias) ? categorias : [];
+            const categoriasDeProductos = (medicamentos || [])
+                .map(producto => String(producto.categoria || "").trim())
+                .filter(Boolean);
+            categoriasDisponiblesAdministracion = [...new Set([
+                ...categoriasConfiguradas,
+                ...categoriasDisponiblesAdministracion,
+                ...categoriasDeProductos
+            ])].sort((a, b) => a.localeCompare(b, "es"));
+
+            const controlesCategoria = seccion.querySelector(".filtros-categoria-administracion");
+            if (controlesCategoria) {
+                controlesCategoria.innerHTML = "";
+                const opcionesCategoria = ["", ...categoriasDisponiblesAdministracion];
+                opcionesCategoria.forEach(nombreCategoria => {
+                    const botonCategoria = document.createElement("button");
+                    botonCategoria.type = "button";
+                    botonCategoria.textContent = nombreCategoria || "TODOS";
+                    botonCategoria.className = "boton-categoria-administracion";
+                    botonCategoria.style.border = "1px solid #159c96";
+                    botonCategoria.style.borderRadius = "8px";
+                    botonCategoria.style.padding = "9px 14px";
+                    botonCategoria.style.background = categoriaSeleccionadaAdministracion === nombreCategoria ? "#159c96" : "#ffffff";
+                    botonCategoria.style.color = categoriaSeleccionadaAdministracion === nombreCategoria ? "#ffffff" : "#222222";
+                    botonCategoria.style.fontWeight = "600";
+                    botonCategoria.style.cursor = "pointer";
+                    botonCategoria.addEventListener("click", function () {
+                        if (categoriaSeleccionadaAdministracion === nombreCategoria) return;
+                        categoriaSeleccionadaAdministracion = nombreCategoria;
+                        cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+                    });
+                    controlesCategoria.appendChild(botonCategoria);
+                });
+            }
+        }
 
         medicamentos.forEach(function (medicamento) {
             const tarjeta = document.createElement("article");
