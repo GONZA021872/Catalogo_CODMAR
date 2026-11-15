@@ -2049,114 +2049,65 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const etiquetas = (encabezado || []).map(normalizarEncabezado);
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
-        const indiceClaveDetectado = encontrar(["clave", "claveproducto", "codigoproducto"]);
-        const indiceClave = indiceClaveDetectado >= 0 ? indiceClaveDetectado : 0;
-        const indiceNombreComercial = encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]);
-        const indiceNombreParaClaves = indiceNombreComercial >= 0 ? indiceNombreComercial : 1;
-
-        // Desplegable visible con las claves de los primeros 13 productos válidos del Excel.
-        const campoClaves = document.createElement("label");
-        campoClaves.className = "campo-carga-masiva-codmar";
-        const tituloClaves = document.createElement("span");
-        tituloClaves.textContent = "Clave del producto";
-        const listaClaves = document.createElement("select");
-        listaClaves.setAttribute("aria-label", "Claves de los 13 productos seleccionados");
-        // Apariencia marcada: recuadro blanco, borde negro y sombra, como los demás campos.
-        Object.assign(listaClaves.style, {
-            display: "block",
-            width: "100%",
-            minHeight: "42px",
-            boxSizing: "border-box",
-            padding: "9px 12px",
-            border: "1px solid #222222",
-            borderRadius: "7px",
-            background: "#ffffff",
-            color: "#111111",
-            fontWeight: "700",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.22)",
-            appearance: "auto"
-        });
-        const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
-        const clavesLeidas = filasClaves
+        const indiceClave = Math.max(0, encontrar(["clave", "claveproducto", "codigoproducto"]));
+        const indiceNombreComercial = Math.max(0, encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]));
+        const filasProducto = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
             .filter(fila => Array.isArray(fila) &&
                 String(fila[indiceClave] || "").trim() &&
-                String(fila[indiceNombreParaClaves] || "").trim())
-            .slice(0, 13)
-            .map(fila => String(fila[indiceClave]).trim());
-        const opcionInicialClave = document.createElement("option");
-        opcionInicialClave.value = "";
-        opcionInicialClave.textContent = clavesLeidas.length
-            ? "Selecciona una clave (" + clavesLeidas.length + " productos)"
-            : "No se encontraron claves en el Excel";
-        opcionInicialClave.disabled = clavesLeidas.length > 0;
-        opcionInicialClave.selected = true;
-        listaClaves.appendChild(opcionInicialClave);
-        clavesLeidas.forEach(clave => {
-            const opcion = document.createElement("option");
-            opcion.value = clave;
-            opcion.textContent = clave;
-            listaClaves.appendChild(opcion);
-        });
-        listaClaves.disabled = clavesLeidas.length === 0;
-        listaClaves.size = 1;
-        campoClaves.append(tituloClaves, listaClaves);
-        zonaColumnas.appendChild(campoClaves);
+                String(fila[indiceNombreComercial] || "").trim());
+        const estiloDesplegable = {
+            display: "block", width: "100%", minHeight: "42px", boxSizing: "border-box",
+            padding: "9px 12px", border: "1px solid #222222", borderRadius: "7px",
+            background: "#ffffff", color: "#111111", fontWeight: "700",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.22)", appearance: "auto"
+        };
+        function mostrarListaProductos(titulo, aria, valores, textoInicial) {
+            const campo = document.createElement("label");
+            campo.className = "campo-carga-masiva-codmar";
+            const texto = document.createElement("span");
+            texto.textContent = titulo;
+            const lista = document.createElement("select");
+            lista.setAttribute("aria-label", aria);
+            Object.assign(lista.style, estiloDesplegable);
+            const inicial = document.createElement("option");
+            inicial.value = "";
+            inicial.textContent = valores.length ? "Selecciona (" + valores.length + " productos)" : textoInicial;
+            inicial.disabled = valores.length > 0;
+            inicial.selected = true;
+            lista.appendChild(inicial);
+            valores.forEach(valor => {
+                const opcion = document.createElement("option");
+                opcion.value = valor;
+                opcion.textContent = valor;
+                lista.appendChild(opcion);
+            });
+            lista.disabled = valores.length === 0;
+            campo.append(texto, lista);
+            zonaColumnas.appendChild(campo);
+        }
+        mostrarListaProductos("Clave del producto", "Claves de los 13 productos seleccionados",
+            filasProducto.slice(0, 13).map(f => String(f[indiceClave]).trim()), "No se encontraron claves en el Excel");
+        mostrarListaProductos("Nombre comercial del producto", "Nombres comerciales de los 13 productos seleccionados",
+            filasProducto.slice(0, 13).map(f => String(f[indiceNombreComercial]).trim()), "No se encontraron nombres en el Excel");
 
-        // Desplegable visible con los nombres comerciales de los mismos 13 productos.
-        const filasNombres = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0)
-            .filter(fila => Array.isArray(fila) &&
-                String(fila[indiceClave] || "").trim() &&
-                String(fila[indiceNombreParaClaves] || "").trim())
-            .slice(0, 13);
-        const campoNombres = document.createElement("label");
-        campoNombres.className = "campo-carga-masiva-codmar";
-        const tituloNombres = document.createElement("span");
-        tituloNombres.textContent = "Nombre comercial del producto";
-        const listaNombres = document.createElement("select");
-        listaNombres.setAttribute("aria-label", "Nombres comerciales de los 13 productos seleccionados");
-        Object.assign(listaNombres.style, {
-            display: "block",
-            width: "100%",
-            minHeight: "42px",
-            boxSizing: "border-box",
-            padding: "9px 12px",
-            border: "1px solid #222222",
-            borderRadius: "7px",
-            background: "#ffffff",
-            color: "#111111",
-            fontWeight: "700",
-            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.22)",
-            appearance: "auto"
-        });
-        const opcionInicialNombre = document.createElement("option");
-        opcionInicialNombre.value = "";
-        opcionInicialNombre.textContent = filasNombres.length
-            ? "Selecciona un producto (" + filasNombres.length + " productos)"
-            : "No se encontraron nombres en el Excel";
-        opcionInicialNombre.disabled = filasNombres.length > 0;
-        opcionInicialNombre.selected = true;
-        listaNombres.appendChild(opcionInicialNombre);
-        filasNombres.forEach(fila => {
-            const nombre = String(fila[indiceNombreParaClaves]).trim();
-            const opcion = document.createElement("option");
-            opcion.value = nombre;
-            opcion.textContent = nombre;
-            listaNombres.appendChild(opcion);
-        });
-        listaNombres.disabled = filasNombres.length === 0;
-        listaNombres.size = 1;
-        campoNombres.append(tituloNombres, listaNombres);
-        zonaColumnas.appendChild(campoNombres);
-
-        // Se conserva el selector interno de columna para que la importación siga leyendo el Excel correctamente.
-        const colNombre = selectorColumna("Columna del nombre comercial (interno)", opciones, indiceNombreComercial, null);
+        // La clave y el nombre ya se muestran arriba. Estos selectores internos conservan su vínculo con el Excel.
+        const colClave = selectorColumna("Clave del producto (interno)", opciones, indiceClave, null);
+        colClave.parentElement.style.display = "none";
+        const colNombre = selectorColumna("Nombre comercial (interno)", opciones, indiceNombreComercial, null);
         colNombre.parentElement.style.display = "none";
-        const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
-        const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta", "neto"]), null);
-        const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
-        const colCategoria = selectorColumna("Categoría (si viene en Excel)", opciones, encontrar(["categoria", "seccion", "familia"]), "Usar categoría seleccionada arriba");
-        const colImagen = selectorColumna("Nombre de archivo de foto (si viene en Excel)", opciones, encontrar(["imagen", "foto", "archivoimagen", "nombreimagen"]), "Buscar foto por nombre del producto");
-        return { colNombre, colPublico, colCodmar, colPresentacion, colCategoria, colImagen };
+
+        // Los cinco campos visibles corresponden a las columnas reales del archivo Excel.
+        const colCodigoBarras = selectorColumna("Columna del código de barras", opciones,
+            encontrar(["codigobarras", "codigodebarras", "barcode", "ean", "upc"]), null);
+        const colSales = selectorColumna("Columna de sales", opciones,
+            encontrar(["sales", "sal", "salesactivas"]), null);
+        const colStock = selectorColumna("Columna del stock", opciones,
+            encontrar(["stock", "existencia", "existencias", "inventario"]), null);
+        const colPublico = selectorColumna("Columna del precio máximo al público", opciones,
+            encontrar(["preciomaximoalpublico", "preciomaxalpublico", "preciomaximo", "preciopublico", "maximoalpublico"]), null);
+        const colNeto = selectorColumna("Columna del precio neto (precio de venta en tienda)", opciones,
+            encontrar(["precioneto", "neto"]), null);
+        return { colClave, colNombre, colCodigoBarras, colSales, colStock, colPublico, colNeto };
     }
     let mapaColumnas = null;
     let matrizExcel = null;
@@ -2223,7 +2174,10 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             selectorLote.appendChild(opcion);
         }
         selectorLote.value = String(Math.min(loteAnterior, Math.max(0, numeroLotes - 1)));
-        if (mapaColumnas.colNombre.value === "" || mapaColumnas.colPublico.value === "" || mapaColumnas.colCodmar.value === "") throw new Error("Elige las columnas correctas para nombre comercial, precio público y precio CODMAR.");
+        const columnasRequeridas = ["colClave", "colNombre", "colCodigoBarras", "colSales", "colStock", "colPublico", "colNeto"];
+        if (columnasRequeridas.some(nombre => !mapaColumnas[nombre] || mapaColumnas[nombre].value === "")) {
+            throw new Error("Selecciona las columnas de clave, nombre comercial, código de barras, sales, stock, precio máximo al público y precio neto.");
+        }
         mapaImagenes = new Map();
         Array.from(archivoFotos.files).filter(esArchivoImagenLote).forEach(f => {
             clavesPosiblesFotoLote(f.name).forEach(clave => {
@@ -2234,22 +2188,28 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         const filasDelLote = filasConDatos.slice(inicioLote, inicioLote + 100);
         filasPreparadas = filasDelLote.map(({ fila, indice }) => {
             const obtener = select => select.value === "" ? "" : fila[Number(select.value)] ?? "";
+            const claveProducto = String(obtener(mapaColumnas.colClave)).trim();
             const nombre = String(obtener(mapaColumnas.colNombre)).trim();
+            const codigoBarras = String(obtener(mapaColumnas.colCodigoBarras)).trim();
+            const sales = String(obtener(mapaColumnas.colSales)).trim();
+            const existenciaTexto = String(obtener(mapaColumnas.colStock)).trim();
+            const existencia = existenciaTexto === "" ? null : Math.max(0, Math.trunc(Number(existenciaTexto.replace(/,/g, ""))));
             const precioPublico = numeroPrecio(obtener(mapaColumnas.colPublico));
-            const precioCodmar = numeroPrecio(obtener(mapaColumnas.colCodmar));
-            const presentacion = String(obtener(mapaColumnas.colPresentacion)).trim();
-            const categoria = categoriaFija || String(obtener(mapaColumnas.colCategoria)).trim() || selectorCategoria.value;
-            const archivoDeclarado = String(obtener(mapaColumnas.colImagen)).trim();
-            const clavesFoto = archivoDeclarado ? [normalizarClaveLote(archivoDeclarado)] : [normalizarClaveLote(nombre), normalizarClaveLote(nombre + " " + presentacion)];
+            const precioCodmar = numeroPrecio(obtener(mapaColumnas.colNeto));
+            const presentacion = "";
+            const categoria = categoriaFija || selectorCategoria.value;
+            const clavesFoto = [normalizarClaveLote(nombre), normalizarClaveLote(claveProducto)];
             const foto = clavesFoto.map(k => mapaImagenes.get(k)).find(Boolean) || null;
             const problemas = [];
+            if (!claveProducto) problemas.push("falta clave del producto");
             if (!nombre) problemas.push("falta nombre");
-            if (!Number.isFinite(precioPublico) || precioPublico < 0) problemas.push("precio público inválido");
-            if (!Number.isFinite(precioCodmar) || precioCodmar < 0) problemas.push("precio CODMAR inválido");
-            if (Number.isFinite(precioPublico) && Number.isFinite(precioCodmar) && precioCodmar > precioPublico) problemas.push("CODMAR supera el público");
+            if (existenciaTexto !== "" && (!Number.isFinite(existencia) || existencia < 0)) problemas.push("stock inválido");
+            if (!Number.isFinite(precioPublico) || precioPublico < 0) problemas.push("precio máximo al público inválido");
+            if (!Number.isFinite(precioCodmar) || precioCodmar < 0) problemas.push("precio neto inválido");
+            if (Number.isFinite(precioPublico) && Number.isFinite(precioCodmar) && precioCodmar > precioPublico) problemas.push("el precio neto supera el máximo al público");
             if (!foto) problemas.push("falta foto con nombre coincidente");
             if (foto && foto.size > 8 * 1024 * 1024) problemas.push("foto mayor a 8 MB");
-            return { nombre, presentacion, categoria, precioPublico, precioCodmar, foto, problemas, numero: indice + 1 };
+            return { claveProducto, nombre, codigoBarras, sales, existencia, presentacion, categoria, precioPublico, precioCodmar, foto, problemas, numero: indice + 1 };
         });
         const vistosEnLote = new Set();
         filasPreparadas.forEach(f => {
@@ -2346,7 +2306,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 if (subida.error) throw subida.error;
                 fotoActual = rutaImagen;
                 const url = clienteSupabase.storage.from("imagenes").getPublicUrl(rutaImagen).data.publicUrl;
-                const insercion = await clienteSupabase.from("catalogo_codmar").insert({ cliente_id: clienteId, nombre: fila.nombre, presentacion: fila.presentacion || null, categoria: fila.categoria, precio_publico: fila.precioPublico, precio_codmar: fila.precioCodmar, imagen_url: url, imagen_path: rutaImagen, activo: true });
+                const insercion = await clienteSupabase.from("catalogo_codmar").insert({ cliente_id: clienteId, clave_producto: fila.claveProducto, nombre: fila.nombre, codigo_barras: fila.codigoBarras || null, sales: fila.sales || null, existencia: fila.existencia, presentacion: fila.presentacion || null, categoria: fila.categoria, precio_publico: fila.precioPublico, precio_codmar: fila.precioCodmar, imagen_url: url, imagen_path: rutaImagen, activo: true });
                 if (insercion.error) {
                     await clienteSupabase.storage.from("imagenes").remove([rutaImagen]);
                     fotoActual = null;
