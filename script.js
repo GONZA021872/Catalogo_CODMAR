@@ -2034,7 +2034,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         });
         const etiquetas = (encabezado || []).map(normalizarEncabezado);
         const encontrar = claves => etiquetas.findIndex(h => claves.includes(h));
-        const colNombre = selectorColumna("Columna del nombre del producto", opciones, encontrar(["producto", "nombre", "medicamento", "descripcion", "articulo"]), null);
+        const colNombre = selectorColumna("Clave del producto", opciones, encontrar(["clave"]), null);
         const colPublico = selectorColumna("Columna del precio público", opciones, encontrar(["preciopublico", "publico", "preciomaximo", "maximo", "precio", "pventa", "preciolista"]), null);
         const colCodmar = selectorColumna("Columna del precio CODMAR", opciones, encontrar(["preciocodmar", "codmar", "preciocosto", "costo", "precioespecial", "preciodistribuidor", "preciooferta"]), null);
         const colPresentacion = selectorColumna("Presentación (si viene separada)", opciones, encontrar(["presentacion", "contenido"]), "Usar el nombre completo");
