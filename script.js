@@ -1920,7 +1920,7 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
     const campoLote = document.createElement("label");
     campoLote.className = "campo-carga-masiva-codmar";
     const textoLote = document.createElement("span");
-    textoLote.textContent = "Lote que deseas cargar (máximo 100 productos)";
+    textoLote.textContent = "Fotografías seleccionadas (máximo 100 productos)";
     const selectorLote = document.createElement("select");
     const opcionLoteInicial = document.createElement("option");
     opcionLoteInicial.value = "";
@@ -2072,13 +2072,17 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
                 .filter(fila => Array.isArray(fila) && fila.some(celda => String(celda || "").trim()));
             const numeroLotesDetectados = Math.ceil(filasDetectadas.length / 100);
             selectorLote.innerHTML = "";
-            const fotosSeleccionadas = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote);
+            const fotosSeleccionadas = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote)
+                .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
             fotosSeleccionadas.forEach(foto => {
                 const opcion = document.createElement("option");
                 opcion.value = "0";
                 opcion.textContent = foto.name;
                 selectorLote.appendChild(opcion);
             });
+            selectorLote.size = Math.min(9, Math.max(1, fotosSeleccionadas.length));
+            selectorLote.style.maxHeight = "220px";
+            selectorLote.style.overflowY = "auto";
             selectorLote.disabled = fotosSeleccionadas.length === 0;
             mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
             botonRevisar.textContent = "VALIDAR LOTE";
@@ -2161,13 +2165,17 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         revisionCompleta = false;
         botonSubir.disabled = true;
         selectorLote.innerHTML = "";
-        const fotos = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote);
-        fotos.forEach((foto, indice) => {
+        const fotos = Array.from(archivoFotos.files || []).filter(esArchivoImagenLote)
+            .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }));
+        fotos.forEach(foto => {
             const opcion = document.createElement("option");
             opcion.value = "0";
             opcion.textContent = foto.name;
             selectorLote.appendChild(opcion);
         });
+        selectorLote.size = Math.min(9, Math.max(1, fotos.length));
+        selectorLote.style.maxHeight = "220px";
+        selectorLote.style.overflowY = "auto";
         selectorLote.disabled = fotos.length === 0;
         estado.textContent = fotos.length
             ? "Fotografías seleccionadas: " + fotos.length + ". Selecciona un archivo en la lista."
