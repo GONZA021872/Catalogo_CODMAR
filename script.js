@@ -2052,20 +2052,12 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         const indiceClave = encontrar(["clave"]);
         const indiceNombreComercial = encontrar(["nombrecomercial", "producto", "nombre", "medicamento", "descripcion"]);
 
-        // Mostrar las claves reales del Excel; no se pide elegir una columna para ellas.
-        const campoClaves = document.createElement("div");
+        // Claves del Excel en un desplegable compacto, igual al de fotografías.
+        const campoClaves = document.createElement("label");
         campoClaves.className = "campo-carga-masiva-codmar";
         const tituloClaves = document.createElement("span");
         tituloClaves.textContent = "Clave del producto";
-        const listaClaves = document.createElement("div");
-        listaClaves.style.maxHeight = "112px";
-        listaClaves.style.fontSize = "12px";
-        listaClaves.style.overflowY = "auto";
-        listaClaves.style.border = "1px solid #cbd5d8";
-        listaClaves.style.borderRadius = "8px";
-        listaClaves.style.padding = "4px 6px";
-        listaClaves.style.background = "#fff";
-        listaClaves.style.color = "#222";
+        const listaClaves = document.createElement("select");
         const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
         const clavesLeidas = filasClaves
             .filter(fila => Array.isArray(fila) &&
@@ -2077,15 +2069,19 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             .map(fila => String(fila[indiceClave]).trim());
         if (clavesLeidas.length) {
             clavesLeidas.forEach(clave => {
-                const renglon = document.createElement("div");
-                renglon.textContent = clave;
-                renglon.style.padding = "2px 2px";
-                renglon.style.borderBottom = "1px solid #edf0f1";
-                listaClaves.appendChild(renglon);
+                const opcion = document.createElement("option");
+                opcion.value = clave;
+                opcion.textContent = clave;
+                listaClaves.appendChild(opcion);
             });
         } else {
-            listaClaves.textContent = "No se encontraron claves en el Excel.";
+            const opcion = document.createElement("option");
+            opcion.value = "";
+            opcion.textContent = "No se encontraron claves en el Excel";
+            listaClaves.appendChild(opcion);
+            listaClaves.disabled = true;
         }
+        listaClaves.size = 1;
         campoClaves.append(tituloClaves, listaClaves);
         zonaColumnas.appendChild(campoClaves);
 
