@@ -2181,9 +2181,9 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
             selectorLote.style.removeProperty("overflow-y");
             selectorLote.disabled = fotosSeleccionadas.length === 0;
             mapaColumnas = mostrarSelectorColumnas(matrizExcel, indiceEncabezadoActual);
-            botonRevisar.textContent = "VALIDAR LOTE";
+            botonRevisar.textContent = "ACEPTAR";
             zonaColumnas.addEventListener("change", function () { revisionCompleta = false; botonSubir.disabled = true; });
-            estado.textContent = "Excel leído: " + filasDetectadas.length + " productos. Selecciona el lote, confirma las columnas y pulsa VALIDAR LOTE.";
+            estado.textContent = "Excel leído: " + filasDetectadas.length + " productos. Revisa los campos y pulsa ACEPTAR para validar y subir los productos a la tienda.";
             return;
         }
         const filasDatos = matrizExcel.slice(indiceEncabezadoActual >= 0 ? indiceEncabezadoActual + 1 : 0);
@@ -2305,11 +2305,20 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
     });
     selectorCategoria.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
     selectorLote.addEventListener("change", () => { revisionCompleta = false; botonSubir.disabled = true; });
+    // Un solo botón para completar el flujo: primero lee el Excel y después ACEPTAR valida y sube.
+    botonSubir.style.display = "none";
     botonRevisar.addEventListener("click", async function () {
         botonRevisar.disabled = true;
-        try { await prepararRevision(); }
-        catch (error) { estado.textContent = error.message || "No pude revisar esos archivos."; }
-        finally { botonRevisar.disabled = false; }
+        try {
+            await prepararRevision();
+            if (matrizExcel !== null && revisionCompleta && filasPreparadas.length) {
+                await botonSubir.click();
+            }
+        } catch (error) {
+            estado.textContent = error.message || "No pude revisar esos archivos.";
+        } finally {
+            botonRevisar.disabled = false;
+        }
     });
     botonSubir.addEventListener("click", async function () {
         if (!revisionCompleta || !filasPreparadas.length) return;
