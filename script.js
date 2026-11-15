@@ -2061,6 +2061,21 @@ function abrirCargaMasivaProductos(categoriaFija = null) {
         tituloClaves.textContent = "Clave del producto";
         const listaClaves = document.createElement("select");
         listaClaves.setAttribute("aria-label", "Claves de los 13 productos seleccionados");
+        // Apariencia marcada: recuadro blanco, borde negro y sombra, como los demás campos.
+        Object.assign(listaClaves.style, {
+            display: "block",
+            width: "100%",
+            minHeight: "42px",
+            boxSizing: "border-box",
+            padding: "9px 12px",
+            border: "1px solid #222222",
+            borderRadius: "7px",
+            background: "#ffffff",
+            color: "#111111",
+            fontWeight: "700",
+            boxShadow: "0 2px 5px rgba(0, 0, 0, 0.22)",
+            appearance: "auto"
+        });
         const filasClaves = matriz.slice(indiceEncabezado >= 0 ? indiceEncabezado + 1 : 0);
         const clavesLeidas = filasClaves
             .filter(fila => Array.isArray(fila) &&
