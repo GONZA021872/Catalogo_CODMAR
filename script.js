@@ -1768,6 +1768,19 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             );
             controlesModo.appendChild(botonActualizarPreciosPrincipal);
 
+            if (opcionAdministracionSeleccionada) {
+                const botonBorrarCategoria = document.createElement("button");
+                botonBorrarCategoria.type = "button";
+                botonBorrarCategoria.textContent = "BORRAR TODO";
+                botonBorrarCategoria.title = "Eliminar todos los productos de la categoría seleccionada";
+                botonBorrarCategoria.setAttribute("aria-label", botonBorrarCategoria.title);
+                botonBorrarCategoria.classList.add("modo-activo");
+                botonBorrarCategoria.addEventListener("click", function () {
+                    eliminarProductosDeCategoriaAdministracion(opcionAdministracionSeleccionada, botonBorrarCategoria);
+                });
+                controlesModo.appendChild(botonBorrarCategoria);
+            }
+
             seccion.appendChild(controlesModo);
 
             const controlesCategoria = document.createElement("div");
@@ -1799,26 +1812,6 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             });
 
             seccion.appendChild(controlesCategoria);
-
-            if (opcionAdministracionSeleccionada) {
-                const botonBorrarCategoria = document.createElement("button");
-                botonBorrarCategoria.type = "button";
-                botonBorrarCategoria.textContent = "ELIMINAR TODOS LOS PRODUCTOS DE ESTA CATEGORÍA";
-                botonBorrarCategoria.className = "boton-eliminar-categoria-administracion";
-                botonBorrarCategoria.style.display = "block";
-                botonBorrarCategoria.style.margin = "0 auto 16px";
-                botonBorrarCategoria.style.padding = "10px 14px";
-                botonBorrarCategoria.style.border = "0";
-                botonBorrarCategoria.style.borderRadius = "8px";
-                botonBorrarCategoria.style.background = "#b42318";
-                botonBorrarCategoria.style.color = "#ffffff";
-                botonBorrarCategoria.style.fontWeight = "700";
-                botonBorrarCategoria.style.cursor = "pointer";
-                botonBorrarCategoria.addEventListener("click", function () {
-                    eliminarProductosDeCategoriaAdministracion(opcionAdministracionSeleccionada, botonBorrarCategoria);
-                });
-                seccion.appendChild(botonBorrarCategoria);
-            }
 
             lista = document.createElement("div");
             lista.className = "lista-medicamentos-codmar";
