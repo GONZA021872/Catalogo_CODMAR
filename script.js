@@ -1765,7 +1765,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             botonSeleccion.type = "button";
             botonSeleccion.textContent = modoSeleccionBorradoAdministracion ? "CANCELAR SELECCIÓN" : "SELECCIONAR PRODUCTOS";
             botonSeleccion.title = "Marcar productos individualmente para borrarlos";
-            botonSeleccion.classList.toggle("modo-activo", modoSeleccionBorradoAdministracion);
+            botonSeleccion.classList.add("modo-activo");
             botonSeleccion.addEventListener("click", function () {
                 modoSeleccionBorradoAdministracion = !modoSeleccionBorradoAdministracion;
                 productosSeleccionadosAdministracion.clear();
