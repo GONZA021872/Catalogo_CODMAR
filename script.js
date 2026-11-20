@@ -1585,7 +1585,10 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
     const categoriasMenuAdministracion = obtenerCategoriasMenuAdministracion();
 
     if (!categoriasMenuAdministracion.some(opcion => opcion.clave === categoriaSeleccionadaAdministracion)) {
-        categoriaSeleccionadaAdministracion = categoriasMenuAdministracion[0]?.clave || "";
+        const categoriaPredeterminada = categoriasMenuAdministracion.find(
+            opcion => opcion.clave === "medicamentos"
+        ) || categoriasMenuAdministracion[0];
+        categoriaSeleccionadaAdministracion = categoriaPredeterminada?.clave || "";
     }
 
     const opcionAdministracionSeleccionada = categoriasMenuAdministracion.find(
@@ -1694,7 +1697,7 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             .eq("activo", true);
 
         consultaCatalogo = opcionAdministracionSeleccionada
-            ? consultaCatalogo.in("categoria", opcionAdministracionSeleccionada.valores)
+            ? consultaCatalogo.ilike("categoria", opcionAdministracionSeleccionada.valores[0])
             : consultaCatalogo.eq("categoria", "");
 
         if (terminoBusquedaCatalogo) {
