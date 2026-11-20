@@ -1542,11 +1542,55 @@ let terminoBusquedaCatalogo = "";
 let temporizadorBusquedaCatalogo = null;
 let secuenciaCargaCatalogo = 0;
 let categoriaSeleccionadaAdministracion = "";
-let categoriasDisponiblesAdministracion = [];
+
+function normalizarCategoriaAdministracion(categoria) {
+    return String(categoria || "")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase("es");
+}
+
+function obtenerCategoriasMenuAdministracion() {
+    const categoriasPorNombre = new Map();
+
+    (Array.isArray(categorias) ? categorias : []).forEach(function (categoriaOriginal) {
+        const categoria = String(categoriaOriginal || "").trim();
+        const clave = normalizarCategoriaAdministracion(categoria);
+
+        if (!clave || clave === "todos") return;
+
+        let opcion = categoriasPorNombre.get(clave);
+        if (!opcion) {
+            const nombre = clave === "medicamentos"
+                ? "Medicamentos"
+                : clave === "medicamentos similares"
+                    ? "Medicamentos similares"
+                    : categoria;
+            opcion = { clave, nombre, valores: [] };
+            categoriasPorNombre.set(clave, opcion);
+        }
+
+        if (!opcion.valores.includes(categoria)) {
+            opcion.valores.push(categoria);
+        }
+    });
+
+    return [...categoriasPorNombre.values()];
+}
 
 async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBusqueda = terminoBusquedaCatalogo) {
     const idSolicitudCatalogo = ++secuenciaCargaCatalogo;
     terminoBusquedaCatalogo = String(terminoBusqueda || "").trim();
+    const categoriasMenuAdministracion = obtenerCategoriasMenuAdministracion();
+
+    if (!categoriasMenuAdministracion.some(opcion => opcion.clave === categoriaSeleccionadaAdministracion)) {
+        categoriaSeleccionadaAdministracion = categoriasMenuAdministracion[0]?.clave || "";
+    }
+
+    const opcionAdministracionSeleccionada = categoriasMenuAdministracion.find(
+        opcion => opcion.clave === categoriaSeleccionadaAdministracion
+    );
 
     const contenedor = document.querySelector(".contenido-inicio");
 
@@ -1613,6 +1657,27 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             controlesCategoria.style.justifyContent = "center";
             controlesCategoria.style.gap = "8px";
             controlesCategoria.style.margin = "12px 0 16px";
+
+            categoriasMenuAdministracion.forEach(function (opcion) {
+                const botonCategoria = document.createElement("button");
+                botonCategoria.type = "button";
+                botonCategoria.textContent = opcion.nombre;
+                botonCategoria.className = "boton-categoria-administracion";
+                botonCategoria.style.border = "1px solid #159c96";
+                botonCategoria.style.borderRadius = "8px";
+                botonCategoria.style.padding = "9px 14px";
+                botonCategoria.style.background = categoriaSeleccionadaAdministracion === opcion.clave ? "#159c96" : "#ffffff";
+                botonCategoria.style.color = categoriaSeleccionadaAdministracion === opcion.clave ? "#ffffff" : "#222222";
+                botonCategoria.style.fontWeight = "600";
+                botonCategoria.style.cursor = "pointer";
+                botonCategoria.addEventListener("click", function () {
+                    if (categoriaSeleccionadaAdministracion === opcion.clave) return;
+                    categoriaSeleccionadaAdministracion = opcion.clave;
+                    cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+                });
+                controlesCategoria.appendChild(botonCategoria);
+            });
+
             seccion.appendChild(controlesCategoria);
 
             lista = document.createElement("div");
@@ -1628,9 +1693,9 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             .eq("cliente_id", clienteId)
             .eq("activo", true);
 
-        if (categoriaSeleccionadaAdministracion) {
-            consultaCatalogo = consultaCatalogo.eq("categoria", categoriaSeleccionadaAdministracion);
-        }
+        consultaCatalogo = opcionAdministracionSeleccionada
+            ? consultaCatalogo.in("categoria", opcionAdministracionSeleccionada.valores)
+            : consultaCatalogo.eq("categoria", "");
 
         if (terminoBusquedaCatalogo) {
             const terminoSeguro = terminoBusquedaCatalogo.replace(/[,%()\\]/g, " ").replace(/\s+/g, " ").trim();
@@ -1676,43 +1741,6 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             style: "currency",
             currency: "MXN"
         });
-
-        if (!agregar) {
-            const categoriasConfiguradas = Array.isArray(categorias) ? categorias : [];
-            const categoriasDeProductos = (medicamentos || [])
-                .map(producto => String(producto.categoria || "").trim())
-                .filter(Boolean);
-            categoriasDisponiblesAdministracion = [...new Set([
-                ...categoriasConfiguradas,
-                ...categoriasDisponiblesAdministracion,
-                ...categoriasDeProductos
-            ])].sort((a, b) => a.localeCompare(b, "es"));
-
-            const controlesCategoria = seccion.querySelector(".filtros-categoria-administracion");
-            if (controlesCategoria) {
-                controlesCategoria.innerHTML = "";
-                const opcionesCategoria = ["", ...categoriasDisponiblesAdministracion];
-                opcionesCategoria.forEach(nombreCategoria => {
-                    const botonCategoria = document.createElement("button");
-                    botonCategoria.type = "button";
-                    botonCategoria.textContent = nombreCategoria || "TODOS";
-                    botonCategoria.className = "boton-categoria-administracion";
-                    botonCategoria.style.border = "1px solid #159c96";
-                    botonCategoria.style.borderRadius = "8px";
-                    botonCategoria.style.padding = "9px 14px";
-                    botonCategoria.style.background = categoriaSeleccionadaAdministracion === nombreCategoria ? "#159c96" : "#ffffff";
-                    botonCategoria.style.color = categoriaSeleccionadaAdministracion === nombreCategoria ? "#ffffff" : "#222222";
-                    botonCategoria.style.fontWeight = "600";
-                    botonCategoria.style.cursor = "pointer";
-                    botonCategoria.addEventListener("click", function () {
-                        if (categoriaSeleccionadaAdministracion === nombreCategoria) return;
-                        categoriaSeleccionadaAdministracion = nombreCategoria;
-                        cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
-                    });
-                    controlesCategoria.appendChild(botonCategoria);
-                });
-            }
-        }
 
         medicamentos.forEach(function (medicamento) {
             const tarjeta = document.createElement("article");
@@ -3947,6 +3975,7 @@ if (
             }
 
             mostrarCategorias();
+            cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
 
             mostrarCategoriasParaAdministrar();
 
@@ -4004,6 +4033,7 @@ borrarCategoria.addEventListener("click", async function () {
     }
 
     mostrarCategorias();
+    cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
     mostrarCategoriasParaAdministrar();
     nombreCategoriaBorrar.value = "";
     mensajeCategorias.textContent =
