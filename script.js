@@ -1579,6 +1579,123 @@ function obtenerCategoriasMenuAdministracion() {
     return [...categoriasPorNombre.values()];
 }
 
+function escaparPatronCategoriaAdministracion(valor) {
+    return String(valor || "").replace(/[\\%_]/g, "\\$&");
+}
+
+async function eliminarProductosDeCategoriaAdministracion(opcion, boton) {
+    if (!opcion || !boton) return;
+
+    const textoOriginal = boton.textContent;
+    const tamanoPaginaBorrado = 500;
+    const tamanoLoteBorrado = 100;
+    const productos = [];
+    let errorBorrado = null;
+    let errorImagenes = false;
+
+    boton.disabled = true;
+
+    try {
+        let offset = 0;
+        while (true) {
+            boton.textContent = "Buscando productos…";
+            const { data, error } = await clienteSupabase
+                .from("catalogo_codmar")
+                .select("id,nombre,imagen_path")
+                .eq("cliente_id", clienteId)
+                .ilike("categoria", escaparPatronCategoriaAdministracion(opcion.valores[0]))
+                .order("id", { ascending: true })
+                .range(offset, offset + tamanoPaginaBorrado - 1);
+
+            if (error) throw error;
+            productos.push(...(data || []));
+            if (!data || data.length < tamanoPaginaBorrado) break;
+            offset += tamanoPaginaBorrado;
+        }
+
+        if (productos.length === 0) {
+            alert("No hay productos almacenados en la categoría «" + opcion.nombre + "».");
+            return;
+        }
+
+        const confirmar = window.confirm(
+            "Se eliminarán definitivamente " + productos.length +
+            " productos de «" + opcion.nombre +
+            "», incluidos los que no estén activos. También se eliminarán las fotografías que ya no use otro producto.\n\n" +
+            "Esta acción no se puede deshacer. ¿Deseas continuar?"
+        );
+
+        if (!confirmar) return;
+
+        const idsEliminados = new Set();
+        for (let inicio = 0; inicio < productos.length; inicio += tamanoLoteBorrado) {
+            const lote = productos.slice(inicio, inicio + tamanoLoteBorrado);
+            boton.textContent = "Eliminando " + idsEliminados.size + " de " + productos.length + "…";
+
+            const { data, error } = await clienteSupabase
+                .from("catalogo_codmar")
+                .delete()
+                .in("id", lote.map(producto => producto.id))
+                .eq("cliente_id", clienteId)
+                .select("id");
+
+            if (error) {
+                errorBorrado = error;
+                break;
+            }
+
+            (data || []).forEach(producto => idsEliminados.add(producto.id));
+        }
+
+        const rutasImagen = [...new Set(productos
+            .filter(producto => idsEliminados.has(producto.id) && producto.imagen_path)
+            .map(producto => producto.imagen_path))];
+
+        for (let inicio = 0; inicio < rutasImagen.length; inicio += tamanoLoteBorrado) {
+            const loteRutas = rutasImagen.slice(inicio, inicio + tamanoLoteBorrado);
+            const { data: referencias, error: errorReferencias } = await clienteSupabase
+                .from("catalogo_codmar")
+                .select("imagen_path")
+                .eq("cliente_id", clienteId)
+                .in("imagen_path", loteRutas);
+
+            if (errorReferencias) {
+                errorImagenes = true;
+                continue;
+            }
+
+            const rutasEnUso = new Set((referencias || []).map(producto => producto.imagen_path));
+            const rutasSinUso = loteRutas.filter(ruta => !rutasEnUso.has(ruta));
+            if (rutasSinUso.length === 0) continue;
+
+            const { error: errorEliminarImagen } = await clienteSupabase.storage
+                .from("imagenes")
+                .remove(rutasSinUso);
+            if (errorEliminarImagen) errorImagenes = true;
+        }
+
+        await cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+
+        if (errorBorrado) {
+            alert("Se eliminaron " + idsEliminados.size + " de " + productos.length +
+                " productos. El resto no se pudo borrar: " + (errorBorrado.message || "error desconocido."));
+        } else if (errorImagenes) {
+            alert("Se eliminaron " + idsEliminados.size + " productos, pero algunas fotografías no se pudieron limpiar.");
+        } else {
+            alert("Se eliminaron " + idsEliminados.size + " productos de «" + opcion.nombre + "».");
+        }
+    } catch (error) {
+        console.error("Error al eliminar productos de la categoría:", error);
+        await cargarMedicamentosCatalogo(0, false, terminoBusquedaCatalogo);
+        alert("No se pudo completar el borrado masivo: " + (error.message || "error desconocido."));
+    } finally {
+        if (boton.isConnected) {
+            boton.disabled = false;
+            boton.textContent = textoOriginal;
+        }
+    }
+}
+
 async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBusqueda = terminoBusquedaCatalogo) {
     const idSolicitudCatalogo = ++secuenciaCargaCatalogo;
     terminoBusquedaCatalogo = String(terminoBusqueda || "").trim();
@@ -1682,6 +1799,26 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             });
 
             seccion.appendChild(controlesCategoria);
+
+            if (opcionAdministracionSeleccionada) {
+                const botonBorrarCategoria = document.createElement("button");
+                botonBorrarCategoria.type = "button";
+                botonBorrarCategoria.textContent = "ELIMINAR TODOS LOS PRODUCTOS DE ESTA CATEGORÍA";
+                botonBorrarCategoria.className = "boton-eliminar-categoria-administracion";
+                botonBorrarCategoria.style.display = "block";
+                botonBorrarCategoria.style.margin = "0 auto 16px";
+                botonBorrarCategoria.style.padding = "10px 14px";
+                botonBorrarCategoria.style.border = "0";
+                botonBorrarCategoria.style.borderRadius = "8px";
+                botonBorrarCategoria.style.background = "#b42318";
+                botonBorrarCategoria.style.color = "#ffffff";
+                botonBorrarCategoria.style.fontWeight = "700";
+                botonBorrarCategoria.style.cursor = "pointer";
+                botonBorrarCategoria.addEventListener("click", function () {
+                    eliminarProductosDeCategoriaAdministracion(opcionAdministracionSeleccionada, botonBorrarCategoria);
+                });
+                seccion.appendChild(botonBorrarCategoria);
+            }
 
             lista = document.createElement("div");
             lista.className = "lista-medicamentos-codmar";
