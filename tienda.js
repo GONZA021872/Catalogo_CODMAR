@@ -99,30 +99,21 @@
   }
 
   async function cargarCategorias() {
-    // Cargar y aplicar la identidad de la tienda en cuanto responda Supabase,
-    // sin esperar a que termine la consulta independiente de categorías.
-    const respuestaConfigPromise = supabase
+    // Leer configuración y aplicar la identidad de la tienda.
+    const respuestaConfig = await supabase
       .from("configuracion_tienda_codmar_publica")
       .select("*")
       .eq("negocio_slug", negocioSlugTienda)
-      .maybeSingle()
-      .then(respuesta => {
-        if (respuesta.error) {
-          console.error("No se pudo cargar la identidad de la tienda:", respuesta.error);
-          return respuesta;
-        }
-        if (respuesta.data) aplicarIdentidad(respuesta.data);
-        else console.error("La vista pública no devolvió la configuración de la tienda.");
-        return respuesta;
-      });
-
-    const respuestaCategorias = await supabase
-      .from("categorias_tienda_publicas")
-      .select("categorias")
-      .eq("negocio_slug", negocioSlugTienda)
       .maybeSingle();
 
-    if (respuestaCategorias.error) throw respuestaCategorias.error;
+    if (respuestaConfig.error) {
+      console.error("No se pudo cargar la identidad de la tienda:", respuestaConfig.error);
+    } else if (respuestaConfig.data) {
+      aplicarIdentidad(respuestaConfig.data);
+    } else {
+      console.error("La vista pública no devolvió la configuración de la tienda.");
+    }
+
     const categoriasUnicas = new Map();
     const agregarCategoria = valor => {
       const categoria = textoSeguro(valor);
@@ -132,12 +123,12 @@
       if (!categoriasUnicas.has(clave)) categoriasUnicas.set(clave, categoria);
     };
 
-    const categoriasConfiguradas = respuestaCategorias.data?.categorias;
+    const categoriasConfiguradas = respuestaConfig.data?.categorias;
     if (Array.isArray(categoriasConfiguradas)) {
       categoriasConfiguradas.forEach(agregarCategoria);
     }
 
-    // Compatibilidad con negocios cuya lista de categorías aún no esté configurada.
+    // Compatibilidad con tiendas que aún no tienen categorías configuradas.
     if (!categoriasUnicas.size) {
       const respuestaProductos = await supabase
         .from("catalogo_codmar_publico")
@@ -161,8 +152,6 @@
       boton.addEventListener("click", () => seleccionarCategoria(categoria));
       categoriasEl.appendChild(boton);
     });
-
-    await respuestaConfigPromise;
   }
 
   let configuracionTiendaActiva = null;
