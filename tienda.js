@@ -117,21 +117,39 @@
       });
 
     const respuestaCategorias = await supabase
-      .from("catalogo_codmar_publico")
-      .select("categoria")
+      .from("categorias_tienda_publicas")
+      .select("categorias")
       .eq("negocio_slug", negocioSlugTienda)
-      .order("categoria");
+      .maybeSingle();
 
     if (respuestaCategorias.error) throw respuestaCategorias.error;
     const categoriasUnicas = new Map();
-    (respuestaCategorias.data || []).forEach(item => {
-      const categoria = textoSeguro(item.categoria);
+    const agregarCategoria = valor => {
+      const categoria = textoSeguro(valor);
       if (!categoria) return;
       const clave = categoria.toLocaleLowerCase("es");
+      if (clave === "todos") return;
       if (!categoriasUnicas.has(clave)) categoriasUnicas.set(clave, categoria);
-    });
-    const categorias = [...categoriasUnicas.values()]
-      .sort((a, b) => a.localeCompare(b, "es"));
+    };
+
+    const categoriasConfiguradas = respuestaCategorias.data?.categorias;
+    if (Array.isArray(categoriasConfiguradas)) {
+      categoriasConfiguradas.forEach(agregarCategoria);
+    }
+
+    // Compatibilidad con negocios cuya lista de categorías aún no esté configurada.
+    if (!categoriasUnicas.size) {
+      const respuestaProductos = await supabase
+        .from("catalogo_codmar_publico")
+        .select("categoria")
+        .eq("negocio_slug", negocioSlugTienda)
+        .order("categoria");
+
+      if (respuestaProductos.error) throw respuestaProductos.error;
+      (respuestaProductos.data || []).forEach(item => agregarCategoria(item.categoria));
+    }
+
+    const categorias = [...categoriasUnicas.values()];
 
     categoriasEl.querySelectorAll("button:not([data-categoria=''])").forEach(b => b.remove());
     categorias.forEach(categoria => {
