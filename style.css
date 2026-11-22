@@ -4285,3 +4285,21 @@ transform: translateY(-25px);
         -webkit-overflow-scrolling: touch;
     }
 }
+
+
+/* Categorías de Administración: fila única desplazable también con el dedo. */
+.filtros-categoria-administracion{
+  flex-wrap:nowrap !important;
+  justify-content:flex-start !important;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:4px 0 10px;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x;
+  scrollbar-width:thin;
+}
+.filtros-categoria-administracion .boton-categoria-administracion{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
