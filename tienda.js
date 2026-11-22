@@ -486,7 +486,7 @@
       console.error("Error al preparar el pago con Mercado Pago:", error);
       mostrarEstado(error.message || "No se pudo preparar el pago. Intenta de nuevo.", "error");
       creandoPago = false;
-      boton.textContent = "Pagar con Mercado Pago";
+      boton.textContent = "Pagar";
       boton.disabled = !carrito.length;
     }
   }
