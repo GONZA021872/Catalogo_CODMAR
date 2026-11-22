@@ -47,6 +47,9 @@ button,input{font:inherit}
 .controles-cantidad{display:flex;align-items:center;gap:10px}
 .controles-cantidad button{width:30px;height:30px;border:1px solid var(--borde);border-radius:50%;background:white;cursor:pointer}
 .pie-carrito{border-top:1px solid var(--borde);padding-top:16px}
+.boton-pago-mercado-pago{display:block;width:100%;min-height:48px;margin:0 0 10px;border:0;border-radius:8px;background:#009ee3;color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.boton-pago-mercado-pago:hover:not(:disabled){background:#0089c7}
+.boton-pago-mercado-pago:disabled{opacity:.55;cursor:not-allowed}
 .pie-carrito>p{display:flex;justify-content:space-between;margin:0 0 16px;font-size:16px}
 .pie-carrito>p strong{font-size:23px}
 .pie-carrito small{display:block;margin-top:12px;color:#7b8794;line-height:1.4}
