@@ -670,17 +670,36 @@ body.selector-producto-abierto{overflow:hidden}
 }
 
 
-/* En celular, mostrar primero la compra y después los medios de pago. */
+/* En celular, Mi compra tiene espacio para unos 20 renglones y pagos queda debajo. */
 @media(max-width:700px){
+  .panel-carrito{
+    overflow-x:hidden;
+    overflow-y:auto;
+  }
   .distribucion-compra-tienda{
+    height:auto;
+    min-height:100%;
     grid-template-rows:auto auto;
     align-content:start;
+    overflow:visible;
   }
   .nota-compra-tienda{
     order:1;
     height:auto;
+    min-height:980px;
+  }
+  .nota-compra-tienda .items-carrito{
+    flex:1 0 800px;
+    min-height:800px;
+    overflow-y:auto;
   }
   .medios-pago-tienda{
     order:2;
+  }
+  .logo-pago-tienda{
+    display:block;
+    width:150px;
+    height:58px;
+    max-width:100%;
   }
 }
