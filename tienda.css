@@ -653,3 +653,18 @@ body.selector-producto-abierto{overflow:hidden}
     margin-top: 0 !important;
   }
 }
+
+
+/* Categorías en una sola fila, desplazable con el dedo en pantallas táctiles. */
+.categorias-tienda{
+  flex-flow:row nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-x;
+  scrollbar-width:thin;
+}
+.categorias-tienda .categoria{
+  flex:0 0 auto;
+  white-space:nowrap;
+}
