@@ -668,3 +668,19 @@ body.selector-producto-abierto{overflow:hidden}
   flex:0 0 auto;
   white-space:nowrap;
 }
+
+
+/* En celular, mostrar primero la compra y después los medios de pago. */
+@media(max-width:700px){
+  .distribucion-compra-tienda{
+    grid-template-rows:auto auto;
+    align-content:start;
+  }
+  .nota-compra-tienda{
+    order:1;
+    height:auto;
+  }
+  .medios-pago-tienda{
+    order:2;
+  }
+}
