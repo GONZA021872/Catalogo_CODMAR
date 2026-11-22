@@ -703,3 +703,54 @@ body.selector-producto-abierto{overflow:hidden}
     max-width:100%;
   }
 }
+
+
+/* Carrito móvil compacto, a todo el ancho y entre las franjas fijas. */
+@media(max-width:700px){
+  .fondo-carrito{
+    inset:101px 0 70px;
+    align-items:stretch;
+    justify-content:flex-start;
+    padding:0;
+    overflow:hidden;
+  }
+  .panel-carrito{
+    width:100%;
+    height:100%;
+    max-height:none;
+    padding:0;
+    border:0;
+    border-radius:0;
+    overflow-x:hidden;
+    overflow-y:auto;
+    box-shadow:none;
+  }
+  .distribucion-compra-tienda{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto;
+    width:100%;
+    height:auto;
+    min-height:100%;
+    overflow:visible;
+  }
+  .nota-compra-tienda{
+    order:1;
+    width:100%;
+    height:min(55vh,420px);
+    min-height:320px;
+    padding:16px;
+  }
+  .nota-compra-tienda .items-carrito{
+    flex:1 1 0;
+    min-height:100px;
+    overflow:auto;
+  }
+  .medios-pago-tienda{
+    order:2;
+    width:100%;
+    padding:16px;
+    border:0;
+    border-top:1px solid #e5e7eb;
+  }
+}
