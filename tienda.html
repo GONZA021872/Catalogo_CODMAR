@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <meta name="theme-color" content="#ffffff">
   <title>Tienda en línea</title>
-  <link rel="stylesheet" href="tienda.css?v=37">
+  <link rel="stylesheet" href="tienda.css?v=38">
 </head>
 <body>
   <header class="encabezado-tienda" id="encabezado-tienda">
@@ -70,26 +70,6 @@
   <div id="fondo-carrito" class="fondo-carrito" hidden>
     <section class="panel-carrito" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
       <div class="distribucion-compra-tienda">
-        <section class="medios-pago-tienda">
-          <h2>Medios de pago</h2>
-          <p class="subtitulo-pago-tienda">Opciones disponibles</p>
-          <div class="tarjetas-pago-tienda">
-            <div class="tarjeta-pago-tienda">
-              <svg class="logo-pago-tienda" viewBox="0 0 160 64" role="img" aria-label="Visa">
-                <text x="80" y="45" text-anchor="middle" fill="#1434CB" font-family="Arial,Helvetica,sans-serif" font-size="45" font-style="italic" font-weight="900">VISA</text>
-              </svg>
-            </div>
-            <div class="tarjeta-pago-tienda">
-              <svg class="logo-pago-tienda" viewBox="0 0 160 64" role="img" aria-label="Mastercard">
-                <circle cx="66" cy="25" r="19" fill="#EB001B"/>
-                <circle cx="94" cy="25" r="19" fill="#F79E1B"/>
-                <text x="80" y="59" text-anchor="middle" fill="#252525" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="700">mastercard</text>
-              </svg>
-            </div>
-            <div class="tarjeta-pago-tienda"><strong>American Express</strong></div>
-            <div class="tarjeta-pago-tienda"><strong>Otras tarjetas</strong></div>
-          </div>
-        </section>
         <section class="nota-compra-tienda">
           <div class="encabezado-carrito">
             <h2 id="titulo-carrito">Mi compra</h2>
@@ -100,7 +80,6 @@
           </div>
           <div class="pie-carrito">
             <p><span>TOTAL:</span><strong id="total-carrito">$0.00</strong></p>
-            <button id="pagar-mercado-pago" class="boton-pago-mercado-pago" type="button" disabled>Pagar</button>
             <button id="enviar-pedido" class="boton-pedido" type="button" disabled>Enviar pedido por WhatsApp</button>
           </div>
         </section>
@@ -109,6 +88,6 @@
   </div>
   <footer class="pie-tienda">Catálogo en línea</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="tienda.js?v=37"></script>
+  <script src="tienda.js?v=38"></script>
 </body>
 </html>
