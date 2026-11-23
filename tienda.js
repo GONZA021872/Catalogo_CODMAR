@@ -31,7 +31,6 @@
   let carrito = [];
   let telefonoPedidosTienda = "";
   let nombreTiendaActiva = "CODMAR";
-  let creandoPago = false;
 
   function textoSeguro(valor) {
     return String(valor ?? "").trim();
@@ -449,7 +448,6 @@
     porId("total-carrito").textContent = formatoPrecio.format(total);
     porId("contador-carrito").textContent = String(piezas);
     porId("enviar-pedido").disabled = !carrito.length;
-    porId("pagar-mercado-pago").disabled = !carrito.length || creandoPago;
   }
 
   function abrirCarrito() {
@@ -460,35 +458,6 @@
   function cerrarCarrito() {
     porId("fondo-carrito").hidden = true;
     document.body.classList.remove("carrito-abierto");
-  }
-
-  async function pagarConMercadoPago() {
-    if (!carrito.length || creandoPago) return;
-    creandoPago = true;
-    const boton = porId("pagar-mercado-pago");
-    boton.disabled = true;
-    boton.textContent = "Preparando pago…";
-    try {
-      const respuesta = await fetch(SUPABASE_URL + "/functions/v1/codmar-crear-pago", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
-        body: JSON.stringify({
-          negocio_slug: negocioSlugTienda,
-          items: carrito.map(item => ({ id: item.id, quantity: item.cantidad }))
-        })
-      });
-      const resultado = await respuesta.json().catch(() => ({}));
-      if (!respuesta.ok || !resultado.checkout_url) {
-        throw new Error(resultado.error || "No se pudo preparar el pago.");
-      }
-      window.location.assign(resultado.checkout_url);
-    } catch (error) {
-      console.error("Error al preparar el pago con Mercado Pago:", error);
-      mostrarEstado(error.message || "No se pudo preparar el pago. Intenta de nuevo.", "error");
-      creandoPago = false;
-      boton.textContent = "Pagar";
-      boton.disabled = !carrito.length;
-    }
   }
 
   function enviarPedido() {
@@ -562,7 +531,6 @@
     if (evento.target === porId("fondo-carrito")) cerrarCarrito();
   });
   porId("enviar-pedido").addEventListener("click", enviarPedido);
-  porId("pagar-mercado-pago").addEventListener("click", pagarConMercadoPago);
   document.addEventListener("keydown", evento => {
     if (evento.key === "Escape") cerrarCarrito();
   });
