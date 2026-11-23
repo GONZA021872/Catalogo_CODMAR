@@ -47,9 +47,6 @@ button,input{font:inherit}
 .controles-cantidad{display:flex;align-items:center;gap:10px}
 .controles-cantidad button{width:30px;height:30px;border:1px solid var(--borde);border-radius:50%;background:white;cursor:pointer}
 .pie-carrito{border-top:1px solid var(--borde);padding-top:16px}
-.boton-pago-mercado-pago{display:block;width:100%;min-height:48px;margin:0 0 10px;border:0;border-radius:8px;background:#009ee3;color:#fff;font-weight:700;font-size:15px;cursor:pointer}
-.boton-pago-mercado-pago:hover:not(:disabled){background:#0089c7}
-.boton-pago-mercado-pago:disabled{opacity:.55;cursor:not-allowed}
 .pie-carrito>p{display:flex;justify-content:space-between;margin:0 0 16px;font-size:16px}
 .pie-carrito>p strong{font-size:23px}
 .pie-carrito small{display:block;margin-top:12px;color:#7b8794;line-height:1.4}
@@ -499,21 +496,12 @@ body.carrito-abierto{overflow:hidden}
   overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.16);
 }
 .distribucion-compra-tienda{
-  display:grid;grid-template-columns:1fr 1fr;width:100%;height:100%;
+  display:grid;grid-template-columns:minmax(0,1fr);width:100%;height:100%;
   min-height:0;background:#fff;
 }
-.medios-pago-tienda{min-width:0;padding:30px;border-right:1px solid #e5e7eb}
-.medios-pago-tienda h2,.nota-compra-tienda h2{
+.nota-compra-tienda h2{
   margin:0;color:#263746;font-family:Georgia,"Times New Roman",serif;font-size:22px
 }
-.subtitulo-pago-tienda{margin:8px 0 0;color:#777;font-family:Georgia,"Times New Roman",serif;font-size:14px}
-.tarjetas-pago-tienda{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:25px}
-.tarjeta-pago-tienda{
-  display:flex;min-height:75px;align-items:center;justify-content:center;
-  border:1px solid #e0e4e8;border-radius:8px;color:#34495e;background:#fff;
-  font-family:Georgia,"Times New Roman",serif
-}
-.aviso-pago-tienda{margin-top:25px;color:#777;font-family:Georgia,"Times New Roman",serif;font-size:13px;line-height:1.5}
 .nota-compra-tienda{
   display:flex;flex-direction:column;min-width:0;min-height:0;height:100%;
   padding:30px;overflow:hidden
@@ -553,15 +541,8 @@ body.carrito-abierto{overflow:hidden}
 @media(max-width:700px){
   .fondo-carrito{padding:8px}
   .panel-carrito{width:96vw;height:94vh;max-height:760px}
-  .distribucion-compra-tienda{
-    grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);overflow:auto
-  }
-  .medios-pago-tienda{padding:15px 16px;border-right:0;border-bottom:1px solid #e5e7eb}
-  .medios-pago-tienda h2,.nota-compra-tienda h2{font-size:18px}
-  .subtitulo-pago-tienda{margin-top:4px}
-  .tarjetas-pago-tienda{gap:8px;margin-top:12px}
-  .tarjeta-pago-tienda{min-height:42px;font-size:12px}
-  .aviso-pago-tienda{margin:10px 0 0;font-size:11px}
+  .distribucion-compra-tienda{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;overflow:auto}
+  .nota-compra-tienda h2{font-size:18px}
   .nota-compra-tienda{padding:15px 12px;min-height:280px}
   .nota-compra-tienda .encabezado-carrito{padding-bottom:12px}
   .items-carrito{padding:12px 0}
@@ -696,16 +677,7 @@ body.selector-producto-abierto{overflow:hidden}
     min-height:800px;
     overflow-y:auto;
   }
-  .medios-pago-tienda{
-    order:2;
   }
-  .logo-pago-tienda{
-    display:block;
-    width:150px;
-    height:58px;
-    max-width:100%;
-  }
-}
 
 
 /* Carrito móvil compacto, a todo el ancho y entre las franjas fijas. */
@@ -731,7 +703,7 @@ body.selector-producto-abierto{overflow:hidden}
   .distribucion-compra-tienda{
     display:grid;
     grid-template-columns:minmax(0,1fr);
-    grid-template-rows:auto auto;
+    grid-template-rows:auto;
     width:100%;
     height:auto;
     min-height:100%;
@@ -749,11 +721,4 @@ body.selector-producto-abierto{overflow:hidden}
     min-height:100px;
     overflow:auto;
   }
-  .medios-pago-tienda{
-    order:2;
-    width:100%;
-    padding:16px;
-    border:0;
-    border-top:1px solid #e5e7eb;
   }
-}
