@@ -251,6 +251,117 @@ if (campoPassword && botonMostrarPassword) {
          
     
   
+
+    // Acceso administrativo de solo lectura para revisar MARCUSLOGON.
+    if (session && sesionValidaParaNegocio && !modoRecuperacion) {
+        try {
+            const { data: permisoRevision, error: errorPermisoRevision } =
+                await clienteSupabase.rpc("obtener_revision_negocio", {
+                    p_cliente_id: 7
+                });
+
+            if (!errorPermisoRevision && permisoRevision) {
+                const menuAdministracion = document.getElementById("panel-menu");
+                if (menuAdministracion && !document.getElementById("boton-revisar-marcuslogon")) {
+                    const opcionRevision = document.createElement("div");
+                    opcionRevision.className = "opcion-menu";
+                    opcionRevision.id = "boton-revisar-marcuslogon";
+                    opcionRevision.textContent = "Revisar MARCUSLOGON";
+                    const opcionSalir = document.getElementById("boton-salir");
+                    menuAdministracion.insertBefore(opcionRevision, opcionSalir || null);
+
+                    opcionRevision.addEventListener("click", async () => {
+                        opcionRevision.style.pointerEvents = "none";
+                        opcionRevision.textContent = "Cargando revisión...";
+                        try {
+                            const { data, error } = await clienteSupabase.rpc(
+                                "obtener_revision_negocio",
+                                { p_cliente_id: 7 }
+                            );
+                            if (error) throw error;
+
+                            let panel = document.getElementById("panel-revision-marcuslogon");
+                            if (panel) panel.remove();
+                            panel = document.createElement("section");
+                            panel.id = "panel-revision-marcuslogon";
+                            panel.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:14px;";
+
+                            const tarjeta = document.createElement("div");
+                            tarjeta.style.cssText = "background:#fff;color:#222;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:14px;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.3);";
+                            panel.appendChild(tarjeta);
+
+                            const titulo = document.createElement("h2");
+                            titulo.textContent = "REVISIÓN ADMINISTRATIVA · " + (data.cliente?.nombre_comercial || "MARCUSLOGON");
+                            titulo.style.cssText = "margin:0 0 8px;font-size:20px;";
+                            tarjeta.appendChild(titulo);
+
+                            const aviso = document.createElement("p");
+                            aviso.textContent = "Modo de solo lectura. Esta revisión no modifica ni elimina datos del negocio.";
+                            aviso.style.cssText = "margin:0 0 18px;color:#555;font-size:14px;";
+                            tarjeta.appendChild(aviso);
+
+                            const agregarSeccion = (encabezado, valor) => {
+                                const h = document.createElement("h3");
+                                h.textContent = encabezado;
+                                h.style.cssText = "margin:18px 0 8px;font-size:16px;";
+                                tarjeta.appendChild(h);
+                                const p = document.createElement("p");
+                                p.textContent = valor;
+                                p.style.cssText = "margin:0;color:#333;white-space:pre-wrap;overflow-wrap:anywhere;";
+                                tarjeta.appendChild(p);
+                            };
+
+                            const categorias = data.configuracion_inicio?.categorias ||
+                                data.configuracion_tienda?.categorias || [];
+                            agregarSeccion("Categorías configuradas", Array.isArray(categorias) && categorias.length
+                                ? categorias.join(", ") : "No hay categorías registradas.");
+
+                            const catalogo = Array.isArray(data.catalogo) ? data.catalogo : [];
+                            agregarSeccion("Productos del catálogo (" + catalogo.length + ")",
+                                catalogo.length
+                                    ? catalogo.map(p => (p.nombre || "Sin nombre") + " · " +
+                                        (p.categoria || "Sin categoría") + " · " +
+                                        (p.activo ? "Activo" : "Inactivo")).join("\n")
+                                    : "No hay productos en el catálogo.");
+
+                            const productos = Array.isArray(data.productos) ? data.productos : [];
+                            agregarSeccion("Productos registrados en la tienda (" + productos.length + ")",
+                                productos.length
+                                    ? productos.map(p => (p.nombre || "Sin nombre") + " · " +
+                                        (p.categoria || "Sin categoría")).join("\n")
+                                    : "Todavía no hay productos registrados en esta sección.");
+
+                            const enlaceTienda = document.createElement("a");
+                            enlaceTienda.href = "tienda.html?negocio=" + encodeURIComponent(data.cliente.slug);
+                            enlaceTienda.target = "_blank";
+                            enlaceTienda.rel = "noopener";
+                            enlaceTienda.textContent = "Abrir tienda pública de MARCUSLOGON";
+                            enlaceTienda.style.cssText = "display:inline-block;margin-top:18px;color:#075bbb;font-weight:600;";
+                            tarjeta.appendChild(enlaceTienda);
+
+                            const cerrar = document.createElement("button");
+                            cerrar.type = "button";
+                            cerrar.textContent = "CERRAR REVISIÓN";
+                            cerrar.style.cssText = "display:block;margin-top:20px;padding:11px 18px;border:0;border-radius:8px;background:#222;color:#fff;font-weight:600;cursor:pointer;";
+                            cerrar.addEventListener("click", () => panel.remove());
+                            tarjeta.appendChild(cerrar);
+
+                            document.body.appendChild(panel);
+                        } catch (error) {
+                            console.error("No se pudo abrir la revisión administrativa:", error);
+                            alert("No fue posible cargar la revisión de MARCUSLOGON. " + (error.message || ""));
+                        } finally {
+                            opcionRevision.style.pointerEvents = "";
+                            opcionRevision.textContent = "Revisar MARCUSLOGON";
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("No se pudo comprobar el permiso de revisión administrativa:", error);
+        }
+    }
+
     /* ================================================= */
     /*                  BOTÓN SALIR                      */
     /* ================================================= */
