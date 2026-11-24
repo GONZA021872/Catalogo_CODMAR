@@ -3451,7 +3451,7 @@ guardar.className = "boton-guardar-captura";
 
 const cancelar = document.createElement("button");
 cancelar.type = "button";
-cancelar.textContent = "CANCELAR";
+cancelar.textContent = "CERRAR";
 cancelar.className = "boton-cancelar-captura";
 
 const botones = document.createElement("div");
