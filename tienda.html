@@ -81,13 +81,63 @@
           <div class="pie-carrito">
             <p><span>TOTAL:</span><strong id="total-carrito">$0.00</strong></p>
             <button id="enviar-pedido" class="boton-pedido" type="button" disabled>Enviar pedido por WhatsApp</button>
+            <button id="pagar-con-tarjeta" class="boton-pagar-tarjeta" type="button" disabled hidden>Pagar con tarjeta</button>
           </div>
         </section>
       </div>
     </section>
   </div>
+  <div id="fondo-pago-openpay" class="fondo-pago-openpay" hidden>
+    <section class="panel-pago-openpay" role="dialog" aria-modal="true" aria-labelledby="titulo-pago-openpay">
+      <div class="encabezado-pago-openpay">
+        <h2 id="titulo-pago-openpay">Pagar con tarjeta</h2>
+        <button id="cerrar-pago-openpay" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <p class="aviso-sandbox-openpay">Prueba de pago con Openpay Sandbox. No se realizará un cobro real.</p>
+      <form id="formulario-pago-openpay" autocomplete="on">
+        <div class="campos-cliente-openpay">
+          <label>Nombre del titular
+            <input id="cliente-nombre-openpay" type="text" autocomplete="name" maxlength="80" required>
+          </label>
+          <label>Teléfono
+            <input id="cliente-telefono-openpay" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" required>
+          </label>
+          <label>Correo electrónico (opcional)
+            <input id="cliente-correo-openpay" type="email" autocomplete="email" maxlength="100">
+          </label>
+        </div>
+        <div class="separador-pago-openpay"></div>
+        <div class="campos-tarjeta-openpay">
+          <label>Número de tarjeta
+            <input id="tarjeta-numero-openpay" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" required>
+          </label>
+          <label>Nombre como aparece en la tarjeta
+            <input id="tarjeta-titular-openpay" type="text" autocomplete="cc-name" maxlength="80" required>
+          </label>
+          <div class="fila-expiracion-openpay">
+            <label>Mes
+              <input id="tarjeta-mes-openpay" type="text" inputmode="numeric" autocomplete="cc-exp-month" maxlength="2" placeholder="MM" required>
+            </label>
+            <label>Año
+              <input id="tarjeta-anio-openpay" type="text" inputmode="numeric" autocomplete="cc-exp-year" maxlength="2" placeholder="AA" required>
+            </label>
+            <label>CVV
+              <input id="tarjeta-cvv-openpay" type="password" inputmode="numeric" autocomplete="cc-csc" maxlength="4" required>
+            </label>
+          </div>
+        </div>
+        <input id="device_session_id" name="device_session_id" type="hidden">
+        <p id="estado-pago-openpay" class="estado-pago-openpay" role="status" aria-live="polite"></p>
+        <p id="total-pago-openpay" class="total-pago-openpay"></p>
+        <button id="confirmar-pago-openpay" class="boton-confirmar-pago-openpay" type="submit">Continuar y pagar</button>
+      </form>
+      <p class="pie-seguridad-openpay">Tus datos de tarjeta se envían directamente a Openpay para generar un token. CODMAR no recibe ni almacena el número de tarjeta ni el CVV.</p>
+    </section>
+  </div>
   <footer class="pie-tienda">Catálogo en línea</footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://js.openpay.mx/openpay.v1.min.js"></script>
+  <script src="https://js.openpay.mx/openpay-data.v1.min.js"></script>
   <script src="tienda.js?v=39"></script>
 </body>
 </html>
