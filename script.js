@@ -311,10 +311,41 @@ if (campoPassword && botonMostrarPassword) {
                                 tarjeta.appendChild(p);
                             };
 
+                            const crearDetalleConfiguracion = (encabezado, configuracion) => {
+                                const detalle = document.createElement("details");
+                                detalle.style.cssText = "margin:14px 0;border:1px solid #ddd;border-radius:9px;padding:10px 12px;";
+                                const resumen = document.createElement("summary");
+                                resumen.textContent = encabezado + " · solo lectura";
+                                resumen.style.cssText = "font-weight:700;cursor:pointer;";
+                                detalle.appendChild(resumen);
+                                const lista = document.createElement("div");
+                                lista.style.cssText = "margin-top:12px;display:grid;grid-template-columns:minmax(120px, .8fr) minmax(0, 1.2fr);gap:8px 12px;font-size:13px;";
+                                if (!configuracion || typeof configuracion !== "object" || Array.isArray(configuracion)) {
+                                    lista.textContent = "No hay configuración registrada.";
+                                } else {
+                                    Object.entries(configuracion).forEach(([clave, valor]) => {
+                                        const etiqueta = document.createElement("strong");
+                                        etiqueta.textContent = clave.replace(/_/g, " ");
+                                        const contenido = document.createElement("span");
+                                        contenido.style.cssText = "overflow-wrap:anywhere;";
+                                        contenido.textContent = valor === null || valor === undefined || valor === ""
+                                            ? "Sin configurar"
+                                            : typeof valor === "object" ? JSON.stringify(valor) : String(valor);
+                                        lista.appendChild(etiqueta);
+                                        lista.appendChild(contenido);
+                                    });
+                                }
+                                detalle.appendChild(lista);
+                                tarjeta.appendChild(detalle);
+                            };
+
                             const categorias = data.configuracion_inicio?.categorias ||
                                 data.configuracion_tienda?.categorias || [];
                             agregarSeccion("Categorías configuradas", Array.isArray(categorias) && categorias.length
                                 ? categorias.join(", ") : "No hay categorías registradas.");
+
+                            crearDetalleConfiguracion("Configuración de inicio", data.configuracion_inicio);
+                            crearDetalleConfiguracion("Configuración de tienda pública", data.configuracion_tienda);
 
                             const catalogo = Array.isArray(data.catalogo) ? data.catalogo : [];
                             agregarSeccion("Productos del catálogo (" + catalogo.length + ")",
