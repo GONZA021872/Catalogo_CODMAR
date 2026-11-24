@@ -908,139 +908,6 @@ aceptarCabecera.addEventListener("click", function () {
 
 
      
-/* ============================================= */
-/*       ABRIR Y CERRAR PANEL DE COMPRAS         */
-/* ============================================= */
-
-const panelComprasCODMAR =
-    document.getElementById("panel-compras-codmar");
-
-const cerrarPanelCompras =
-    document.getElementById("cerrar-panel-compras");
-
-
-
-/* ============================================= */
-/*       MOSTRAR PRODUCTOS DEL CARRITO           */
-/* ============================================= */
-
-function mostrarProductosCarritoCODMAR() {
-
-    const lista =
-        document.getElementById("lista-productos-carrito");
-
-    const totalGeneral =
-        document.getElementById("total-general-carrito");
-
-    if (!lista || !totalGeneral) {
-        return;
-    }
-
-    lista.innerHTML = "";
-
-    let total = 0;
-
-    // ENCABEZADOS DE LAS COLUMNAS
-
-    const encabezados = document.createElement("div");
-    encabezados.className = "encabezados-nota-codmar";
-
-    encabezados.innerHTML = `
-        <span>CANTIDAD</span>
-        <span>PRODUCTO</span>
-        <span>PRECIO</span>
-        <span>IMPORTE</span>
-    `;
-
-    lista.appendChild(encabezados);
-
-    // CARRITO VACÍO
-
-    if (carritoCODMAR.length === 0) {
-
-        const vacio = document.createElement("p");
-        vacio.className = "carrito-vacio";
-        vacio.textContent = "Tu carrito está vacío.";
-
-        lista.appendChild(vacio);
-
-        totalGeneral.textContent = "$0.00";
-
-        return;
-    }
-
-    // PRODUCTOS
-
-    carritoCODMAR.forEach(function (producto) {
-
-        const precio = Number(producto.precio_codmar) || 0;
-        const cantidad = Number(producto.cantidad) || 0;
-        const importe = precio * cantidad;
-
-        total += importe;
-
-        const fila = document.createElement("div");
-        fila.className = "fila-nota-codmar";
-
-        const cantidadColumna = document.createElement("span");
-        cantidadColumna.textContent = cantidad;
-
-        const productoColumna = document.createElement("span");
-        productoColumna.textContent =
-            producto.nombre +
-            (producto.presentacion ? " " + producto.presentacion : "");
-
-        const precioColumna = document.createElement("span");
-        precioColumna.textContent = "$" + precio.toFixed(2);
-
-        const importeColumna = document.createElement("span");
-        importeColumna.textContent = "$" + importe.toFixed(2);
-
-        fila.appendChild(cantidadColumna);
-        fila.appendChild(productoColumna);
-        fila.appendChild(precioColumna);
-        fila.appendChild(importeColumna);
-
-        lista.appendChild(fila);
-
-    });
-
-    totalGeneral.textContent = "$" + total.toFixed(2);
-
-}
-
-
-
-// ABRIR O CERRAR CON EL BOTÓN SUPERIOR
-
-if (botonCarrito && panelComprasCODMAR) {
-
-    botonCarrito.addEventListener("click", function () {
-
-    panelComprasCODMAR.classList.toggle("activo");
-
-    mostrarProductosCarritoCODMAR();
-       
-
-    });
-
-}
-
-// CERRAR CON LA X
-
-if (cerrarPanelCompras && panelComprasCODMAR) {
-
-    cerrarPanelCompras.addEventListener("click", function () {
-
-        panelComprasCODMAR.classList.remove("activo");
-
-    });
-
-}
-
-
-
-
     /* ================================================= */
     /*                 NOMBRE COMERCIAL                  */
     /* ================================================= */
@@ -1531,8 +1398,6 @@ function detenerMovimientoLogotipo() {
 
 
 // CARRITO DE COMPRAS CODMAR
-let carritoCODMAR = [];
-
 console.log("CLIENTE ACTUAL:", clienteId);
 
 
@@ -2892,10 +2757,12 @@ if (configuracionGuardada) {
         mostrarCarrito.checked =
             configuracionGuardada.mostrar_carrito !== false;
 
-        botonCarrito.classList.toggle(
-            "oculto",
-            !mostrarCarrito.checked
-        );
+        if (botonCarrito) {
+            botonCarrito.classList.toggle(
+                "oculto",
+                !mostrarCarrito.checked
+            );
+        }
 
 
         /* --------------------------------------------- */
@@ -5601,10 +5468,12 @@ aceptarCarrito.addEventListener(
             );
         }
 
-        botonCarrito.classList.toggle(
-            "oculto",
-            !mostrarCarrito.checked
-        );
+        if (botonCarrito) {
+            botonCarrito.classList.toggle(
+                "oculto",
+                !mostrarCarrito.checked
+            );
+        }
 
         aplicarTipoCarrito();
 
