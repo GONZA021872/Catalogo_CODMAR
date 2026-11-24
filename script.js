@@ -1411,10 +1411,11 @@ function detenerMovimientoLogotipo() {
         .toLowerCase();
     const slugNegocioNormalizado = (datosNegocioActual?.slug || "").toLowerCase();
 
+    const esNegocioCodmar = nombreNegocioNormalizado === "codmar" ||
+        slugNegocioNormalizado.startsWith("codmar");
+
     if (campoNombreCategoria) {
-        const esCodmar = nombreNegocioNormalizado === "codmar" ||
-            slugNegocioNormalizado.startsWith("codmar");
-        campoNombreCategoria.placeholder = esCodmar ? "Ej. Medicamentos" : "";
+        campoNombreCategoria.placeholder = esNegocioCodmar ? "Ej. Medicamentos" : "";
     }
 
     const enlaceTiendaNegocio = document.getElementById("boton-abrir-tienda");
@@ -3545,7 +3546,7 @@ function mostrarCategorias() {
 
             const nombre = document.createElement("input");
             nombre.type = "text";
-           nombre.placeholder = "Nombre del medicamento";
+            nombre.placeholder = esNegocioCodmar ? "Nombre del medicamento" : "";
             nombre.autocomplete = "off";
             nombre.maxLength = 150;
 
