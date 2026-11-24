@@ -586,10 +586,20 @@
   }
 
   function errorOpenpayTexto(error) {
-    const codigo = Number(error?.data?.error_code || error?.data?.status || 0);
-    if (codigo === 3001 || codigo === 3002 || codigo === 3003 || codigo === 3005) return "Openpay rechazó la tarjeta. Revisa los datos o utiliza otra tarjeta de prueba.";
-    if (error?.message === "Timeout after X milliseconds") return "Openpay tardó demasiado en responder. Revisa el panel de pruebas antes de intentar otra vez.";
-    return "No se pudo validar la tarjeta. Revisa los datos e inténtalo nuevamente.";
+    const detalle = error?.data || {};
+    const codigo = Number(detalle.error_code || 0);
+    const descripcion = String(detalle.description || error?.message || "").trim();
+    const estado = Number(detalle.status || error?.status || 0);
+    if (codigo === 3001 || codigo === 3002 || codigo === 3003 || codigo === 3005) {
+      return "Openpay rechazó la tarjeta (código " + codigo + "): " + (descripcion || "revisa los datos o utiliza otra tarjeta de prueba.");
+    }
+    if (error?.message === "Timeout after X milliseconds") {
+      return "Openpay tardó demasiado en responder. Revisa el panel Sandbox antes de intentar otra vez.";
+    }
+    if (descripcion || codigo || estado) {
+      return "Error de validación Openpay" + (codigo ? " (" + codigo + ")" : estado ? " (estado " + estado + ")" : "") + ": " + (descripcion || "sin descripción adicional.");
+    }
+    return "Openpay no devolvió detalles del error. Verifica los datos y revisa la conexión con Openpay.";
   }
 
   async function enviarPagoOpenpay(tokenId) {
