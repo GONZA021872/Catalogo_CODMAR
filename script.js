@@ -1737,7 +1737,9 @@ async function cargarMedicamentosCatalogo(offset = 0, agregar = false, terminoBu
             seccion.className = "catalogo-medicamentos-codmar";
 
             const titulo = document.createElement("h2");
-            titulo.textContent = "MEDICAMENTOS";
+            titulo.textContent = opcionAdministracionSeleccionada?.nombre
+                ? opcionAdministracionSeleccionada.nombre.toLocaleUpperCase("es")
+                : "CATÁLOGO";
 
             // En el sistema administrativo solo se muestra el acceso de ADMINISTRACIÓN.
             // Las ventas se realizan desde la página pública de tienda.
