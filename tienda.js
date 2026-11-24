@@ -565,9 +565,13 @@
     porId("fondo-pago-openpay").hidden = false;
     document.body.classList.add("pago-openpay-abierto");
     try {
-      deviceSessionOpenpay = OpenPay.deviceData.setup("formulario-pago-openpay", "device_session_id") || "";
       const campoDispositivo = porId("device_session_id");
-      if (campoDispositivo && deviceSessionOpenpay) campoDispositivo.value = deviceSessionOpenpay;
+      if (!deviceSessionOpenpay) {
+        deviceSessionOpenpay = OpenPay.deviceData.setup("formulario-pago-openpay", "device_session_id") || "";
+        if (campoDispositivo && !deviceSessionOpenpay) deviceSessionOpenpay = campoDispositivo.value || "";
+      } else if (campoDispositivo) {
+        campoDispositivo.value = deviceSessionOpenpay;
+      }
     } catch (error) {
       console.error("No se pudo iniciar la identificación del dispositivo Openpay.");
       mostrarEstadoPagoOpenpay("No se pudo iniciar la validación de seguridad. Recarga la tienda e inténtalo de nuevo.", true);
@@ -577,13 +581,13 @@
   function cerrarPagoOpenpay() {
     porId("fondo-pago-openpay").hidden = true;
     document.body.classList.remove("pago-openpay-abierto");
-    porId("formulario-pago-openpay").reset();
-    deviceSessionOpenpay = "";
+    porId("tarjeta-numero-openpay").value = "";
+    porId("tarjeta-cvv-openpay").value = "";
   }
 
   function errorOpenpayTexto(error) {
     const codigo = Number(error?.data?.error_code || error?.data?.status || 0);
-    if (codigo === 3001 || codigo === 3002 || codigo === 3003) return "Openpay rechazó la tarjeta. Revisa los datos o utiliza otra tarjeta de prueba.";
+    if (codigo === 3001 || codigo === 3002 || codigo === 3003 || codigo === 3005) return "Openpay rechazó la tarjeta. Revisa los datos o utiliza otra tarjeta de prueba.";
     if (error?.message === "Timeout after X milliseconds") return "Openpay tardó demasiado en responder. Revisa el panel de pruebas antes de intentar otra vez.";
     return "No se pudo validar la tarjeta. Revisa los datos e inténtalo nuevamente.";
   }
@@ -675,6 +679,8 @@
         return;
       }
       try {
+        porId("tarjeta-numero-openpay").value = "";
+        porId("tarjeta-cvv-openpay").value = "";
         boton.textContent = "Procesando pago…";
         mostrarEstadoPagoOpenpay("Openpay está procesando el pago. No cierres esta ventana.");
         await enviarPagoOpenpay(tokenId);
