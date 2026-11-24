@@ -3,6 +3,9 @@
 
   const SUPABASE_URL = "https://lkajqjiiqatleydroibw.supabase.co";
   const SUPABASE_KEY = "sb_publishable_tfOFSgp4Rq8Q6WKSWhstaA_VsdxHk9D";
+  const OPENPAY_MERCHANT_ID = "mwjxzjxqizrwr70oq7uh";
+  const OPENPAY_PUBLIC_KEY = "pk_f4231d25aa8d40e6b542ef121c53f15c";
+  const OPENPAY_FUNCTION_URL = SUPABASE_URL + "/functions/v1/codmar-openpay";
   const TELEFONO_PEDIDOS = "5212282116197";
   // Evitar que el navegador reutilice respuestas antiguas al recargar la tienda.
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -448,6 +451,8 @@
     porId("total-carrito").textContent = formatoPrecio.format(total);
     porId("contador-carrito").textContent = String(piezas);
     porId("enviar-pedido").disabled = !carrito.length;
+    const botonTarjeta = porId("pagar-con-tarjeta");
+    if (botonTarjeta) botonTarjeta.disabled = !carrito.length;
   }
 
   function abrirCarrito() {
@@ -531,6 +536,166 @@
     if (evento.target === porId("fondo-carrito")) cerrarCarrito();
   });
   porId("enviar-pedido").addEventListener("click", enviarPedido);
+  // Openpay se habilita solo para CODMAR mientras exista una única cuenta de comercio.
+  const openpayHabilitado = negocioSlugTienda === "co-d-mar-1" && Boolean(window.OpenPay);
+  let deviceSessionOpenpay = "";
+
+  if (openpayHabilitado) {
+    porId("pagar-con-tarjeta").hidden = false;
+    OpenPay.setId(OPENPAY_MERCHANT_ID);
+    OpenPay.setApiKey(OPENPAY_PUBLIC_KEY);
+    OpenPay.setSandboxMode(true);
+  } else {
+    porId("pagar-con-tarjeta").hidden = true;
+  }
+
+  function mostrarEstadoPagoOpenpay(mensaje, error = false) {
+    const salida = porId("estado-pago-openpay");
+    salida.textContent = mensaje;
+    salida.style.color = error ? "#a33b30" : "#16745f";
+  }
+
+  function abrirPagoOpenpay() {
+    if (!openpayHabilitado || !carrito.length) return;
+    porId("total-pago-openpay").textContent =
+      "Total: " + formatoPrecio.format(carrito.reduce((suma, item) => suma + item.precio * item.cantidad, 0));
+    mostrarEstadoPagoOpenpay("");
+    porId("confirmar-pago-openpay").disabled = false;
+    porId("confirmar-pago-openpay").textContent = "Continuar y pagar";
+    porId("fondo-pago-openpay").hidden = false;
+    document.body.classList.add("pago-openpay-abierto");
+    try {
+      const campoDispositivo = porId("device_session_id");
+      if (!deviceSessionOpenpay) {
+        deviceSessionOpenpay = OpenPay.deviceData.setup("formulario-pago-openpay", "device_session_id") || "";
+        if (campoDispositivo && !deviceSessionOpenpay) deviceSessionOpenpay = campoDispositivo.value || "";
+      } else if (campoDispositivo) {
+        campoDispositivo.value = deviceSessionOpenpay;
+      }
+    } catch (error) {
+      console.error("No se pudo iniciar la identificación del dispositivo Openpay.");
+      mostrarEstadoPagoOpenpay("No se pudo iniciar la validación de seguridad. Recarga la tienda e inténtalo de nuevo.", true);
+    }
+  }
+
+  function cerrarPagoOpenpay() {
+    porId("fondo-pago-openpay").hidden = true;
+    document.body.classList.remove("pago-openpay-abierto");
+    porId("tarjeta-numero-openpay").value = "";
+    porId("tarjeta-cvv-openpay").value = "";
+  }
+
+  function errorOpenpayTexto(error) {
+    const codigo = Number(error?.data?.error_code || error?.data?.status || 0);
+    if (codigo === 3001 || codigo === 3002 || codigo === 3003 || codigo === 3005) return "Openpay rechazó la tarjeta. Revisa los datos o utiliza otra tarjeta de prueba.";
+    if (error?.message === "Timeout after X milliseconds") return "Openpay tardó demasiado en responder. Revisa el panel de pruebas antes de intentar otra vez.";
+    return "No se pudo validar la tarjeta. Revisa los datos e inténtalo nuevamente.";
+  }
+
+  async function enviarPagoOpenpay(tokenId) {
+    const deviceId = porId("device_session_id").value || deviceSessionOpenpay;
+    if (!deviceId) throw new Error("No se pudo obtener el identificador de seguridad del dispositivo.");
+
+    const datos = {
+      negocio_slug: negocioSlugTienda,
+      token_id: tokenId,
+      device_session_id: deviceId,
+      customer: {
+        name: porId("cliente-nombre-openpay").value.trim(),
+        phone_number: porId("cliente-telefono-openpay").value.replace(/\\D/g, ""),
+        email: porId("cliente-correo-openpay").value.trim()
+      },
+      items: carrito.map(item => ({ id: Number(item.id), quantity: Number(item.cantidad) }))
+    };
+
+    const respuesta = await fetch(OPENPAY_FUNCTION_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY
+      },
+      body: JSON.stringify(datos),
+      cache: "no-store"
+    });
+    const resultado = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok) {
+      if (respuesta.status === 429) throw new Error("Se alcanzó el límite de intentos. Espera unos minutos antes de volver a probar.");
+      if (resultado.error === "openpay_not_configured") throw new Error("Openpay todavía no está configurado en el servidor.");
+      if (resultado.error === "openpay_store_not_enabled") throw new Error("Esta tienda todavía no tiene una cuenta Openpay habilitada.");
+      throw new Error(resultado.message || "Openpay no pudo procesar el pago. Código: " + (resultado.error || respuesta.status));
+    }
+
+    if (resultado.success === true && resultado.status === "completed") {
+      carrito = [];
+      actualizarCarrito();
+      porId("tarjeta-numero-openpay").value = "";
+      porId("tarjeta-cvv-openpay").value = "";
+      porId("confirmar-pago-openpay").disabled = true;
+      porId("confirmar-pago-openpay").textContent = "Pago aprobado";
+      mostrarEstadoPagoOpenpay("Pago aprobado. Referencia: " + (resultado.transaction_id || resultado.order_id));
+      return;
+    }
+
+    if (respuesta.status === 202 || resultado.status === "in_progress" || resultado.status === "pending") {
+      mostrarEstadoPagoOpenpay("El pago quedó en proceso. No vuelvas a intentarlo todavía; primero revisa la transacción en Openpay.");
+      return;
+    }
+
+    throw new Error("Openpay no confirmó el pago. Revisa la transacción en el panel Sandbox antes de repetir el intento.");
+  }
+
+  porId("pagar-con-tarjeta").addEventListener("click", abrirPagoOpenpay);
+  porId("cerrar-pago-openpay").addEventListener("click", cerrarPagoOpenpay);
+  porId("fondo-pago-openpay").addEventListener("click", evento => {
+    if (evento.target === porId("fondo-pago-openpay")) cerrarPagoOpenpay();
+  });
+
+  porId("formulario-pago-openpay").addEventListener("submit", evento => {
+    evento.preventDefault();
+    if (!openpayHabilitado || !carrito.length) return;
+    const formulario = porId("formulario-pago-openpay");
+    if (!formulario.reportValidity()) return;
+
+    const boton = porId("confirmar-pago-openpay");
+    boton.disabled = true;
+    boton.textContent = "Validando tarjeta…";
+    mostrarEstadoPagoOpenpay("Enviando los datos de la tarjeta directamente a Openpay…");
+
+    const tarjeta = {
+      card_number: porId("tarjeta-numero-openpay").value.replace(/\\D/g, ""),
+      holder_name: porId("tarjeta-titular-openpay").value.trim(),
+      expiration_month: porId("tarjeta-mes-openpay").value.trim().padStart(2, "0"),
+      expiration_year: porId("tarjeta-anio-openpay").value.trim(),
+      cvv2: porId("tarjeta-cvv-openpay").value.trim()
+    };
+
+    OpenPay.token.create(tarjeta, async respuesta => {
+      const tokenId = respuesta?.data?.id;
+      if (!tokenId) {
+        boton.disabled = false;
+        boton.textContent = "Continuar y pagar";
+        mostrarEstadoPagoOpenpay("Openpay no devolvió el token de la tarjeta. Inténtalo de nuevo.", true);
+        return;
+      }
+      try {
+        porId("tarjeta-numero-openpay").value = "";
+        porId("tarjeta-cvv-openpay").value = "";
+        boton.textContent = "Procesando pago…";
+        mostrarEstadoPagoOpenpay("Openpay está procesando el pago. No cierres esta ventana.");
+        await enviarPagoOpenpay(tokenId);
+      } catch (error) {
+        mostrarEstadoPagoOpenpay(error.message || "No se pudo completar el pago.", true);
+        boton.disabled = false;
+        boton.textContent = "Continuar y pagar";
+      }
+    }, error => {
+      boton.disabled = false;
+      boton.textContent = "Continuar y pagar";
+      mostrarEstadoPagoOpenpay(errorOpenpayTexto(error), true);
+    });
+  });
+
   document.addEventListener("keydown", evento => {
     if (evento.key === "Escape") cerrarCarrito();
   });
