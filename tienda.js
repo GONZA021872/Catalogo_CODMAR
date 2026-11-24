@@ -545,6 +545,20 @@
     OpenPay.setId(OPENPAY_MERCHANT_ID);
     OpenPay.setApiKey(OPENPAY_PUBLIC_KEY);
     OpenPay.setSandboxMode(true);
+    // Diagnóstico seguro: nunca registrar llaves ni datos de tarjeta.
+    const openpaySandboxActivo = typeof OpenPay.getSandboxMode === "function"
+      ? OpenPay.getSandboxMode()
+      : null;
+    console.info("[CODMAR/Openpay] Configuración:", {
+      libreriaCargada: true,
+      merchantConfigurado: Boolean(OPENPAY_MERCHANT_ID),
+      llavePublicaConfigurada: Boolean(OPENPAY_PUBLIC_KEY),
+      sandboxSolicitado: true,
+      sandboxConfirmado: openpaySandboxActivo
+    });
+    if (openpaySandboxActivo === false) {
+      console.error("[CODMAR/Openpay] El navegador no confirmó el modo Sandbox.");
+    }
   } else {
     porId("pagar-con-tarjeta").hidden = true;
   }
@@ -589,6 +603,16 @@
     const detalle = error?.data || {};
     const codigo = Number(detalle.error_code || 0);
     const descripcion = String(detalle.description || error?.message || "").trim();
+    // Datos de diagnóstico no sensibles para identificar la petición fallida.
+    console.error("[CODMAR/Openpay] Falló la tokenización:", {
+      mensaje: error?.message || null,
+      estadoHttp: detalle.http_code || detalle.status || error?.status || null,
+      codigoOpenpay: codigo || null,
+      categoria: detalle.category || null,
+      descripcion: descripcion || null,
+      requestId: detalle.request_id || null,
+      sandbox: typeof OpenPay.getSandboxMode === "function" ? OpenPay.getSandboxMode() : "no disponible"
+    });
     const estado = Number(detalle.status || error?.status || 0);
     if (codigo === 3001 || codigo === 3002 || codigo === 3003 || codigo === 3005) {
       return "Openpay rechazó la tarjeta (código " + codigo + "): " + (descripcion || "revisa los datos o utiliza otra tarjeta de prueba.");
