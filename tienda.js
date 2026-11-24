@@ -541,6 +541,7 @@
   let deviceSessionOpenpay = "";
 
   if (openpayHabilitado) {
+    porId("pagar-con-tarjeta").hidden = false;
     OpenPay.setId(OPENPAY_MERCHANT_ID);
     OpenPay.setApiKey(OPENPAY_PUBLIC_KEY);
     OpenPay.setSandboxMode(true);
