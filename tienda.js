@@ -489,7 +489,7 @@
     const separadorPunteado = "................................";
     const anchoNombre = 26;
     const ajustarNombreTicket = texto => {
-      const nombre = String(texto || "").replace(/\\s+/g, " ").trim();
+      const nombre = String(texto || "").replace(/\s+/g, " ").trim();
       if (nombre.length <= anchoNombre) return nombre;
       const espacioRestante = anchoNombre - 1;
       const caracteresInicio = Math.ceil(espacioRestante / 2);
@@ -612,7 +612,7 @@
       device_session_id: deviceId,
       customer: {
         name: porId("cliente-nombre-openpay").value.trim(),
-        phone_number: porId("cliente-telefono-openpay").value.replace(/\\D/g, ""),
+        phone_number: porId("cliente-telefono-openpay").value.replace(/\D/g, ""),
         email: porId("cliente-correo-openpay").value.trim()
       },
       items: carrito.map(item => ({ id: Number(item.id), quantity: Number(item.cantidad) }))
@@ -673,7 +673,7 @@
     mostrarEstadoPagoOpenpay("Enviando los datos de la tarjeta directamente a Openpay…");
 
     const tarjeta = {
-      card_number: porId("tarjeta-numero-openpay").value.replace(/\\D/g, ""),
+      card_number: porId("tarjeta-numero-openpay").value.replace(/\D/g, ""),
       holder_name: porId("tarjeta-titular-openpay").value.trim(),
       expiration_month: porId("tarjeta-mes-openpay").value.trim().padStart(2, "0"),
       expiration_year: porId("tarjeta-anio-openpay").value.trim(),
