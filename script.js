@@ -166,10 +166,9 @@ if (campoPassword && botonMostrarPassword) {
             if (!clienteAcceso || clienteAcceso.slug !== negocioSlugAcceso) {
                 sesionValidaParaNegocio = false;
                 await clienteSupabase.auth.signOut();
+                // La sesión ajena se cierra sin mostrar avisos en la pantalla de acceso.
                 const avisoAcceso = document.getElementById("mensaje-login");
-                if (avisoAcceso) {
-                    avisoAcceso.textContent = "Esta dirección corresponde a otro negocio. Inicia sesión con la cuenta correcta.";
-                }
+                if (avisoAcceso) avisoAcceso.textContent = "";
             }
         }
     }
