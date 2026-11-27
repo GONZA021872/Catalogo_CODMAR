@@ -722,29 +722,3 @@ body.selector-producto-abierto{overflow:hidden}
     overflow:auto;
   }
   }
-
-
-/* Checkout de tarjeta Openpay: modal independiente del carrito y WhatsApp. */
-.boton-pagar-tarjeta{width:100%;min-height:42px;margin-top:10px;padding:11px 13px;border:1px solid #00a6a6;border-radius:8px;background:#fff;color:#008f91;font-weight:700;cursor:pointer}
-.boton-pagar-tarjeta:hover{background:#effafa}
-.boton-pagar-tarjeta:disabled{opacity:.45;cursor:not-allowed}
-.fondo-pago-openpay{position:fixed;inset:0;z-index:7000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(12,24,44,.62)}
-.fondo-pago-openpay[hidden]{display:none}
-.panel-pago-openpay{width:min(480px,96vw);max-height:92vh;overflow:auto;padding:22px;border-radius:14px;background:#fff;box-shadow:0 14px 42px rgba(0,0,0,.28)}
-.encabezado-pago-openpay{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--borde);padding-bottom:12px}
-.encabezado-pago-openpay h2{margin:0;color:#263746;font-size:21px}
-.encabezado-pago-openpay button{border:0;background:none;color:#526171;font-size:30px;cursor:pointer}
-.aviso-sandbox-openpay{margin:13px 0;padding:10px;border-radius:8px;background:#fff7e6;color:#805600;font-size:12px;line-height:1.4}
-.campos-cliente-openpay,.campos-tarjeta-openpay{display:grid;gap:12px}
-.campos-cliente-openpay label,.campos-tarjeta-openpay label{display:grid;gap:5px;color:#34495e;font-size:12px;font-weight:700}
-.campos-cliente-openpay input,.campos-tarjeta-openpay input{width:100%;min-height:40px;padding:9px 10px;border:1px solid #d8e0e5;border-radius:7px;background:#fff;color:#263746;font:inherit;font-size:14px}
-.campos-cliente-openpay input:focus,.campos-tarjeta-openpay input:focus{outline:2px solid #9de0df;border-color:#00a6a6}
-.separador-pago-openpay{height:1px;margin:16px 0;background:var(--borde)}
-.fila-expiracion-openpay{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.estado-pago-openpay{min-height:18px;margin:12px 0;color:#a33b30;font-size:12px}
-.total-pago-openpay{margin:8px 0 12px;color:#263746;font-size:18px;font-weight:800;text-align:right}
-.boton-confirmar-pago-openpay{width:100%;min-height:44px;border:0;border-radius:8px;background:#00a6a6;color:#fff;font-weight:800;cursor:pointer}
-.boton-confirmar-pago-openpay:disabled{opacity:.55;cursor:wait}
-.pie-seguridad-openpay{margin:12px 0 0;color:#7b8794;font-size:11px;line-height:1.45}
-body.pago-openpay-abierto{overflow:hidden}
-@media(max-width:700px){.panel-pago-openpay{width:100%;max-height:100%;border-radius:12px;padding:18px}.fondo-pago-openpay{padding:10px}}
